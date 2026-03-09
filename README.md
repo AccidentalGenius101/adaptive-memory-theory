@@ -37,6 +37,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 22 | Spatial Correlation Signature of Zone Formation: Interface Sharpening | [PDF](papers/paper22_spatial_correlation/paper22_spatial_correlation.pdf) · [TeX](papers/paper22_spatial_correlation/paper22_spatial_correlation.tex) · [Code](papers/paper22_spatial_correlation/) | -- |
 | 23 | Two-Scale Reynolds Decomposition: Interface Formula and Inheritance Roughness | [PDF](papers/paper23_two_scale/paper23_two_scale.pdf) · [TeX](papers/paper23_two_scale/paper23_two_scale.tex) · [Code](papers/paper23_two_scale/) | -- |
 | 24 | The Birth Bias Axis: Probing the Allen-Cahn--Burgers Universality Class Transition in VCML | [PDF](papers/paper24_birth_bias/paper24_birth_bias.pdf) · [TeX](papers/paper24_birth_bias/paper24_birth_bias.tex) · [Code](papers/paper24_birth_bias/) | -- |
+| 25 | Completing the Model H Picture: Zone-Level Structure, Partial Burgers Signal, and Inheritance Roughness in VCML | [PDF](papers/paper25_burgers_transition/paper25_burgers_transition.pdf) · [TeX](papers/paper25_burgers_transition/paper25_burgers_transition.tex) · [Code](papers/paper25_burgers_transition/) | -- |
 
 ---
 
