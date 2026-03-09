@@ -30,6 +30,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 15 | Differentiation Amplitude as the Internal Control Variable of Viability-Constrained Memory Systems: A Square-Root Scaling Law | [PDF](papers/paper15_amplitude_law/paper15_amplitude_law.pdf) · [TeX](papers/paper15_amplitude_law/paper15_amplitude_law.tex) · [Code](papers/paper15_amplitude_law/) | -- |
 | 16 | Mechanistic Origin of the FA Scaling Law in Viability-Constrained Memory Systems: Consolidation-Diffusion Crossover and the Anti-Erasure Effect | [PDF](papers/paper16_growth_dynamics/paper16_growth_dynamics.pdf) · [TeX](papers/paper16_growth_dynamics/paper16_growth_dynamics.tex) · [Code](papers/paper16_growth_dynamics/) | -- |
 | 17 | Two-Factor Structure of the Viability-Constrained Memory Saturation Law: Complete Parametric Decomposition | [PDF](papers/paper17_two_factor_decomposition/paper17_two_factor_decomposition.pdf) · [TeX](papers/paper17_two_factor_decomposition/paper17_two_factor_decomposition.tex) · [Code](papers/paper17_two_factor_decomposition/) | -- |
+| 18 | Temporal Dynamics of Viability-Constrained Memory Systems: Consolidation Burst and MID\_DECAY-Limited Forgetting | [PDF](papers/paper18_temporal_dynamics/paper18_temporal_dynamics.pdf) · [TeX](papers/paper18_temporal_dynamics/paper18_temporal_dynamics.tex) · [Code](papers/paper18_temporal_dynamics/) | -- |
 
 ---
 
