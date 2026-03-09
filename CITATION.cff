@@ -1,0 +1,67 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the relevant paper(s) below."
+title: "Adaptive Memory Theory: A Constraint-Based Framework for Adaptive Memory Systems"
+authors:
+  - family-names: Aubin-Moreau
+    given-names: Gabriel
+    alias: AccidentalGenius101
+    website: "https://github.com/AccidentalGenius101"
+date-released: 2026-03-09
+repository-code: "https://github.com/AccidentalGenius101/adaptive-memory-theory"
+
+references:
+  - type: article
+    title: "Spontaneous Spatial Self-Organization in Viability-Gated Memory Substrates"
+    authors:
+      - family-names: Aubin-Moreau
+        given-names: Gabriel
+    year: 2026
+    notes: "Paper 0 -- Bootstrap"
+
+  - type: article
+    title: "Memory Capacity Bounds via Spherical Random Sequential Adsorption"
+    authors:
+      - family-names: Aubin-Moreau
+        given-names: Gabriel
+    year: 2026
+    notes: "Paper 1 -- Capacity"
+
+  - type: article
+    title: "Memory Bandwidth as a Function of Turnover Rate"
+    authors:
+      - family-names: Aubin-Moreau
+        given-names: Gabriel
+    year: 2026
+    notes: "Paper 2 -- Bandwidth"
+
+  - type: article
+    title: "Finite Correlation Length and Propagation Constraints in Adaptive Substrates"
+    authors:
+      - family-names: Aubin-Moreau
+        given-names: Gabriel
+    year: 2026
+    notes: "Paper 3 -- Propagation"
+
+  - type: article
+    title: "Consolidation Gate and Noise Robustness in VCSM"
+    authors:
+      - family-names: Aubin-Moreau
+        given-names: Gabriel
+    year: 2026
+    notes: "Paper 4 -- Stability"
+
+  - type: article
+    title: "A Unified Physical Theory of Viability-Gated Adaptive Systems"
+    authors:
+      - family-names: Aubin-Moreau
+        given-names: Gabriel
+    year: 2026
+    notes: "Paper 5 -- Unified"
+
+  - type: article
+    title: "Adaptive Memory in Artificial Systems: A Constraint-Based Framework"
+    authors:
+      - family-names: Aubin-Moreau
+        given-names: Gabriel
+    year: 2026
+    notes: "Paper 6 -- AI Memory"
