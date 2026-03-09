@@ -10,15 +10,15 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 
 ## Papers
 
-| # | Title | PDF |
-|---|-------|-----|
-| 0 | Spontaneous Spatial Self-Organization in Viability-Gated Memory Substrates | [PDF](papers/paper0_spatial_self_organization.pdf) · [TeX](papers/paper0_spatial_self_organization.tex) |
-| 1 | Memory Capacity Bounds via Spherical Random Sequential Adsorption | [PDF](papers/paper1_capacity_bounds.pdf) · [TeX](papers/paper1_capacity_bounds.tex) |
-| 2 | Memory Bandwidth as a Function of Turnover Rate | [PDF](papers/paper2_bandwidth_turnover.pdf) · [TeX](papers/paper2_bandwidth_turnover.tex) |
-| 3 | Finite Correlation Length and Propagation Constraints in Adaptive Substrates | [PDF](papers/paper3_propagation_constraints.pdf) · [TeX](papers/paper3_propagation_constraints.tex) |
-| 4 | Consolidation Gating and Noise Robustness in Adaptive Memory Systems | [PDF](papers/paper4_consolidation_gating.pdf) · [TeX](papers/paper4_consolidation_gating.tex) |
-| 5 | A Unified Constraint Framework for Viability-Gated Adaptive Systems | [PDF](papers/paper5_unified_framework.pdf) · [TeX](papers/paper5_unified_framework.tex) |
-| 6 | Adaptive Memory in Artificial Systems: A Constraint-Based Framework | [PDF](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.pdf) · [TeX](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.tex) · [Code](papers/paper6_adaptive_memory_theory/) |
+| # | Title | PDF | DOI |
+|---|-------|-----|-----|
+| 0 | Spontaneous Spatial Self-Organization in Viability-Gated Memory Substrates | [PDF](papers/paper0_spatial_self_organization.pdf) · [TeX](papers/paper0_spatial_self_organization.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918240.svg)](https://doi.org/10.5281/zenodo.18918240) |
+| 1 | Memory Capacity Bounds via Spherical Random Sequential Adsorption | [PDF](papers/paper1_capacity_bounds.pdf) · [TeX](papers/paper1_capacity_bounds.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918441.svg)](https://doi.org/10.5281/zenodo.18918441) |
+| 2 | Memory Bandwidth as a Function of Turnover Rate | [PDF](papers/paper2_bandwidth_turnover.pdf) · [TeX](papers/paper2_bandwidth_turnover.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918269.svg)](https://doi.org/10.5281/zenodo.18918269) |
+| 3 | Finite Correlation Length and Propagation Constraints in Adaptive Substrates | [PDF](papers/paper3_propagation_constraints.pdf) · [TeX](papers/paper3_propagation_constraints.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918284.svg)](https://doi.org/10.5281/zenodo.18918284) |
+| 4 | Consolidation Gating and Noise Robustness in Adaptive Memory Systems | [PDF](papers/paper4_consolidation_gating.pdf) · [TeX](papers/paper4_consolidation_gating.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918295.svg)](https://doi.org/10.5281/zenodo.18918295) |
+| 5 | A Unified Constraint Framework for Viability-Gated Adaptive Systems | [PDF](papers/paper5_unified_framework.pdf) · [TeX](papers/paper5_unified_framework.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918310.svg)](https://doi.org/10.5281/zenodo.18918310) |
+| 6 | Adaptive Memory in Artificial Systems: A Constraint-Based Framework | [PDF](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.pdf) · [TeX](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.tex) · [Code](papers/paper6_adaptive_memory_theory/) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918322.svg)](https://doi.org/10.5281/zenodo.18918322) |
 
 ---
 
