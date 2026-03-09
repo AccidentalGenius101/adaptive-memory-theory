@@ -5,10 +5,12 @@ Regime fingerprints: time-series signatures of each regime.
 For each of the four canonical regimes, track sg4(t), collapse_rate(t),
 and nonadj/adj(t) across the run. Shows qualitatively distinct trajectories:
 
-  Frozen:      sg4 rises and stays; collapse_rate ~0; no dip at shift.
-  Adaptive:    sg4 dips at shift then recovers; collapse_rate ~0.01.
-  Chaotic:     sg4 never rises; collapse_rate ~0.1; no coherent structure.
-  Fragmented:  sg4 low; nonadj/adj near 1; structure is local, not zonal.
+  Frozen:          sg4 rises and stays; collapse_rate ~0; no dip at shift.
+  Adaptive:        sg4 dips at shift then recovers; collapse_rate ~0.01.
+  Turnover-dom:    sg4 never rises; collapse_rate ~0.1; no coherent structure.
+  Fragmented:      sg4 low; nonadj/adj near 1; structure is local, not zonal.
+  Adaptive (2x):   Same as adaptive with WAVE_AMP doubled (0.6).
+                   Tests shift-magnitude robustness of the dip-and-recovery signature.
 
 Fragmented: KAPPA=0 (no field diffusion) + SEED_BETA=0 (no birth seeding).
 This eliminates both propagation mechanisms, giving pure local structure.
@@ -46,10 +48,11 @@ top_mask  = _row < H // 2; bot_mask  = _row >= H // 2
 d_A = np.array([1.0, 0.0]); d_B = np.array([0.0, 1.0])
 
 REGIMES = {
-    "frozen":     {"death_p": 0.0001, "kappa": 0.020, "seed_beta": 0.25},
-    "adaptive":   {"death_p": 0.005,  "kappa": 0.020, "seed_beta": 0.25},
-    "chaotic":    {"death_p": 0.060,  "kappa": 0.020, "seed_beta": 0.25},
-    "fragmented": {"death_p": 0.005,  "kappa": 0.000, "seed_beta": 0.00},
+    "frozen":       {"death_p": 0.0001, "kappa": 0.020, "seed_beta": 0.25, "wave_amp": 0.3},
+    "adaptive":     {"death_p": 0.005,  "kappa": 0.020, "seed_beta": 0.25, "wave_amp": 0.3},
+    "turnover_dom": {"death_p": 0.060,  "kappa": 0.020, "seed_beta": 0.25, "wave_amp": 0.3},
+    "fragmented":   {"death_p": 0.005,  "kappa": 0.000, "seed_beta": 0.00, "wave_amp": 0.3},
+    "adaptive_2x":  {"death_p": 0.005,  "kappa": 0.020, "seed_beta": 0.25, "wave_amp": 0.6},
 }
 
 def sg4(F):
@@ -71,7 +74,7 @@ def align_cosine(F, d, pos, neg):
     if mag < 1e-9: return 0.0
     return float(np.dot(contrast / mag, d))
 
-def run_regime(name, death_p, kappa, seed_beta, seed=42):
+def run_regime(name, death_p, kappa, seed_beta, wave_amp=0.3, seed=42):
     rng = np.random.default_rng(seed)
     h = rng.normal(0, 0.1, (N_ACT, HS))
     F = np.zeros((N_ACT, HS)); m = np.zeros((N_ACT, HS))
@@ -102,7 +105,7 @@ def run_regime(name, death_p, kappa, seed_beta, seed=42):
         for w in waves:
             if w[3]: mask = left_mask if w[0] <= 1 else right_mask
             else:    mask = top_mask if w[0] == 0 else bot_mask
-            h[mask] += 0.3 * np.array(w[2])
+            h[mask] += wave_amp * np.array(w[2])
         m[pert] += ALPHA_MID * (h - base)[pert]
         m *= MID_DECAY; streak[pert] = 0; streak[~pert] += 1
         ok = streak >= SS
@@ -162,14 +165,15 @@ if __name__ == "__main__":
         post_shift = next(s for s in snaps if s["step"] >= 1200)
         final      = snaps[-1]
         p = REGIMES[name]
-        print(f"[{name.upper():12s}]  death_p={p['death_p']:.4f}  kappa={p['kappa']:.3f}  seed_beta={p['seed_beta']:.2f}")
+        print(f"[{name.upper():14s}]  death_p={p['death_p']:.4f}  kappa={p['kappa']:.3f}  seed_beta={p['seed_beta']:.2f}  wave_amp={p['wave_amp']:.2f}")
         print(f"  t= 500: sg4={early['sg4']:6.2f}  coll={early['coll_rate']:.4f}  ratio={early['ratio']:.3f}  adapt_B={early['adapt_B']:+.3f}")
         print(f"  t=1000: sg4={pre_shift['sg4']:6.2f}  coll={pre_shift['coll_rate']:.4f}  ratio={pre_shift['ratio']:.3f}  adapt_B={pre_shift['adapt_B']:+.3f}")
         print(f"  t=1200: sg4={post_shift['sg4']:6.2f}  coll={post_shift['coll_rate']:.4f}  ratio={post_shift['ratio']:.3f}  adapt_B={post_shift['adapt_B']:+.3f}")
         print(f"  t=2000: sg4={final['sg4']:6.2f}  coll={final['coll_rate']:.4f}  ratio={final['ratio']:.3f}  adapt_B={final['adapt_B']:+.3f}")
         print()
     print("Signatures:")
-    print("  adaptive:   dip in sg4 at t=1000, recovery at t=2000, adapt_B>0 at end")
-    print("  frozen:     sg4 stays high, adapt_B~0 at end (locked in Phase 1 pattern)")
-    print("  chaotic:    sg4 ~0 throughout, high coll_rate")
-    print("  fragmented: sg4 low-moderate, ratio<1.2 (no zone structure)")
+    print("  adaptive:     dip in sg4 at t=1000, recovery at t=2000, adapt_B>0 at end")
+    print("  frozen:       sg4 stays high, adapt_B~0 at end (locked in Phase 1 pattern)")
+    print("  turnover_dom: sg4 ~0 throughout, high coll_rate")
+    print("  fragmented:   sg4 low-moderate, ratio<1.2 (no zone structure)")
+    print("  adaptive_2x:  dip-and-recovery still present at doubled wave amplitude")
