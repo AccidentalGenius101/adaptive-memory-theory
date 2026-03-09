@@ -22,6 +22,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 7 | Regime Structure of Adaptive Memory Systems | [PDF](papers/paper7_regime_structure/paper7_regime_structure.pdf) · [TeX](papers/paper7_regime_structure/paper7_regime_structure.tex) · [Code](papers/paper7_regime_structure/) | -- |
 | 8 | Empirical Turnover Invariance in a Viability-Constrained Memory Substrate | [PDF](papers/paper8_timescale_matching/paper8_timescale_matching.pdf) · [TeX](papers/paper8_timescale_matching/paper8_timescale_matching.tex) · [Code](papers/paper8_timescale_matching/) | -- |
 | 9 | What Governs the Adaptive Regime? Testing a Dimensionless Ratio in Viability-Constrained Memory Systems | [PDF](papers/paper9_governing_ratio/paper9_governing_ratio.pdf) · [TeX](papers/paper9_governing_ratio/paper9_governing_ratio.tex) · [Code](papers/paper9_governing_ratio/) | -- |
+| 10 | The Adaptive Window Resists WR Perturbation: Limits of the Replacement Hazard Framework in Viability-Constrained Memory Systems | [PDF](papers/paper10_replacement_hazard/paper10_structural_replacement_hazard.pdf) · [TeX](papers/paper10_replacement_hazard/paper10_structural_replacement_hazard.tex) · [Code](papers/paper10_replacement_hazard/) | -- |
 
 ---
 
