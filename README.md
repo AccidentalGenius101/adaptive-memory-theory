@@ -28,6 +28,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 13 | Closing the Control Law: The Adaptive Regime of Viability-Constrained Memory Systems is a 4D Viability Volume | [PDF](papers/paper13_viability_volume/paper13_viability_volume.pdf) · [TeX](papers/paper13_viability_volume/paper13_viability_volume.tex) · [Code](papers/paper13_viability_volume/) | -- |
 | 14 | Timescale Nesting and the Limits of Ratio Invariance in Viability-Constrained Memory Systems | [PDF](papers/paper14_timescale_nesting/paper14_timescale_nesting.pdf) · [TeX](papers/paper14_timescale_nesting/paper14_timescale_nesting.tex) · [Code](papers/paper14_timescale_nesting/) | -- |
 | 15 | Differentiation Amplitude as the Internal Control Variable of Viability-Constrained Memory Systems: A Square-Root Scaling Law | [PDF](papers/paper15_amplitude_law/paper15_amplitude_law.pdf) · [TeX](papers/paper15_amplitude_law/paper15_amplitude_law.tex) · [Code](papers/paper15_amplitude_law/) | -- |
+| 16 | Mechanistic Origin of the FA Scaling Law in Viability-Constrained Memory Systems: Consolidation-Diffusion Crossover and the Anti-Erasure Effect | [PDF](papers/paper16_growth_dynamics/paper16_growth_dynamics.pdf) · [TeX](papers/paper16_growth_dynamics/paper16_growth_dynamics.tex) · [Code](papers/paper16_growth_dynamics/) | -- |
 
 ---
 
