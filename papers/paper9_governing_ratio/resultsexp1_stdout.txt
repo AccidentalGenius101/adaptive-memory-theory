@@ -1,0 +1,14 @@
+Saved results.
+
+WAVE_DUR sweep: does nu* shift with 1/WAVE_DUR? (WR=4.8, 5 seeds)
+Dimensionless Xi = nu * 100 * 2 * WAVE_DUR / 4.8
+Prediction: nu*_pred = WR / (2 * WAVE_DUR * N_act/4)
+
+  WD |  nu*_pred |      nu* |     sg4* |    Xi* | sg4 profile
+------------------------------------------------------------------------------------------
+   7 |    0.0034 |   0.0001 |    138.5 |  0.029 |    139     129     110     119     101      98      30      32       5       2       0       0
+  15 |    0.0016 |   0.0005 |    419.0 |  0.312 |    223     220     273     419     376     328     161      80      24       4       1       0
+  30 |    0.0008 |   0.0005 |    561.7 |  0.625 |    217     299     391     562     448     407     299     104      26       5       1       0
+  60 |    0.0004 |   0.0010 |    432.6 |  2.500 |    214     281     290     261     433     352     252     106      26       4       1       0
+
+Xi* column: if Xi* is constant across WAVE_DUR, the dimensionless number governs the regime.

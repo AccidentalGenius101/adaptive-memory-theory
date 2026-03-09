@@ -1,0 +1,12 @@
+Saved results.
+
+Ratio collapse: same R=WR/WAVE_DUR -> same nu*? (5 seeds)
+All pairs have R = WR/WAVE_DUR = 0.32
+
+   WR   WD      R |      nu* |     sg4* |    Xi* | sg4 profile
+-----------------------------------------------------------------------------------------------
+  1.6    5  0.320 |   0.0010 |    206.1 |  0.625 |     46      96     152     201     206     133      69      19       6       1       0       0
+  4.8   15  0.320 |   0.0005 |    419.0 |  0.312 |    223     220     273     419     376     328     161      80      24       4       1       0
+  9.6   30  0.320 |   0.0003 |    402.7 |  0.188 |    145      66     403     196     119     182      65      14      13      10       1       0
+
+Xi* column: should be equal across all rows if R alone governs nu*.
