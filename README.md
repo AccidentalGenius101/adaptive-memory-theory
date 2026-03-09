@@ -34,8 +34,9 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 19 | The Blocked-Site Buffer: Direct Measurement of the Third Reservoir in Viability-Constrained Memory Systems | [PDF](papers/paper19_blocked_buffer/paper19_blocked_buffer.pdf) · [TeX](papers/paper19_blocked_buffer/paper19_blocked_buffer.tex) · [Code](papers/paper19_blocked_buffer/) | -- |
 | 20 | The Coupled ODE of Viability-Constrained Memory Systems: Analytical Closure, Validated Predictions, and the Buildup Gap | [PDF](papers/paper20_ode_closure/paper20_ode_closure.pdf) · [TeX](papers/paper20_ode_closure/paper20_ode_closure.tex) · [Code](papers/paper20_ode_closure/) | -- |
 | 21 | The Spatial Formation Factor: Birth-Mediated Propagation and the Buildup Gap in Viability-Constrained Memory Systems | [PDF](papers/paper21_spatial_formation/paper21_spatial_formation.pdf) · [TeX](papers/paper21_spatial_formation/paper21_spatial_formation.tex) · [Code](papers/paper21_spatial_formation/) | -- |
-| 22 | Spatial Correlation Signature of Zone Formation: Interface Sharpening | paper22_spatial_correlation/ |
-| 23 | Two-Scale Reynolds Decomposition: Interface Formula and Inheritance Roughness | paper23_two_scale/ |
+| 22 | Spatial Correlation Signature of Zone Formation: Interface Sharpening | [PDF](papers/paper22_spatial_correlation/paper22_spatial_correlation.pdf) · [TeX](papers/paper22_spatial_correlation/paper22_spatial_correlation.tex) · [Code](papers/paper22_spatial_correlation/) | -- |
+| 23 | Two-Scale Reynolds Decomposition: Interface Formula and Inheritance Roughness | [PDF](papers/paper23_two_scale/paper23_two_scale.pdf) · [TeX](papers/paper23_two_scale/paper23_two_scale.tex) · [Code](papers/paper23_two_scale/) | -- |
+| 24 | The Birth Bias Axis: Probing the Allen-Cahn--Burgers Universality Class Transition in VCML | [PDF](papers/paper24_birth_bias/paper24_birth_bias.pdf) · [TeX](papers/paper24_birth_bias/paper24_birth_bias.tex) · [Code](papers/paper24_birth_bias/) | -- |
 
 ---
 
