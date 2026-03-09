@@ -32,6 +32,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 17 | Two-Factor Structure of the Viability-Constrained Memory Saturation Law: Complete Parametric Decomposition | [PDF](papers/paper17_two_factor_decomposition/paper17_two_factor_decomposition.pdf) · [TeX](papers/paper17_two_factor_decomposition/paper17_two_factor_decomposition.tex) · [Code](papers/paper17_two_factor_decomposition/) | -- |
 | 18 | Temporal Dynamics of Viability-Constrained Memory Systems: Consolidation Burst and MID\_DECAY-Limited Forgetting | [PDF](papers/paper18_temporal_dynamics/paper18_temporal_dynamics.pdf) · [TeX](papers/paper18_temporal_dynamics/paper18_temporal_dynamics.tex) · [Code](papers/paper18_temporal_dynamics/) | -- |
 | 19 | The Blocked-Site Buffer: Direct Measurement of the Third Reservoir in Viability-Constrained Memory Systems | [PDF](papers/paper19_blocked_buffer/paper19_blocked_buffer.pdf) · [TeX](papers/paper19_blocked_buffer/paper19_blocked_buffer.tex) · [Code](papers/paper19_blocked_buffer/) | -- |
+| 20 | The Coupled ODE of Viability-Constrained Memory Systems: Analytical Closure, Validated Predictions, and the Buildup Gap | [PDF](papers/paper20_ode_closure/paper20_ode_closure.pdf) · [TeX](papers/paper20_ode_closure/paper20_ode_closure.tex) · [Code](papers/paper20_ode_closure/) | -- |
 
 ---
 
