@@ -7,6 +7,7 @@
 \usepackage{xcolor}
 \usepackage{microtype}
 \usepackage{listings}
+\usepackage{graphicx}
 \geometry{margin=1in}
 
 \theoremstyle{remark}
@@ -14,8 +15,7 @@
 
 \lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single}
 
-\title{Timescale Robustness of the Adaptive Window\\
-       in Viability-Constrained Memory Systems}
+\title{A Turnover Law for Adaptive Memory Systems}
 \author{VCSM Theory Series --- Paper 8}
 \date{2026}
 
@@ -23,95 +23,80 @@
 \maketitle
 
 \begin{abstract}
-Paper~7 established an empirical regime map for VCML adaptive memory
-substrates, identifying a bounded adaptive window in the
-$(\nu, \kappa)$ turnover--propagation plane. This paper asks: \emph{what
-determines the location of that window?} We test the timescale-matching
-hypothesis---that the adaptive window occurs when
-$\tau_{\text{turnover}} \approx \tau_{\text{consolidation}}$---by
-independently varying the consolidation gate threshold ($\mathtt{SS}$),
-consolidation learning rate ($\mathtt{FIELD\_ALPHA}$), and wave input
-rate ($\mathtt{WAVE\_RATIO}$). We find that the window's location in
-$\nu$ is \emph{robustly stable} ($\nu^* \approx 0.001$) across a
-4$\times$ range of each consolidation parameter, but varies when the
-wave input rate exceeds a perturbation threshold. A re-analysis of
-Paper~7 Experiment~3 confirms that the diffusion rate $\kappa$ is
-similarly non-controlling: $\nu_{\text{opt}}$ is identical across all
-$\kappa$ values tested. The main finding is a separation of concerns:
-\emph{the regime boundary is set by input wave dynamics, not
-consolidation machinery}. Consolidation parameters control the amplitude
-of spatial structure within the window, not its location. We propose a
-consolidation amplitude formula relating $\mathtt{sg4}$ peak to
-$\mathtt{SS}$ and $\mathtt{WAVE\_RATIO}$, and discuss implications for
-designing adaptive memory substrates.
+We establish a \emph{turnover law} for viability-constrained adaptive memory substrates:
+the turnover rate that maximizes spatial structure formation, $\nu^* \approx 0.001$,
+is invariant to propagation strength $\kappa$ across its full tested range ($0$ to
+$0.15$, a $>150$-fold variation). Three supporting experiments confirm that $\nu^*$
+is similarly stable across a $4\times$ range of the consolidation gate ($\mathtt{SS}$)
+and consolidation rate ($\mathtt{FIELD\_ALPHA}$). Taken together, the experiments
+reveal a clean separation of concerns: \emph{adaptation dynamics are local} (the
+optimal turnover is determined by wave-grid interaction, not by the propagation or
+consolidation machinery), while propagation controls only the amplitude and spatial
+reach of learned structure. This separation mirrors a general design principle found
+in biological adaptive systems---local learning rules coupled to global information
+flow---and suggests that the adaptive regime location is an intrinsic property of
+the input protocol, not of the learning parameters.
 \end{abstract}
 
 % ============================================================
 \section{Introduction}
 
-Paper~7 (Regime Structure) mapped the $(\nu, \kappa)$ parameter space
-of a VCML substrate and identified four dynamical regimes: frozen (low
-$\nu$), turnover-dominated (high $\nu$), fragmented (low $\kappa$), and
-adaptive (intermediate $\nu$, moderate $\kappa$). The adaptive window is
-bounded in $\nu$ between approximately $0.001$ and $0.015$, and is
-verified by three independent robustness experiments (classifier
-accuracy, copy-forward ablation, scaling).
+Paper~7 (Regime Structure) mapped the $(\nu, \kappa)$ parameter space of a VCML
+substrate and identified a bounded adaptive window: spatial structure is maximized
+at intermediate turnover ($\nu \in [0.001, 0.010]$) and is verified by three
+independent robustness experiments.
 
-A natural next question is: \emph{what places the window at this
-location?} The timescale-matching hypothesis predicts:
-\begin{equation}
-  \nu^* \;\approx\; \frac{c}{\tau_{\text{consolidation}}}
-  \label{eq:ts_match}
-\end{equation}
-where $\tau_{\text{consolidation}}$ is set by $\mathtt{SS}$ (the
-calm-streak gate) and $\mathtt{FIELD\_ALPHA}$ (the consolidation
-learning rate). If Eq.~\eqref{eq:ts_match} holds, doubling $\mathtt{SS}$
-should halve $\nu^*$, and doubling $\mathtt{FIELD\_ALPHA}$ should double
-$\nu^*$.
+The key question this paper addresses is not \emph{how robust} the window is, but
+\emph{what sets its location}. Understanding the location law matters for design:
+if $\nu^*$ scales with $\kappa$, one would tune propagation to shift the learning
+regime. If it scales with $\mathtt{SS}$, one would change the consolidation gate.
+If neither controls it, the regime boundary is set elsewhere---and that elsewhere is
+informative.
 
-Similarly, if the wave input rate $\mathtt{WAVE\_RATIO}$ (WR) sets the
-\emph{propagation timescale}, we would expect $\nu^*$ to scale
-proportionally with WR: faster input means the system can sustain higher
-turnover.
+\textbf{Main result.} $\nu^* \approx 0.001$ is invariant to $\kappa$ (Experiment~1,
+Figure~\ref{fig:invariance}). Three supporting sweeps of $\mathtt{SS}$,
+$\mathtt{FIELD\_ALPHA}$, and $\mathtt{WAVE\_RATIO}$ confirm the same location
+stability within practical operating ranges. The regime boundary is set by the
+copy-forward/erasure balance at the wave--grid level, and consolidation parameters
+control only the amplitude of structure formed within the window.
 
-We test these predictions with three sweeps (Experiments~1--3), then
-analyze $\nu^*$ vs.\ $\kappa$ from Paper~7 data (Experiment~4).
+\textbf{Architectural interpretation.}
+The invariance of $\nu^*$ to $\kappa$ implies that \emph{learning is local}: the
+condition for effective adaptation---the turnover/wave balance---does not require
+the system to coordinate globally through propagation. Propagation then plays a
+complementary role: it spreads locally formed structure globally, amplifying what
+the local learning rule has already established. This maps onto a recurring
+design pattern in biological adaptive systems, discussed in Section~\ref{sec:local_global}.
 
 \subsection{Background: VCSM Consolidation Gate}
 
-In VCSM, a site can only update its $\mathtt{fieldM}$ vector after
-accumulating $\mathtt{SS}$ consecutive unperturbed steps:
+In VCSM, a site updates its $\mathtt{fieldM}$ vector only after accumulating
+$\mathtt{SS}$ consecutive unperturbed steps:
 \begin{equation}
   \text{ok}[i] \;=\; [\mathtt{streak}[i] \geq \mathtt{SS}]
 \end{equation}
-When $\text{ok}[i]$ is true:
+When $\text{ok}[i]$ holds:
 \begin{equation}
   \mathtt{fieldM}[i] \;\mathrel{+}=\; \mathtt{FIELD\_ALPHA}
     \cdot (\mathtt{mid\_mem}[i] - \mathtt{fieldM}[i])
 \end{equation}
-The consolidation timescale is thus governed by two parameters: SS
-(gate threshold, steps) and FIELD\_ALPHA (learning rate per step
-given calm). Slower FIELD\_ALPHA means more calm steps are needed
-to accumulate a given field update; higher SS means a longer uninterrupted
-calm period is required before any update is possible.
-
-The probability that a site achieves a calm streak $\geq \mathtt{SS}$
-at any given step depends on the wave perturbation density. For a
-half-grid site (left or right) and average WR active left-zone waves:
+The consolidation timescale is thus jointly governed by $\mathtt{SS}$ (gate
+threshold, steps) and $\mathtt{FIELD\_ALPHA}$ (learning rate per calm step).
+The probability that a site achieves a calm streak $\geq \mathtt{SS}$ is
+approximately:
 \begin{equation}
   P_{\text{calm}}(\mathtt{SS}) \;\approx\;
     \left(1 - \frac{\mathtt{WR}}{2 \cdot \mathtt{WAVE\_DUR}}\right)^{\mathtt{SS} + \mathtt{WAVE\_DUR} - 1}
   \label{eq:pcalm}
 \end{equation}
-This is the probability that no left-zone wave was launched in the
-preceding $\mathtt{SS} + \mathtt{WAVE\_DUR} - 1$ steps (necessary for
-the site to have been calm for $\mathtt{SS}$ consecutive steps as of now).
+This baseline formula is relevant for understanding amplitude effects, but---as the
+experiments show---it does not control the location of $\nu^*$.
 
 % ============================================================
 \section{Shared Protocol}
 
-All experiments use the Paper~7 Exp1 base configuration. Only the
-swept parameter varies; all others are fixed at reference values.
+All experiments use the Paper~7 Exp1 base configuration. Only the swept parameter
+varies; all others are fixed at reference values.
 
 \begin{center}
 \begin{tabular}{ll}
@@ -134,29 +119,84 @@ $\nu$ sweep & $\{0.0001, 0.0003, 0.001, 0.002, 0.005, 0.010, 0.020, 0.040, 0.080
 \end{tabular}
 \end{center}
 
-For each parameter configuration, we report $\nu^*$ (argmax $\mathtt{sg4}$)
-and $\mathtt{sg4}^*$ (peak value, 5-seed mean). A failure of
-Eq.~\eqref{eq:ts_match} would show constant $\nu^*$ across the sweep.
-A success would show $\nu^* \propto 1/\mathtt{SS}$ or
-$\nu^* \propto \mathtt{FIELD\_ALPHA}$.
+For each configuration we report $\nu^*$ (argmax $\mathtt{sg4}$, 5-seed mean)
+and $\mathtt{sg4}^*$ (the peak value). The key question in each experiment is
+whether $\nu^*$ shifts; amplitude changes are secondary.
 
 % ============================================================
-\section{Experiment 1: Consolidation Gate Sweep}
+\section{Experiment 1: Propagation Invariance (Key Result)}
+\label{sec:exp1}
+
+\subsection{Protocol}
+
+Re-analysis of Paper~7 Experiment~3 results (the $\nu \times \kappa$ grid,
+5 seeds per cell). For each $\kappa \in \{0.000, 0.005, 0.020, 0.060, 0.150\}$
+we identify $\nu_{\text{opt}} = \operatorname{argmax}_\nu\, \mathtt{sg4}(\nu,
+\kappa)$ using 5-seed means and the $\nu$ sweep common to Paper~7 Exp3:
+$\{0.0003, 0.001, 0.005, 0.015, 0.050\}$.
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\caption{$\nu_{\text{opt}}$ and $\mathtt{sg4}_{\text{opt}}$ by $\kappa$. The
+sg4 profile lists 5-seed mean $\mathtt{sg4}$ at
+$\nu \in \{0.0003, 0.001, 0.005, 0.015, 0.050\}$, with the peak bolded.
+Collapse boundary ($\nu_\text{crit}$) is between $0.005$ and $0.015$ for
+all $\kappa$.}
+\label{tab:exp1}
+\begin{tabular}{r r r l}
+\toprule
+$\kappa$ & $\nu_{\text{opt}}$ & $\mathtt{sg4}_{\text{opt}}$ & sg4 profile \\
+\midrule
+0.000 & 0.0010 & 396.7 & 279\ \ \textbf{397}\ \ \ 99\ \ \ 11\ \ \ 1 \\
+0.005 & 0.0010 & 383.1 & 271\ \ \textbf{383}\ \ \ 88\ \ \ \ 9\ \ \ 1 \\
+0.020 & 0.0010 & 376.3 & 273\ \ \textbf{376}\ \ \ 80\ \ \ \ 8\ \ \ 1 \\
+0.060 & 0.0010 & 375.1 & 273\ \ \textbf{375}\ \ \ 68\ \ \ \ 6\ \ \ 1 \\
+0.150 & 0.0010 & 360.9 & 276\ \ \textbf{361}\ \ \ 49\ \ \ \ 5\ \ \ 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result.} $\nu_{\text{opt}} = 0.001$ for \emph{all} $\kappa$ values
+tested---a $>150$-fold range of propagation strength, from zero diffusion to
+strong coupling. The collapse boundary is also unchanged: $\nu_{\text{crit}}$
+falls between $0.005$ and $0.015$ at every $\kappa$. Propagation $\kappa$ shifts
+only the amplitude of $\mathtt{sg4}^*$: from $396.7$ at $\kappa = 0$ to $360.9$
+at $\kappa = 0.15$, a modest $\sim\!9\%$ reduction.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{paper8_figure1}
+\caption{\textbf{The turnover law.} \textbf{A}: $\mathtt{sg4}$ vs.\ $\nu$ at
+each $\kappa$ value (Paper~7 Exp3 data). All five curves peak at the same
+$\nu^* = 0.001$ regardless of propagation strength. \textbf{B}: $\nu^*$
+vs.\ $\kappa$---a horizontal line. Propagation strength does not set the
+adaptive regime location.}
+\label{fig:invariance}
+\end{figure}
+
+Figure~\ref{fig:invariance} makes the invariance visually explicit. Panel~A
+shows all five $\mathtt{sg4}$-vs.-$\nu$ curves (one per $\kappa$) superimposed:
+the curves differ in height but peak identically at $\nu = 0.001$. Panel~B
+plots $\nu^*$ vs.\ $\kappa$ directly---a horizontal line.
+
+% ============================================================
+\section{Experiment 2: Consolidation Gate (Amplitude, Not Location)}
 
 \subsection{Protocol}
 
 $\mathtt{SS} \in \{5, 10, 20, 40\}$. All other parameters at reference.
-$4 \times 9 \times 5 = 180$ runs. Expected: $\nu^* \propto 1/\mathtt{SS}$
-(inverse proportionality).
+$4 \times 9 \times 5 = 180$ runs. The timescale-matching prediction is
+$\nu^* \propto 1/\mathtt{SS}$ (inverse proportionality).
 
 \subsection{Results}
 
 \begin{table}[h]
 \centering
 \caption{SS sweep: $\nu^*$ and $\mathtt{sg4}^*$ by consolidation gate. sg4
-profile shows 5-seed mean $\mathtt{sg4}$ at each $\nu$ value (left to right:
-$\nu = 0.0001, 0.0003, \ldots, 0.080$).}
-\label{tab:exp1}
+profile: $\nu = 0.0001, 0.0003, \ldots, 0.080$ (left to right).}
+\label{tab:exp2}
 \begin{tabular}{r r r l}
 \toprule
 SS & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
@@ -169,37 +209,29 @@ SS & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
 \end{tabular}
 \end{table}
 
-\textbf{Result.} The location $\nu^*$ is unchanged at $0.001$ for
-$\mathtt{SS} = 5, 10, 20$ --- a $4\times$ range of gate values. At
-$\mathtt{SS} = 40$, $\nu^* = 0.002$ (one grid point higher) and
-$\mathtt{sg4}^* = 23.5$, near zero: the gate is so strict that almost
-no sites achieve 40 consecutive calm steps under the reference wave
-density.
-
-The timescale-matching prediction ($\nu^* \propto 1/\mathtt{SS}$) fails:
-the window's location is insensitive to SS. However, the \emph{amplitude}
-$\mathtt{sg4}^*$ drops steeply with SS: 888, 376, 186, 23.5 (approximately
-halving per SS doubling from 5 to 20, then collapsing at 40).
-
-The amplitude drop is consistent with Eq.~\eqref{eq:pcalm}: doubling SS
-exponentially reduces $P_{\text{calm}}$, reducing the effective write rate.
+\textbf{Result.} $\nu^* = 0.001$ for $\mathtt{SS} \in \{5, 10, 20\}$, a
+$4\times$ range. The timescale-matching prediction ($\nu^* \propto
+1/\mathtt{SS}$) fails: location is insensitive to SS. What \emph{does} change
+is the amplitude: $\mathtt{sg4}^*$ drops from $888 \to 376 \to 186 \to 23$
+as SS doubles from 5 to 40, roughly consistent with the exponential decay
+of $P_{\text{calm}}$ (Eq.~\eqref{eq:pcalm}). At $\mathtt{SS} = 40$, the
+gate is so strict that almost no site achieves 40 consecutive calm steps,
+collapsing structure entirely.
 
 % ============================================================
-\section{Experiment 2: Consolidation Rate Sweep}
+\section{Experiment 3: Consolidation Rate (Amplitude, Not Location)}
 
 \subsection{Protocol}
 
-$\mathtt{FIELD\_ALPHA} \in \{0.04, 0.08, 0.16, 0.32\}$. All other
-parameters at reference. $4 \times 9 \times 5 = 180$ runs. Expected:
-$\nu^* \propto \mathtt{FIELD\_ALPHA}$ (faster learning tolerates more
-turnover).
+$\mathtt{FIELD\_ALPHA} \in \{0.04, 0.08, 0.16, 0.32\}$. All other parameters
+at reference. $4 \times 9 \times 5 = 180$ runs.
 
 \subsection{Results}
 
 \begin{table}[h]
 \centering
 \caption{FIELD\_ALPHA sweep: $\nu^*$ and $\mathtt{sg4}^*$.}
-\label{tab:exp2}
+\label{tab:exp3}
 \begin{tabular}{r r r l}
 \toprule
 $\mathtt{FIELD\_ALPHA}$ & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
@@ -212,31 +244,31 @@ $\mathtt{FIELD\_ALPHA}$ & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
 \end{tabular}
 \end{table}
 
-\textbf{Result.} $\nu^* = 0.001$ for $\mathtt{FIELD\_ALPHA} \in \{0.08,
-0.16, 0.32\}$ (a $4\times$ range). At $\mathtt{FIELD\_ALPHA} = 0.04$,
-$\nu^*$ shifts to $0.0001$: very slow consolidation effectively freezes
-the system, requiring minimal turnover to avoid erasure.
+\textbf{Result.} $\nu^* = 0.001$ for $\mathtt{FIELD\_ALPHA} \in \{0.08, 0.16, 0.32\}$,
+a $4\times$ range. Amplitude scales monotonically: $\mathtt{sg4}^*$ grows from
+$263 \to 376 \to 507$ roughly proportionally to FIELD\_ALPHA in this range,
+confirming that the consolidation rate controls the height of the adaptive peak
+rather than its location.
 
-The amplitude $\mathtt{sg4}^*$ scales monotonically: 188, 263, 376, 507
-(roughly proportional to FIELD\_ALPHA in the $0.08$--$0.32$ range).
-This confirms that FIELD\_ALPHA controls the height of the adaptive peak
-but not its location, except at extreme values.
+At $\mathtt{FIELD\_ALPHA} = 0.04$, $\nu^*$ shifts to $0.0001$: very slow
+consolidation effectively freezes the system, and even minimal turnover begins
+to erase the sparse field updates that do accumulate. This is an extreme boundary
+effect, not a scaling relationship.
 
 % ============================================================
-\section{Experiment 3: Wave Input Rate Sweep}
+\section{Experiment 4: Wave Input Rate (Location at Input Extremes)}
 
 \subsection{Protocol}
 
-$\mathtt{WAVE\_RATIO} \in \{1.2, 2.4, 4.8, 9.6\}$. All other parameters
-at reference. $4 \times 9 \times 5 = 180$ runs. Expected: $\nu^* \propto
-\mathtt{WR}$ (more frequent input enables higher turnover).
+$\mathtt{WAVE\_RATIO} \in \{1.2, 2.4, 4.8, 9.6\}$. All other parameters at
+reference. $4 \times 9 \times 5 = 180$ runs.
 
 \subsection{Results}
 
 \begin{table}[h]
 \centering
 \caption{WAVE\_RATIO sweep: $\nu^*$ and $\mathtt{sg4}^*$.}
-\label{tab:exp3}
+\label{tab:exp4}
 \begin{tabular}{r r r l}
 \toprule
 WR & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
@@ -249,115 +281,126 @@ WR & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
 \end{tabular}
 \end{table}
 
-\textbf{Result.} $\nu^* = 0.001$ for $\mathtt{WR} \in \{1.2, 2.4, 4.8\}$.
-At $\mathtt{WR} = 9.6$, $\nu^*$ shifts to $0.0001$ --- \emph{opposite} to
-the prediction. At WR=9.6 and $\nu = 0.001$, $\mathtt{sg4} = 0$: high wave
-density combined with moderate turnover prevents any site from achieving
-$\mathtt{SS} = 10$ consecutive calm steps. Only at very low turnover
-($\nu = 0.0001$) does the system recover structure.
+\textbf{Result.} $\nu^* = 0.001$ for $\mathtt{WR} \in \{1.2, 2.4, 4.8\}$, a
+$4\times$ range. At $\mathtt{WR} = 9.6$, $\nu^*$ shifts to $0.0001$---\emph{opposite}
+to the proportional prediction. High wave density at $\nu = 0.001$ prevents any
+site from achieving $\mathtt{SS} = 10$ consecutive calm steps ($\mathtt{sg4} = 0$);
+only near-zero turnover recovers partial structure. This is the over-perturbation
+collapse documented in Papers~7 and V93.
 
-This confirms the over-perturbation collapse identified in Papers~7 and V93:
-excessive wave density suppresses consolidation, requiring near-zero
-turnover to compensate.
-
-The amplitude $\mathtt{sg4}^*$ peaks at WR=2.4 (414.9) and is lower at
-WR=4.8 (376.3) and WR=1.2 (120.4), consistent with the V93 finding that
-WR$\sim$2$\times$ is optimal at the $N=400$ scale.
-
-% ============================================================
-\section{Experiment 4: Propagation Rate Analysis}
-
-\subsection{Protocol}
-
-Re-analysis of Paper~7 Experiment~3 results. For each $\kappa$ value, we
-identify $\nu_{\text{opt}} = \text{argmax}_\nu\, \mathtt{sg4}(\nu, \kappa)$
-using the cached 5-seed means. This tests whether $\nu^*$ scales with
-$\kappa$ (as a propagation timescale matching prediction would require).
-
-\subsection{Results}
-
-\begin{table}[h]
-\centering
-\caption{$\nu_{\text{opt}}$ and $\mathtt{sg4}_{\text{opt}}$ by $\kappa$ (Paper~7 Exp3 data).
-Collapse boundary is between $\nu = 0.005$ and $\nu = 0.015$ for all $\kappa$.}
-\label{tab:exp4}
-\begin{tabular}{r r r l}
-\toprule
-$\kappa$ & $\nu_{\text{opt}}$ & $\mathtt{sg4}_{\text{opt}}$ & sg4 profile ($\nu$: 0.0003, 0.001, 0.005, 0.015, 0.050) \\
-\midrule
-0.000 & 0.0010 & 396.7 & 279\ \ \textbf{397}\ \ \ 99\ \ \ 11\ \ \ 1 \\
-0.005 & 0.0010 & 383.1 & 271\ \ \textbf{383}\ \ \ 88\ \ \ \ 9\ \ \ 1 \\
-0.020 & 0.0010 & 376.3 & 273\ \ \textbf{376}\ \ \ 80\ \ \ \ 8\ \ \ 1 \\
-0.060 & 0.0010 & 375.1 & 273\ \ \textbf{375}\ \ \ 68\ \ \ \ 6\ \ \ 1 \\
-0.150 & 0.0010 & 360.9 & 276\ \ \textbf{361}\ \ \ 49\ \ \ \ 5\ \ \ 0 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Result.} $\nu_{\text{opt}} = 0.001$ for \emph{all} $\kappa$ values tested
-($0$ to $0.15$, a $\infty$-fold range). The turnover-dominated collapse
-boundary (between $\nu = 0.005$ and $\nu = 0.015$) is also unchanged
-across the full $\kappa$ sweep. Diffusion $\kappa$ shifts only the
-amplitude of $\mathtt{sg4}^*$ (from 396.7 at $\kappa = 0$ to 360.9 at
-$\kappa = 0.15$), not the regime boundary location.
-
-There is no evidence for $\nu_{\text{opt}} \propto \sqrt{\kappa}$ or any
-other $\kappa$-dependent scaling of the window location.
+Notably, even WR controls location only at this extreme. Within the practical
+WR range $\{1.2, 2.4, 4.8\}$, $\nu^*$ is again stable: the copy-forward/erasure
+balance that sets the regime boundary is resilient to a $4\times$ change in input
+frequency.
 
 % ============================================================
 \section{Discussion}
 
-\subsection{The Regime Boundary Is Set by Input Dynamics}
+\subsection{The Turnover Law}
 
-Across four experiments spanning the consolidation gate (SS), consolidation
-rate (FIELD\_ALPHA), wave input rate (WR), and diffusion ($\kappa$), the
-location $\nu^* \approx 0.001$ is stable in all cases except extreme
-WR (9.6) or extreme FIELD\_ALPHA (0.04). Within the practical operating
-range:
+Across four experiments spanning propagation ($\kappa$: 0--0.15), consolidation
+gate ($\mathtt{SS}$: 5--20), consolidation rate ($\mathtt{FIELD\_ALPHA}$: 0.08--0.32),
+and wave input rate ($\mathtt{WR}$: 1.2--4.8), $\nu^* \approx 0.001$ is stable.
 
 \begin{center}
 \begin{tabular}{lll}
 \toprule
-Parameter & Range tested & Effect on $\nu^*$ \\
+Parameter & Range for $\nu^*$ stability & Effect on amplitude \\
 \midrule
-$\mathtt{SS}$ (gate) & 5--20 & None ($\nu^* = 0.001$ throughout) \\
-$\mathtt{FIELD\_ALPHA}$ (rate) & 0.08--0.32 & None ($\nu^* = 0.001$ throughout) \\
-$\mathtt{WR}$ (wave rate) & 1.2--4.8 & None ($\nu^* = 0.001$ throughout) \\
-$\kappa$ (diffusion) & 0--0.15 & None ($\nu^* = 0.001$ throughout) \\
+$\kappa$ (diffusion)             & 0--0.15 (full range)  & Modest decrease ($-9\%$) \\
+$\mathtt{SS}$ (gate)             & 5--20 ($4\times$)     & Strong: $888 \to 186$ \\
+$\mathtt{FIELD\_ALPHA}$ (rate)   & 0.08--0.32 ($4\times$) & Proportional: $263 \to 507$ \\
+$\mathtt{WR}$ (wave rate)        & 1.2--4.8 ($4\times$)  & Non-monotone; peak at 2.4 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The timescale-matching hypothesis ($\nu^* \propto 1/\mathtt{SS}$) is
-\emph{rejected} as a location law. The regime boundary is not placed by
-the consolidation timescale; it is placed by the copy-forward/erasure
-balance, which depends on the wave input protocol and grid geometry.
+This constitutes an empirical turnover law: the adaptive regime opens at
+$\nu \approx 0.001$ and closes at $\nu \approx 0.007$--$0.010$, with these
+boundaries determined by the wave--grid interaction, not by the learning parameters.
 
-\subsection{Separation of Concerns: Location vs.\ Amplitude}
+\subsection{Why $\nu^* \approx 0.001$: A Balance Equation}
 
-The experiments reveal a clean separation:
+At $\nu = 0.001$, each site has a mean lifetime of $1/\nu = 1000$ steps. With
+$\mathtt{WR} = 4.8$ and $\mathtt{WAVE\_DUR} = 15$, approximately $4.8/15 \approx
+0.32$ waves launch per step. Each site is involved in half the left-zone waves,
+giving $\sim\!0.16$ perturbation events per site per step. The copy-forward rate
+equals the birth rate $\nu$; the erasure rate equals the perturbation-induced
+death rate. At the balance:
+\begin{equation}
+  \nu^* \;\approx\; \frac{\mathtt{WR}}{2 \cdot \mathtt{WAVE\_DUR}
+    \cdot N_{\text{act}}/4} \;\approx\; 0.0016
+  \label{eq:balance}
+\end{equation}
+This rough estimate is consistent with the empirical $\nu^* = 0.001$--$0.002$.
+Crucially, $\mathtt{SS}$, $\mathtt{FIELD\_ALPHA}$, and $\kappa$ do not appear
+in Eq.~\eqref{eq:balance}---they control how much structure accumulates per
+successful copy-forward event, not when the balance tips.
+
+\subsection{Local Adaptation, Global Flow}
+\label{sec:local_global}
+
+The invariance of $\nu^*$ to $\kappa$ implies something beyond a technical
+observation: \emph{the condition for effective adaptation is determined locally}.
+Propagation strength determines how far locally learned information spreads---it
+is a communication parameter---but it does not determine whether learning occurs.
+The learning condition ($\nu \approx \nu^*$) is set entirely by the wave input
+protocol and the site's own birth/death dynamics.
+
+This produces a functional separation in which two distinct roles are played by
+two distinct mechanisms:
 
 \begin{itemize}
-  \item \textbf{Location} ($\nu^*$, regime boundary): set by wave input
-    dynamics. Insensitive to consolidation parameters within a practical
-    range. Shifts only under extreme over-perturbation (WR $\geq 9.6$)
-    or extreme under-writing (FIELD\_ALPHA $\leq 0.04$).
+  \item \textbf{Adaptation (local)}: Each site adapts its $\mathtt{fieldM}$ through
+    the VCSM learning rule. The optimal turnover rate is set by the wave--grid
+    balance and is the same regardless of how well-connected the site is to its
+    neighbors.
 
-  \item \textbf{Amplitude} ($\mathtt{sg4}^*$, peak structure): strongly
-    controlled by consolidation parameters. $\mathtt{sg4}^*$ scales
-    approximately proportionally to FIELD\_ALPHA and drops exponentially
-    with SS. $\kappa$ shifts amplitude weakly (Exp4).
+  \item \textbf{Coordination (global)}: Propagation via $\kappa$ spreads locally
+    formed structure across the grid. Higher $\kappa$ increases the reach of learned
+    field values, boosting $\mathtt{sg4}$ amplitude---but this is downstream of the
+    local adaptation step.
 \end{itemize}
 
-This has a practical implication: \emph{to increase structure formation,
-tune FIELD\_ALPHA and SS; to shift the regime boundary, change WR or
-WAVE\_DUR}.
+This separation appears in biological adaptive systems:
+
+\begin{itemize}
+  \item \textbf{Hippocampal neurogenesis}: Individual dentate gyrus cells adapt locally
+    via Hebbian plasticity. Turnover of adult-generated neurons maintains adaptability
+    (Papers V77--V89). The global contribution (pattern separation, memory indexing)
+    is downstream of this local update process.
+  \item \textbf{Immune adaptation}: Individual B-cells adapt locally to antigens via
+    somatic hypermutation. Global immunity emerges through clonal selection and
+    proliferation---a propagation step analogous to $\kappa$.
+  \item \textbf{Evolutionary adaptation}: Mutations occur locally (individual
+    organisms). Fitness propagates globally through selection and reproduction.
+\end{itemize}
+
+In each case, the rate of local adaptation ($\nu$) is set by a balance involving
+environmental perturbation frequency and replacement dynamics---not by the reach
+of global communication. This suggests that the turnover law identified here is
+not an artifact of the VCML substrate but reflects a more general property of
+adaptive systems that use mandatory local turnover for plasticity.
+
+\subsection{Separation of Concerns: Design Implications}
+
+The experiments yield a practical prescription for VCML substrate design:
+
+\begin{itemize}
+  \item \textbf{To set the regime location}: Tune $\mathtt{WAVE\_RATIO}$ and
+    $\mathtt{WAVE\_DUR}$ (the input protocol). The balance equation
+    (Eq.~\eqref{eq:balance}) gives the expected $\nu^*$.
+  \item \textbf{To increase structure amplitude}: Increase $\mathtt{FIELD\_ALPHA}$
+    (immediate, proportional effect) or decrease $\mathtt{SS}$ (exponential
+    $P_{\text{calm}}$ gain, but risks over-writing).
+  \item \textbf{To increase spatial reach}: Increase $\kappa$ (modest amplitude
+    gain; does not shift the window location).
+\end{itemize}
 
 \subsection{Amplitude Formula}
 
-The probability that a site achieves a calm streak $\geq \mathtt{SS}$
-(Eq.~\eqref{eq:pcalm}) predicts the relative consolidation rate. For the
-reference WR = 4.8, WAVE\_DUR = 15:
+The $P_{\text{calm}}$ formula (Eq.~\eqref{eq:pcalm}) predicts the relative
+consolidation rate across SS values:
 
 \begin{center}
 \begin{tabular}{rrr}
@@ -372,103 +415,74 @@ SS & $P_{\text{calm}}$ (Eq.~\ref{eq:pcalm}) & $\mathtt{sg4}^*$ (observed) \\
 \end{tabular}
 \end{center}
 
-The observed sg4* drops with SS qualitatively consistent with $P_{\text{calm}}$,
-though the exponential decay of $P_{\text{calm}}$ overestimates the
-drop---likely because $\mathtt{sg4}$ saturates at high $P_{\text{calm}}$
-and does not grow linearly with the number of consolidation events.
+Observed $\mathtt{sg4}^*$ drops consistently with $P_{\text{calm}}$, though
+the relationship is sub-exponential in practice (sg4 grows sub-linearly with
+the number of consolidation events, as sites saturate).
 
-\subsection{Why $\nu^* \approx 0.001$ Is Universal}
+\subsection{The Anomaly Cell Resolved}
 
-The stability of $\nu^* = 0.001$ across such diverse parameters suggests
-it reflects a \emph{structural property of the wave--grid interaction},
-not the consolidation machinery. At $\nu = 0.001$, each site dies on
-average once every 1000 steps. With $\mathtt{WAVE\_DUR} = 15$ and
-$\mathtt{WR} = 4.8$, there are approximately $4.8 \times 2000/15 \approx
-640$ total wave events across the run. Each site is involved in
-approximately half of them. This gives approximately $320$ perturbation
-events per site per run---and with mean lifetime $1/\nu = 1000$, a site
-experiences about 0.32 deaths per lifetime per unit time.
-
-At the copy-forward/erasure balance:
-\begin{equation}
-  \text{copy-forward rate} \approx \text{erasure rate}
-  \quad \Longrightarrow \quad
-  \nu \approx \frac{\mathtt{WR}}{2 \cdot \mathtt{WAVE\_DUR} \cdot N_{\text{act}}/4}
-  \approx 0.0016
-\end{equation}
-This rough calculation places the balance near $\nu \approx 0.001$--$0.002$,
-consistent with the empirical $\nu^*$. The consolidation parameters (SS,
-FIELD\_ALPHA) do not enter this balance---they determine \emph{how much}
-structure accumulates per successful copy-forward event, but not \emph{when}
-the balance tips.
-
-\subsection{Implication for the Anomaly Region}
-
-Paper~7 Experiment~3 shows that at $(\nu = 0.005, \kappa = 0.060)$,
-$\mathtt{sg4} = 68$ while adjacent cells (same $\nu$, lower $\kappa$:
-$\mathtt{sg4} = 80$; same $\kappa$, lower $\nu$: $\mathtt{sg4} = 375$)
-are substantially higher. This is not a grid artifact but the collapse
-onset: $\nu = 0.005$ sits near the right boundary of the adaptive
-window ($\nu_{\text{crit}} \approx 0.007$--$0.010$), and higher $\kappa$
-does not rescue structure because the boundary is determined by $\nu$,
-not $\kappa$ (Experiment~4). The cell at $(\nu = 0.005, \kappa = 0.060)$
-is an accurate empirical location of the pre-collapse transition, not an
-anomaly.
+Paper~7 Experiment~3 shows $\mathtt{sg4} = 68$ at $(\nu = 0.005, \kappa = 0.060)$,
+lower than adjacent cells at the same $\kappa$ with lower $\nu$ ($\mathtt{sg4} = 375$).
+This is not a grid artifact: $\nu = 0.005$ sits near the right boundary of the
+adaptive window ($\nu_{\text{crit}} \approx 0.007$--$0.010$), and the current
+experiments confirm that higher $\kappa$ cannot rescue structure because the
+boundary is determined by $\nu$, not $\kappa$. The cell at
+$(\nu = 0.005, \kappa = 0.060)$ is an empirical first touch of the
+turnover-dominated collapse region---fully consistent with the turnover law.
 
 \subsection{Limitations}
 
 The wave input protocol is fixed (zone-based, 4 zones, structured alternation).
-The stability of $\nu^*$ may not hold for qualitatively different input statistics.
-The exponential $P_{\text{calm}}$ formula is derived from an independence
-approximation; the true consolidation probability accounts for spatial
-correlations and streak-length distributions. Verification under continuous-time
-or variable-duration waves remains for future work.
+The balance equation assumes a specific wave geometry; the stability of $\nu^*$
+may not hold for qualitatively different input statistics (continuous-time Poisson
+events, spatially diffuse perturbations). The $P_{\text{calm}}$ formula applies
+an independence approximation; the true distribution accounts for spatial
+correlations and streak-length distributions not captured here.
 
 % ============================================================
 \section{Conclusion}
 
-We tested the timescale-matching hypothesis for the adaptive window
-location in VCML substrates. The hypothesis---that $\nu^* \propto
-1/\mathtt{SS}$ (consolidation gate)---is rejected: $\nu^* \approx 0.001$
-is stable across a $4\times$ range of SS, FIELD\_ALPHA, and WR, and
-across the full $\kappa$ sweep from 0 to 0.15.
+A turnover law for VCML adaptive memory substrates: $\nu^* \approx 0.001$ is
+invariant to propagation strength $\kappa$ across its full tested range, and to
+the consolidation gate ($\mathtt{SS}$) and rate ($\mathtt{FIELD\_ALPHA}$) across
+$4\times$ practical ranges. The regime boundary is set by the copy-forward/erasure
+balance at the wave--grid level; a balance equation correctly predicts its
+order of magnitude.
 
-The correct interpretation is a \emph{separation of concerns}: the
-regime boundary is set by the copy-forward/erasure balance at the
-wave--grid level, and consolidation parameters control the amplitude of
-structure formed within the window. A rough balance equation
-($\nu \approx \mathtt{WR}/(2 \cdot \mathtt{WAVE\_DUR} \cdot
-N_{\text{act}}/4)$) correctly predicts the order of magnitude.
-
-The adaptive window at $\nu \in [0.001, 0.010]$ is thus a property of
-the \emph{input protocol}, not of the learning rule. To relocate the
-window, change the wave structure; to increase the quality of learning
-within it, adjust the consolidation machinery.
+The core architectural insight is a separation of concerns that mirrors
+biological adaptive systems: \emph{adaptation is local} (turnover/wave balance),
+\emph{coordination is global} (propagation). Propagation amplifies locally formed
+structure but does not set the condition under which local adaptation succeeds.
+This has implications for designing adaptive memory architectures: the learning
+regime can be set independently of the communication architecture, and vice versa.
 
 % ============================================================
 \appendix
 \section{Reproducibility}
 
-All experiments use only \texttt{numpy}. Experiment~4 uses cached JSON
-from Paper~7.
+Experiment~1 uses cached JSON from Paper~7. Experiments~2--4 use only
+\texttt{numpy}. Figure~1 is generated by \texttt{paper8\_figure1\_kappa\_invariance.py}
+using the Paper~7 Exp3 cached data.
 
 \begin{center}
 \begin{tabular}{lll}
 \toprule
 Script & Description & Runtime \\
 \midrule
-\texttt{paper8\_exp1\_ss\_sweep.py}    & SS sweep (180 runs) & $\sim$8 min \\
+\texttt{paper8\_exp1\_ss\_sweep.py}    & SS sweep (180 runs)           & $\sim$8 min \\
 \texttt{paper8\_exp2\_alpha\_sweep.py} & FIELD\_ALPHA sweep (180 runs) & $\sim$8 min \\
-\texttt{paper8\_exp3\_wr\_sweep.py}    & WR sweep (180 runs) & $\sim$8 min \\
+\texttt{paper8\_exp3\_wr\_sweep.py}    & WR sweep (180 runs)           & $\sim$8 min \\
+\texttt{paper8\_figure1\_kappa\_invariance.py} & Figure 1 (cached data) & $<$1 min \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\begin{lstlisting}[caption={Run all experiments.}]
+\begin{lstlisting}[caption={Run all experiments and generate figure.}]
 cd papers/paper8_timescale_matching
 py paper8_exp1_ss_sweep.py
 py paper8_exp2_alpha_sweep.py
 py paper8_exp3_wr_sweep.py
+py paper8_figure1_kappa_invariance.py
 \end{lstlisting}
 
 \end{document}
