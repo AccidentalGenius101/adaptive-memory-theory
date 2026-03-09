@@ -7,6 +7,8 @@
 \usepackage{xcolor}
 \usepackage{microtype}
 \usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tikz}
 \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,
         frame=single,numbers=left,numberstyle=\tiny,language=Python}
 
@@ -135,6 +137,49 @@ Adaptive    & mid   & mid--high \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+The four regimes correspond to qualitatively distinct dynamical behaviors, not
+merely different performance levels. \textbf{Frozen} systems preserve previously
+encoded structure but resist adaptation to distribution shifts: without
+sufficient rebirths, copy-forward propagation is too slow to rewrite zone
+memories. \textbf{Turnover-dominated} systems erase structure faster than
+consolidation can stabilize it: every rebirth injects noise rather than field
+inheritance. \textbf{Fragmented} systems learn locally but fail to propagate
+information spatially: without diffusion, each site's field evolves in
+isolation. Only the \textbf{adaptive} regime balances these pressures, exhibiting
+the dip-and-recovery signature (Experiment~4) that indicates successful
+intergenerational rewriting of spatial structure. These behavioral distinctions
+persist under metric substitution (Experiment~5), mechanism ablation
+(Experiment~6), and system scaling (Experiment~7).
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[x=3.0cm, y=2.4cm, font=\small]
+  % Axes
+  \draw[->] (0,0) -- (2.5,0) node[right] {Turnover $\nu$};
+  \draw[->] (0,0) -- (0,2.1) node[above] {Propagation $\kappa$};
+  % Regime regions
+  \fill[gray!15] (0,0) rectangle (0.75,2.0);   % frozen (left strip)
+  \fill[gray!15] (1.75,0) rectangle (2.4,2.0); % turnover-dom (right strip)
+  \fill[gray!15] (0,0) rectangle (2.4,0.40);   % fragmented (bottom strip)
+  \fill[blue!18] (0.75,0.40) rectangle (1.75,2.0); % adaptive (centre)
+  % Labels
+  \node[align=center] at (0.375, 1.2)  {\textbf{Frozen}};
+  \node[align=center] at (2.075, 1.2)  {\textbf{Turnover-}\\\textbf{dominated}};
+  \node[align=center] at (1.25, 0.20)  {\textbf{Fragmented}};
+  \node[align=center, text=blue!70!black] at (1.25, 1.20)
+    {\textbf{Adaptive}\\(dip-and-recovery)};
+  % Tick labels
+  \foreach \x/\lbl in {0/low, 0.75/mid-low, 1.75/mid-high, 2.4/high}
+    \node[below, font=\footnotesize] at (\x, 0) {\lbl};
+  \foreach \y/\lbl in {0/0, 0.40/low, 2.0/high}
+    \node[left, font=\footnotesize] at (0, \y) {\lbl};
+\end{tikzpicture}
+\caption{Conceptual regime map in the $(\nu, \kappa)$ plane (qualitative sketch).
+The adaptive regime (blue) occupies a bounded interior region.
+Experiment~3 and Figure~\ref{fig:regime_map} provide the quantitative map.}
+\label{fig:sketch}
+\end{figure}
 
 % ============================================================
 \section{Experiment 1: Turnover Sweep}
@@ -305,6 +350,20 @@ The feasible region---where $\mathtt{sg4}$ is above the noise floor
 $\nu \in [0.001, 0.015]$ across all $\kappa$ values tested. This is a connected
 interior band in the 2D plane, bounded above and below by the regime transitions.
 \end{remark}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{paper7_figure1}
+\caption{Empirical regime map under two independent observables.
+\textbf{(A)}~Zone differentiation (sg4, from Experiment~3): highest at mid
+$\nu$ ($\approx 0.001$--$0.005$), identifying the adaptive window.
+\textbf{(B)}~Logistic classifier accuracy (Experiment~5b, 5-fold CV): peaks in
+the same region. Dashed rectangle marks the adaptive window ($\nu \in [0.001,
+0.005]$, $\kappa \in [0.005, 0.060]$). Both panels show that metric-independent
+observables converge on the same adaptive window.
+Chance accuracy = 0.25 (4 balanced classes).}
+\label{fig:regime_map}
+\end{figure}
 
 % ============================================================
 \section{Experiment 4: Regime Fingerprints}
@@ -568,6 +627,24 @@ $\approx 0.22$--$0.27$) are present at all three sizes. Nonadj/adj $> 1$ in the
 adaptive regime confirms spatial encoding. The regime structure is not a
 finite-size artifact.
 
+\subsection*{Robustness checklist}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Check & Experiment \\
+\midrule
+Metric independence   & Exp.~5: logistic classifier matches sg4 window \\
+Mechanism ablation    & Exp.~6: copy-forward removal reduces adaptive peak 52\% \\
+Scaling robustness    & Exp.~7: $N = 200$--$800$ preserves regime structure \\
+Perturbation robustness & Exp.~4: dip-and-recovery holds at 2$\times$ amplitude \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The regime structure appears under multiple metrics, parameter scales, and
+perturbation magnitudes.
+
 % ============================================================
 \section{Discussion}
 
@@ -695,23 +772,27 @@ Script & Description & Runtime \\
 \texttt{paper7\_exp2\_propagation\_sweep.py}   & Propagation sweep ($\kappa$)  & $\sim$3 min \\
 \texttt{paper7\_exp3\_phase\_map.py}           & 2D phase map (125 runs)       & $\sim$10 min \\
 \texttt{paper7\_exp4\_regime\_fingerprints.py} & Time-series fingerprints      & $\sim$3 min \\
-\texttt{paper7\_exp5\_classifier.py}           & Classifier accuracy (sklearn) & $\sim$5 min \\
-\texttt{paper7\_exp6\_ablation.py}             & Copy-forward ablation         & $\sim$6 min \\
-\texttt{paper7\_exp7\_scaling.py}              & Scaling $N$=200/400/800       & $\sim$8 min \\
+\texttt{paper7\_exp5\_classifier.py}           & Classifier accuracy (1D, sklearn) & $\sim$5 min \\
+\texttt{paper7\_exp5b\_classifier\_grid.py}   & Classifier accuracy (2D grid)     & $\sim$12 min \\
+\texttt{paper7\_exp6\_ablation.py}             & Copy-forward ablation             & $\sim$6 min \\
+\texttt{paper7\_exp7\_scaling.py}              & Scaling $N$=200/400/800           & $\sim$8 min \\
+\texttt{paper7\_figure1\_regime\_map.py}       & Figure 1 (matplotlib)             & $<$1 min \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \begin{lstlisting}[caption={Run all experiments (results cached after first run).
-Requires: numpy for Exp1-4,7; numpy + scikit-learn for Exp5.}]
+Requires: numpy for Exp1-4,7; numpy + scikit-learn for Exp5/5b; matplotlib for Figure 1.}]
 cd papers/paper7_regime_structure
 py paper7_exp1_turnover_sweep.py
 py paper7_exp2_propagation_sweep.py
 py paper7_exp3_phase_map.py
 py paper7_exp4_regime_fingerprints.py
 py paper7_exp5_classifier.py
+py paper7_exp5b_classifier_grid.py
 py paper7_exp6_ablation.py
 py paper7_exp7_scaling.py
+py paper7_figure1_regime_map.py
 \end{lstlisting}
 
 \begin{lstlisting}[caption={Core VCSM step with variable nu and kappa}]
