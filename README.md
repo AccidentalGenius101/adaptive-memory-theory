@@ -12,12 +12,12 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 
 | # | Title | PDF |
 |---|-------|-----|
-| 0 | Spontaneous Spatial Self-Organization in Viability-Gated Memory Substrates | [paper0_bootstrap.pdf](papers/paper0_bootstrap.pdf) |
-| 1 | Memory Capacity Bounds via Spherical Random Sequential Adsorption | [paper1_capacity.pdf](papers/paper1_capacity.pdf) |
-| 2 | Memory Bandwidth as a Function of Turnover Rate | [paper2_bandwidth.pdf](papers/paper2_bandwidth.pdf) |
-| 3 | Finite Correlation Length and Propagation Constraints in Adaptive Substrates | [paper3_propagation.pdf](papers/paper3_propagation.pdf) |
-| 4 | Consolidation Gate and Noise Robustness in VCSM | [paper4_stability.pdf](papers/paper4_stability.pdf) |
-| 5 | A Unified Physical Theory of Viability-Gated Adaptive Systems | [paper5_unified.pdf](papers/paper5_unified.pdf) |
+| 0 | Spontaneous Spatial Self-Organization in Viability-Gated Memory Substrates | [PDF](papers/paper0_spatial_self_organization.pdf) · [TeX](papers/paper0_spatial_self_organization.tex) |
+| 1 | Memory Capacity Bounds via Spherical Random Sequential Adsorption | [PDF](papers/paper1_capacity_bounds.pdf) · [TeX](papers/paper1_capacity_bounds.tex) |
+| 2 | Memory Bandwidth as a Function of Turnover Rate | [PDF](papers/paper2_bandwidth_turnover.pdf) · [TeX](papers/paper2_bandwidth_turnover.tex) |
+| 3 | Finite Correlation Length and Propagation Constraints in Adaptive Substrates | [PDF](papers/paper3_propagation_constraints.pdf) · [TeX](papers/paper3_propagation_constraints.tex) |
+| 4 | Consolidation Gating and Noise Robustness in Adaptive Memory Systems | [PDF](papers/paper4_consolidation_gating.pdf) · [TeX](papers/paper4_consolidation_gating.tex) |
+| 5 | A Unified Constraint Framework for Viability-Gated Adaptive Systems | [PDF](papers/paper5_unified_framework.pdf) · [TeX](papers/paper5_unified_framework.tex) |
 | 6 | Adaptive Memory in Artificial Systems: A Constraint-Based Framework | [PDF](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.pdf) · [TeX](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.tex) · [Code](papers/paper6_adaptive_memory_theory/) |
 
 ---
@@ -49,12 +49,12 @@ Requires: Python 3.9+, numpy. No other dependencies.
 
 ```
 cd reproduce
-py paper0_repro.py    # ~8 min
-py paper1_repro.py    # ~5 sec  -- exact match
-py paper2_repro.py    # ~30 sec
-py paper3_repro.py    # ~5 min
-py paper4_repro.py    # ~3 min
-py paper5_repro.py    # ~4 min
+py paper0_spatial_self_organization_repro.py    # ~8 min
+py paper1_capacity_bounds_repro.py              # ~5 sec  -- exact match
+py paper2_bandwidth_turnover_repro.py           # ~30 sec
+py paper3_propagation_constraints_repro.py      # ~5 min
+py paper4_consolidation_gating_repro.py         # ~3 min
+py paper5_unified_framework_repro.py            # ~4 min
 ```
 
 See [`reproduce/README.md`](reproduce/README.md) for expected outputs and full runtime table.
@@ -80,12 +80,12 @@ print(lat.sg4())
 ```
 adaptive-memory-theory/
 ├── papers/
-│   ├── paper0_bootstrap.*        Paper 0: spontaneous self-organization
-│   ├── paper1_capacity.*         Paper 1: capacity law
-│   ├── paper2_bandwidth.*        Paper 2: bandwidth law
-│   ├── paper3_propagation.*      Paper 3: propagation constraint
-│   ├── paper4_stability.*        Paper 4: consolidation gate
-│   ├── paper5_unified.*          Paper 5: unified theory
+│   ├── paper0_spatial_self_organization.*     Paper 0: spontaneous self-organization
+│   ├── paper1_capacity_bounds.*               Paper 1: capacity law
+│   ├── paper2_bandwidth_turnover.*            Paper 2: bandwidth law
+│   ├── paper3_propagation_constraints.*       Paper 3: propagation constraint
+│   ├── paper4_consolidation_gating.*          Paper 4: consolidation gate
+│   ├── paper5_unified_framework.*             Paper 5: unified theory
 │   └── paper6_adaptive_memory_theory/
 │       ├── paper6_adaptive_memory_theory.pdf   Paper 6 (AI architectures)
 │       ├── paper6_adaptive_memory_theory.tex
