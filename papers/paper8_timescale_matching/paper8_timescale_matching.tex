@@ -15,7 +15,7 @@
 
 \lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single}
 
-\title{A Turnover Law for Adaptive Memory Systems}
+\title{Empirical Turnover Invariance in a\\Viability-Constrained Memory Substrate}
 \author{VCSM Theory Series --- Paper 8}
 \date{2026}
 
@@ -23,19 +23,19 @@
 \maketitle
 
 \begin{abstract}
-We establish a \emph{turnover law} for viability-constrained adaptive memory substrates:
-the turnover rate that maximizes spatial structure formation, $\nu^* \approx 0.001$,
-is invariant to propagation strength $\kappa$ across its full tested range ($0$ to
-$0.15$, a $>150$-fold variation). Three supporting experiments confirm that $\nu^*$
-is similarly stable across a $4\times$ range of the consolidation gate ($\mathtt{SS}$)
-and consolidation rate ($\mathtt{FIELD\_ALPHA}$). Taken together, the experiments
-reveal a clean separation of concerns: \emph{adaptation dynamics are local} (the
-optimal turnover is determined by wave-grid interaction, not by the propagation or
-consolidation machinery), while propagation controls only the amplitude and spatial
-reach of learned structure. This separation mirrors a general design principle found
-in biological adaptive systems---local learning rules coupled to global information
-flow---and suggests that the adaptive regime location is an intrinsic property of
-the input protocol, not of the learning parameters.
+We report an empirical turnover invariance in a viability-constrained adaptive memory
+substrate: the turnover rate that maximizes spatial structure formation, $\nu^* \approx
+0.001$, is invariant to propagation strength $\kappa$ across its full tested range
+($0$ to $0.15$, a $>150$-fold variation), within this substrate and input protocol.
+Three supporting experiments confirm that $\nu^*$ is similarly stable across a
+$4\times$ range of the consolidation gate ($\mathtt{SS}$) and consolidation rate
+($\mathtt{FIELD\_ALPHA}$) within their operational regimes. Taken together, the
+experiments reveal a clean separation of concerns: \emph{adaptation dynamics are local}
+(the optimal turnover is determined by wave-grid interaction, not by the propagation or
+consolidation machinery), while propagation controls only the amplitude and spatial reach
+of learned structure. This separation suggests the adaptive regime location is an
+intrinsic property of the input protocol rather than the learning parameters, and
+motivates a broader hypothesis about local adaptation in systems with mandatory turnover.
 \end{abstract}
 
 % ============================================================
@@ -216,7 +216,10 @@ is the amplitude: $\mathtt{sg4}^*$ drops from $888 \to 376 \to 186 \to 23$
 as SS doubles from 5 to 40, roughly consistent with the exponential decay
 of $P_{\text{calm}}$ (Eq.~\eqref{eq:pcalm}). At $\mathtt{SS} = 40$, the
 gate is so strict that almost no site achieves 40 consecutive calm steps,
-collapsing structure entirely.
+collapsing structure entirely. The invariance therefore holds within the
+\emph{operational consolidation regime} ($\mathtt{SS} \leq 20$ at reference
+wave density); at extreme gate values, the system degrades into near-zero
+structure across all $\nu$ rather than shifting $\nu^*$ predictably.
 
 % ============================================================
 \section{Experiment 3: Consolidation Rate (Amplitude, Not Location)}
@@ -250,10 +253,13 @@ $263 \to 376 \to 507$ roughly proportionally to FIELD\_ALPHA in this range,
 confirming that the consolidation rate controls the height of the adaptive peak
 rather than its location.
 
-At $\mathtt{FIELD\_ALPHA} = 0.04$, $\nu^*$ shifts to $0.0001$: very slow
-consolidation effectively freezes the system, and even minimal turnover begins
-to erase the sparse field updates that do accumulate. This is an extreme boundary
-effect, not a scaling relationship.
+At $\mathtt{FIELD\_ALPHA} = 0.04$, $\nu^*$ shifts to $0.0001$. The mechanism:
+very slow consolidation means each field update takes many calm steps to accumulate,
+increasing the effective persistence time of written values. As a result, even
+minimal turnover is sufficient to erase the sparse updates before they stabilize,
+pushing $\nu^*$ toward zero rather than following any proportional relationship.
+This is a boundary collapse, not a scaling trend, and is consistent with the
+operational regime boundary observed for $\mathtt{SS}$ above.
 
 % ============================================================
 \section{Experiment 4: Wave Input Rate (Location at Input Extremes)}
@@ -296,11 +302,12 @@ frequency.
 % ============================================================
 \section{Discussion}
 
-\subsection{The Turnover Law}
+\subsection{The Invariance Finding}
 
 Across four experiments spanning propagation ($\kappa$: 0--0.15), consolidation
 gate ($\mathtt{SS}$: 5--20), consolidation rate ($\mathtt{FIELD\_ALPHA}$: 0.08--0.32),
-and wave input rate ($\mathtt{WR}$: 1.2--4.8), $\nu^* \approx 0.001$ is stable.
+and wave input rate ($\mathtt{WR}$: 1.2--4.8), $\nu^* \approx 0.001$ is stable
+within their respective operational regimes.
 
 \begin{center}
 \begin{tabular}{lll}
@@ -315,84 +322,89 @@ $\mathtt{WR}$ (wave rate)        & 1.2--4.8 ($4\times$)  & Non-monotone; peak at
 \end{tabular}
 \end{center}
 
-This constitutes an empirical turnover law: the adaptive regime opens at
-$\nu \approx 0.001$ and closes at $\nu \approx 0.007$--$0.010$, with these
-boundaries determined by the wave--grid interaction, not by the learning parameters.
+The adaptive window opens at $\nu \approx 0.001$ and closes at $\nu \approx
+0.007$--$0.010$, with these boundaries determined by the wave--grid interaction
+rather than the learning parameters. This is an empirical result within this
+substrate and input protocol; whether a similar invariance holds under qualitatively
+different input statistics or substrates remains an open question.
 
-\subsection{Why $\nu^* \approx 0.001$: A Balance Equation}
+\subsection{Separation of Concerns: The Core Architectural Result}
 
-At $\nu = 0.001$, each site has a mean lifetime of $1/\nu = 1000$ steps. With
-$\mathtt{WR} = 4.8$ and $\mathtt{WAVE\_DUR} = 15$, approximately $4.8/15 \approx
-0.32$ waves launch per step. Each site is involved in half the left-zone waves,
-giving $\sim\!0.16$ perturbation events per site per step. The copy-forward rate
-equals the birth rate $\nu$; the erasure rate equals the perturbation-induced
-death rate. At the balance:
+The experiments distinguish two functionally independent roles:
+
+\begin{itemize}
+  \item \textbf{Location of the adaptive regime} ($\nu^*$, regime boundary): set
+    by wave input dynamics. Insensitive to consolidation parameters within their
+    operational range, and insensitive to propagation strength across the full
+    tested range.
+
+  \item \textbf{Amplitude of spatial structure} ($\mathtt{sg4}^*$, peak value):
+    strongly controlled by consolidation parameters ($\mathtt{FIELD\_ALPHA}$,
+    $\mathtt{SS}$) and weakly by $\kappa$. Does not alter the location where
+    the adaptive window opens.
+\end{itemize}
+
+This is the sharpest statement the experiments support: \emph{adaptation is local}
+(the learning condition is set by the per-site wave/turnover balance), while
+\emph{coordination is global} (propagation amplifies already-formed local structure).
+The causal evidence for this separation comes from Paper~7 Experiment~6: ablating
+the copy-forward loop ($\mathtt{SEED\_BETA} = 0$, removing local inheritance at
+birth) eliminates the adaptive peak entirely, confirming that local inheritance
+rather than propagation is the operative mechanism.
+
+\subsection{Order-of-Magnitude Consistency Check}
+
+The observed $\nu^* \approx 0.001$ can be matched post-hoc by a simple
+copy-forward/erasure balance argument. At $\nu = 0.001$, each site has a mean
+lifetime of $1/\nu = 1000$ steps. With $\mathtt{WR} = 4.8$ and
+$\mathtt{WAVE\_DUR} = 15$, approximately $4.8/15 \approx 0.32$ waves launch per
+step. Assuming each site is involved in half the left-zone waves and that
+perturbation events are approximately independent:
 \begin{equation}
   \nu^* \;\approx\; \frac{\mathtt{WR}}{2 \cdot \mathtt{WAVE\_DUR}
     \cdot N_{\text{act}}/4} \;\approx\; 0.0016
   \label{eq:balance}
 \end{equation}
-This rough estimate is consistent with the empirical $\nu^* = 0.001$--$0.002$.
-Crucially, $\mathtt{SS}$, $\mathtt{FIELD\_ALPHA}$, and $\kappa$ do not appear
-in Eq.~\eqref{eq:balance}---they control how much structure accumulates per
-successful copy-forward event, not when the balance tips.
+This rough estimate lands within $2\times$ of the empirical value. It is offered
+as an \emph{order-of-magnitude consistency check}, not a derived prediction:
+it was constructed after observing $\nu^*$, assumes independence of perturbation
+events (which may not hold on the lattice), and does not account for spatial
+correlations or streak-length distributions. Its value is in showing which
+parameters plausibly set the balance ($\mathtt{WR}$, $\mathtt{WAVE\_DUR}$,
+$N_{\text{act}}$), none of which are the consolidation or propagation parameters.
 
-\subsection{Local Adaptation, Global Flow}
+\subsection{A Broader Hypothesis: Local Adaptation, Global Flow}
 \label{sec:local_global}
 
-The invariance of $\nu^*$ to $\kappa$ implies something beyond a technical
-observation: \emph{the condition for effective adaptation is determined locally}.
-Propagation strength determines how far locally learned information spreads---it
-is a communication parameter---but it does not determine whether learning occurs.
-The learning condition ($\nu \approx \nu^*$) is set entirely by the wave input
-protocol and the site's own birth/death dynamics.
+The invariance of $\nu^*$ to $\kappa$ is consistent with a broader architectural
+hypothesis: \emph{the condition for effective adaptation may be local} in systems
+where learning occurs through mandatory turnover. If so, propagation plays a
+complementary but downstream role---spreading locally formed structure further,
+not setting the condition under which local learning succeeds.
 
-This produces a functional separation in which two distinct roles are played by
-two distinct mechanisms:
+A structurally similar pattern appears in several biological adaptive systems:
+hippocampal neurogenesis (local synaptic update, global pattern separation),
+immune adaptation (somatic hypermutation locally, clonal proliferation globally),
+and evolution (local mutation, global selection). In each case, the rate of local
+adaptation is constrained by environmental perturbation and replacement dynamics,
+not by the reach of global communication.
 
-\begin{itemize}
-  \item \textbf{Adaptation (local)}: Each site adapts its $\mathtt{fieldM}$ through
-    the VCSM learning rule. The optimal turnover rate is set by the wave--grid
-    balance and is the same regardless of how well-connected the site is to its
-    neighbors.
+These are \emph{possible analogies}, not mechanistic evidence. Whether the
+specific invariance observed here---$\nu^*$ independent of $\kappa$---generalizes
+to other substrates or input protocols is an open empirical question. The
+VCML result motivates that question; it does not answer it.
 
-  \item \textbf{Coordination (global)}: Propagation via $\kappa$ spreads locally
-    formed structure across the grid. Higher $\kappa$ increases the reach of learned
-    field values, boosting $\mathtt{sg4}$ amplitude---but this is downstream of the
-    local adaptation step.
-\end{itemize}
+\subsection{Design Implications}
 
-This separation appears in biological adaptive systems:
-
-\begin{itemize}
-  \item \textbf{Hippocampal neurogenesis}: Individual dentate gyrus cells adapt locally
-    via Hebbian plasticity. Turnover of adult-generated neurons maintains adaptability
-    (Papers V77--V89). The global contribution (pattern separation, memory indexing)
-    is downstream of this local update process.
-  \item \textbf{Immune adaptation}: Individual B-cells adapt locally to antigens via
-    somatic hypermutation. Global immunity emerges through clonal selection and
-    proliferation---a propagation step analogous to $\kappa$.
-  \item \textbf{Evolutionary adaptation}: Mutations occur locally (individual
-    organisms). Fitness propagates globally through selection and reproduction.
-\end{itemize}
-
-In each case, the rate of local adaptation ($\nu$) is set by a balance involving
-environmental perturbation frequency and replacement dynamics---not by the reach
-of global communication. This suggests that the turnover law identified here is
-not an artifact of the VCML substrate but reflects a more general property of
-adaptive systems that use mandatory local turnover for plasticity.
-
-\subsection{Separation of Concerns: Design Implications}
-
-The experiments yield a practical prescription for VCML substrate design:
+The separation of concerns yields a practical prescription:
 
 \begin{itemize}
   \item \textbf{To set the regime location}: Tune $\mathtt{WAVE\_RATIO}$ and
-    $\mathtt{WAVE\_DUR}$ (the input protocol). The balance equation
+    $\mathtt{WAVE\_DUR}$ (the input protocol). The consistency estimate
     (Eq.~\eqref{eq:balance}) gives the expected $\nu^*$.
   \item \textbf{To increase structure amplitude}: Increase $\mathtt{FIELD\_ALPHA}$
     (immediate, proportional effect) or decrease $\mathtt{SS}$ (exponential
-    $P_{\text{calm}}$ gain, but risks over-writing).
+    $P_{\text{calm}}$ gain, but risks over-writing at extreme values).
   \item \textbf{To increase spatial reach}: Increase $\kappa$ (modest amplitude
     gain; does not shift the window location).
 \end{itemize}
@@ -442,19 +454,22 @@ correlations and streak-length distributions not captured here.
 % ============================================================
 \section{Conclusion}
 
-A turnover law for VCML adaptive memory substrates: $\nu^* \approx 0.001$ is
-invariant to propagation strength $\kappa$ across its full tested range, and to
-the consolidation gate ($\mathtt{SS}$) and rate ($\mathtt{FIELD\_ALPHA}$) across
-$4\times$ practical ranges. The regime boundary is set by the copy-forward/erasure
-balance at the wave--grid level; a balance equation correctly predicts its
-order of magnitude.
+An empirical turnover invariance for a VCML adaptive memory substrate: $\nu^*
+\approx 0.001$ is stable across the full tested range of propagation strength
+($\kappa$: 0--0.15) and across $4\times$ practical ranges of the consolidation
+gate ($\mathtt{SS}$) and rate ($\mathtt{FIELD\_ALPHA}$). The regime boundary is
+set by the copy-forward/erasure balance at the wave--grid level; an
+order-of-magnitude consistency check ($\nu^* \approx \mathtt{WR} / (2 \cdot
+\mathtt{WAVE\_DUR} \cdot N_{\text{act}}/4) \approx 0.0016$) is consistent with
+the empirical value but was derived post-hoc and carries caveats.
 
-The core architectural insight is a separation of concerns that mirrors
-biological adaptive systems: \emph{adaptation is local} (turnover/wave balance),
-\emph{coordination is global} (propagation). Propagation amplifies locally formed
-structure but does not set the condition under which local adaptation succeeds.
-This has implications for designing adaptive memory architectures: the learning
-regime can be set independently of the communication architecture, and vice versa.
+The sharpest architectural result is a separation of concerns: \emph{adaptation is
+local} (the learning condition is the per-site wave/turnover balance),
+\emph{coordination is global} (propagation amplifies locally formed structure but
+does not set the condition under which it forms). This separation, supported
+causally by the copy-forward ablation in Paper~7, motivates the broader hypothesis
+that similar invariances may appear in other adaptive systems with mandatory local
+turnover. Testing that hypothesis is left for future work.
 
 % ============================================================
 \appendix
