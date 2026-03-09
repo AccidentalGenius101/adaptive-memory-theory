@@ -38,6 +38,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 23 | Two-Scale Reynolds Decomposition: Interface Formula and Inheritance Roughness | [PDF](papers/paper23_two_scale/paper23_two_scale.pdf) · [TeX](papers/paper23_two_scale/paper23_two_scale.tex) · [Code](papers/paper23_two_scale/) | -- |
 | 24 | The Birth Bias Axis: Probing the Allen-Cahn--Burgers Universality Class Transition in VCML | [PDF](papers/paper24_birth_bias/paper24_birth_bias.pdf) · [TeX](papers/paper24_birth_bias/paper24_birth_bias.tex) · [Code](papers/paper24_birth_bias/) | -- |
 | 25 | Completing the Model H Picture: Zone-Level Structure, Partial Burgers Signal, and Inheritance Roughness in VCML | [PDF](papers/paper25_burgers_transition/paper25_burgers_transition.pdf) · [TeX](papers/paper25_burgers_transition/paper25_burgers_transition.tex) · [Code](papers/paper25_burgers_transition/) | -- |
+| 26 | Unified Stochastic PDE for VCML: Burgers Reversal, Zone-Width Optimality, and the Temporal Anti-Correlation Signature | [PDF](papers/paper26_unified_theory/paper26_unified_theory.pdf) · [TeX](papers/paper26_unified_theory/paper26_unified_theory.tex) · [Code](papers/paper26_unified_theory/) | -- |
 
 ---
 
