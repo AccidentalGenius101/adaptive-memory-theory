@@ -27,6 +27,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 12 | The Copy-Forward Pathway: A Fourth Axis of the Adaptive Window in Viability-Constrained Memory Systems | [PDF](papers/paper12_copy_forward_mechanism/paper12_copy_forward_mechanism.pdf) · [TeX](papers/paper12_copy_forward_mechanism/paper12_copy_forward_mechanism.tex) · [Code](papers/paper12_copy_forward_mechanism/) | -- |
 | 13 | Closing the Control Law: The Adaptive Regime of Viability-Constrained Memory Systems is a 4D Viability Volume | [PDF](papers/paper13_viability_volume/paper13_viability_volume.pdf) · [TeX](papers/paper13_viability_volume/paper13_viability_volume.tex) · [Code](papers/paper13_viability_volume/) | -- |
 | 14 | Timescale Nesting and the Limits of Ratio Invariance in Viability-Constrained Memory Systems | [PDF](papers/paper14_timescale_nesting/paper14_timescale_nesting.pdf) · [TeX](papers/paper14_timescale_nesting/paper14_timescale_nesting.tex) · [Code](papers/paper14_timescale_nesting/) | -- |
+| 15 | Differentiation Amplitude as the Internal Control Variable of Viability-Constrained Memory Systems: A Square-Root Scaling Law | [PDF](papers/paper15_amplitude_law/paper15_amplitude_law.pdf) · [TeX](papers/paper15_amplitude_law/paper15_amplitude_law.tex) · [Code](papers/paper15_amplitude_law/) | -- |
 
 ---
 
