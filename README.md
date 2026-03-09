@@ -35,6 +35,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 20 | The Coupled ODE of Viability-Constrained Memory Systems: Analytical Closure, Validated Predictions, and the Buildup Gap | [PDF](papers/paper20_ode_closure/paper20_ode_closure.pdf) · [TeX](papers/paper20_ode_closure/paper20_ode_closure.tex) · [Code](papers/paper20_ode_closure/) | -- |
 | 21 | The Spatial Formation Factor: Birth-Mediated Propagation and the Buildup Gap in Viability-Constrained Memory Systems | [PDF](papers/paper21_spatial_formation/paper21_spatial_formation.pdf) · [TeX](papers/paper21_spatial_formation/paper21_spatial_formation.tex) · [Code](papers/paper21_spatial_formation/) | -- |
 | 22 | Spatial Correlation Signature of Zone Formation: Interface Sharpening | paper22_spatial_correlation/ |
+| 23 | Two-Scale Reynolds Decomposition: Interface Formula and Inheritance Roughness | paper23_two_scale/ |
 
 ---
 
