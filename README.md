@@ -19,6 +19,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 4 | Consolidation Gating and Noise Robustness in Adaptive Memory Systems | [PDF](papers/paper4_consolidation_gating.pdf) · [TeX](papers/paper4_consolidation_gating.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918295.svg)](https://doi.org/10.5281/zenodo.18918295) |
 | 5 | A Unified Constraint Framework for Viability-Gated Adaptive Systems | [PDF](papers/paper5_unified_framework.pdf) · [TeX](papers/paper5_unified_framework.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918310.svg)](https://doi.org/10.5281/zenodo.18918310) |
 | 6 | Adaptive Memory in Artificial Systems: A Constraint-Based Framework | [PDF](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.pdf) · [TeX](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.tex) · [Code](papers/paper6_adaptive_memory_theory/) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918322.svg)](https://doi.org/10.5281/zenodo.18918322) |
+| 7 | Regime Structure of Adaptive Memory Systems | [PDF](papers/paper7_regime_structure/paper7_regime_structure.pdf) · [TeX](papers/paper7_regime_structure/paper7_regime_structure.tex) · [Code](papers/paper7_regime_structure/) | -- |
 
 ---
 
