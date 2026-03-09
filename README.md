@@ -25,6 +25,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 10 | The Adaptive Window Resists WR Perturbation: Limits of the Replacement Hazard Framework in Viability-Constrained Memory Systems | [PDF](papers/paper10_replacement_hazard/paper10_structural_replacement_hazard.pdf) · [TeX](papers/paper10_replacement_hazard/paper10_structural_replacement_hazard.tex) · [Code](papers/paper10_replacement_hazard/) | -- |
 | 11 | Substrate Parameters Govern the Adaptive Window: Direct Tests of nu_cryst and nu_max in VCML | [PDF](papers/paper11_substrate_constants/paper11_substrate_constants.pdf) · [TeX](papers/paper11_substrate_constants/paper11_substrate_constants.tex) · [Code](papers/paper11_substrate_constants/) | -- |
 | 12 | The Copy-Forward Pathway: A Fourth Axis of the Adaptive Window in Viability-Constrained Memory Systems | [PDF](papers/paper12_copy_forward_mechanism/paper12_copy_forward_mechanism.pdf) · [TeX](papers/paper12_copy_forward_mechanism/paper12_copy_forward_mechanism.tex) · [Code](papers/paper12_copy_forward_mechanism/) | -- |
+| 13 | Closing the Control Law: The Adaptive Regime of Viability-Constrained Memory Systems is a 4D Viability Volume | [PDF](papers/paper13_viability_volume/paper13_viability_volume.pdf) · [TeX](papers/paper13_viability_volume/paper13_viability_volume.tex) · [Code](papers/paper13_viability_volume/) | -- |
 
 ---
 
