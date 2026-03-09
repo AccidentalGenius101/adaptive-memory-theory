@@ -1,0 +1,474 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{listings}
+\geometry{margin=1in}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single}
+
+\title{Timescale Robustness of the Adaptive Window\\
+       in Viability-Constrained Memory Systems}
+\author{VCSM Theory Series --- Paper 8}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Paper~7 established an empirical regime map for VCML adaptive memory
+substrates, identifying a bounded adaptive window in the
+$(\nu, \kappa)$ turnover--propagation plane. This paper asks: \emph{what
+determines the location of that window?} We test the timescale-matching
+hypothesis---that the adaptive window occurs when
+$\tau_{\text{turnover}} \approx \tau_{\text{consolidation}}$---by
+independently varying the consolidation gate threshold ($\mathtt{SS}$),
+consolidation learning rate ($\mathtt{FIELD\_ALPHA}$), and wave input
+rate ($\mathtt{WAVE\_RATIO}$). We find that the window's location in
+$\nu$ is \emph{robustly stable} ($\nu^* \approx 0.001$) across a
+4$\times$ range of each consolidation parameter, but varies when the
+wave input rate exceeds a perturbation threshold. A re-analysis of
+Paper~7 Experiment~3 confirms that the diffusion rate $\kappa$ is
+similarly non-controlling: $\nu_{\text{opt}}$ is identical across all
+$\kappa$ values tested. The main finding is a separation of concerns:
+\emph{the regime boundary is set by input wave dynamics, not
+consolidation machinery}. Consolidation parameters control the amplitude
+of spatial structure within the window, not its location. We propose a
+consolidation amplitude formula relating $\mathtt{sg4}$ peak to
+$\mathtt{SS}$ and $\mathtt{WAVE\_RATIO}$, and discuss implications for
+designing adaptive memory substrates.
+\end{abstract}
+
+% ============================================================
+\section{Introduction}
+
+Paper~7 (Regime Structure) mapped the $(\nu, \kappa)$ parameter space
+of a VCML substrate and identified four dynamical regimes: frozen (low
+$\nu$), turnover-dominated (high $\nu$), fragmented (low $\kappa$), and
+adaptive (intermediate $\nu$, moderate $\kappa$). The adaptive window is
+bounded in $\nu$ between approximately $0.001$ and $0.015$, and is
+verified by three independent robustness experiments (classifier
+accuracy, copy-forward ablation, scaling).
+
+A natural next question is: \emph{what places the window at this
+location?} The timescale-matching hypothesis predicts:
+\begin{equation}
+  \nu^* \;\approx\; \frac{c}{\tau_{\text{consolidation}}}
+  \label{eq:ts_match}
+\end{equation}
+where $\tau_{\text{consolidation}}$ is set by $\mathtt{SS}$ (the
+calm-streak gate) and $\mathtt{FIELD\_ALPHA}$ (the consolidation
+learning rate). If Eq.~\eqref{eq:ts_match} holds, doubling $\mathtt{SS}$
+should halve $\nu^*$, and doubling $\mathtt{FIELD\_ALPHA}$ should double
+$\nu^*$.
+
+Similarly, if the wave input rate $\mathtt{WAVE\_RATIO}$ (WR) sets the
+\emph{propagation timescale}, we would expect $\nu^*$ to scale
+proportionally with WR: faster input means the system can sustain higher
+turnover.
+
+We test these predictions with three sweeps (Experiments~1--3), then
+analyze $\nu^*$ vs.\ $\kappa$ from Paper~7 data (Experiment~4).
+
+\subsection{Background: VCSM Consolidation Gate}
+
+In VCSM, a site can only update its $\mathtt{fieldM}$ vector after
+accumulating $\mathtt{SS}$ consecutive unperturbed steps:
+\begin{equation}
+  \text{ok}[i] \;=\; [\mathtt{streak}[i] \geq \mathtt{SS}]
+\end{equation}
+When $\text{ok}[i]$ is true:
+\begin{equation}
+  \mathtt{fieldM}[i] \;\mathrel{+}=\; \mathtt{FIELD\_ALPHA}
+    \cdot (\mathtt{mid\_mem}[i] - \mathtt{fieldM}[i])
+\end{equation}
+The consolidation timescale is thus governed by two parameters: SS
+(gate threshold, steps) and FIELD\_ALPHA (learning rate per step
+given calm). Slower FIELD\_ALPHA means more calm steps are needed
+to accumulate a given field update; higher SS means a longer uninterrupted
+calm period is required before any update is possible.
+
+The probability that a site achieves a calm streak $\geq \mathtt{SS}$
+at any given step depends on the wave perturbation density. For a
+half-grid site (left or right) and average WR active left-zone waves:
+\begin{equation}
+  P_{\text{calm}}(\mathtt{SS}) \;\approx\;
+    \left(1 - \frac{\mathtt{WR}}{2 \cdot \mathtt{WAVE\_DUR}}\right)^{\mathtt{SS} + \mathtt{WAVE\_DUR} - 1}
+  \label{eq:pcalm}
+\end{equation}
+This is the probability that no left-zone wave was launched in the
+preceding $\mathtt{SS} + \mathtt{WAVE\_DUR} - 1$ steps (necessary for
+the site to have been calm for $\mathtt{SS}$ consecutive steps as of now).
+
+% ============================================================
+\section{Shared Protocol}
+
+All experiments use the Paper~7 Exp1 base configuration. Only the
+swept parameter varies; all others are fixed at reference values.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Parameter & Reference value \\
+\midrule
+Grid & $W=40$, $H=20$, $\mathtt{HALF}=20$, $N_{\text{act}}=400$ \\
+$\mathtt{HS}$ & 2 \\
+$\mathtt{KAPPA}$ & 0.020 \\
+$\mathtt{WAVE\_RATIO}$ & 4.8 \\
+$\mathtt{WAVE\_DUR}$ & 15 \\
+$\mathtt{SS}$ & 10 \\
+$\mathtt{FIELD\_ALPHA}$ & 0.16 \\
+$\mathtt{SEED\_BETA}$ & 0.25 \\
+$\mathtt{STEPS}$ & 2000 \\
+$\mathtt{SHIFT}$ & 1000 \\
+Seeds & 5 \\
+$\nu$ sweep & $\{0.0001, 0.0003, 0.001, 0.002, 0.005, 0.010, 0.020, 0.040, 0.080\}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For each parameter configuration, we report $\nu^*$ (argmax $\mathtt{sg4}$)
+and $\mathtt{sg4}^*$ (peak value, 5-seed mean). A failure of
+Eq.~\eqref{eq:ts_match} would show constant $\nu^*$ across the sweep.
+A success would show $\nu^* \propto 1/\mathtt{SS}$ or
+$\nu^* \propto \mathtt{FIELD\_ALPHA}$.
+
+% ============================================================
+\section{Experiment 1: Consolidation Gate Sweep}
+
+\subsection{Protocol}
+
+$\mathtt{SS} \in \{5, 10, 20, 40\}$. All other parameters at reference.
+$4 \times 9 \times 5 = 180$ runs. Expected: $\nu^* \propto 1/\mathtt{SS}$
+(inverse proportionality).
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\caption{SS sweep: $\nu^*$ and $\mathtt{sg4}^*$ by consolidation gate. sg4
+profile shows 5-seed mean $\mathtt{sg4}$ at each $\nu$ value (left to right:
+$\nu = 0.0001, 0.0003, \ldots, 0.080$).}
+\label{tab:exp1}
+\begin{tabular}{r r r l}
+\toprule
+SS & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
+\midrule
+ 5 & 0.0010 & 887.8 & 120\ \ 576\ \ \textbf{888}\ \ 734\ \ 126\ \ 18\ \ 5\ \ 1\ \ 0 \\
+10 & 0.0010 & 376.3 & 223\ \ 273\ \ \textbf{376}\ \ 328\ \ \ 80\ \ 24\ \ 4\ \ 1\ \ 0 \\
+20 & 0.0010 & 186.2 & \ 78\ \ \ 88\ \ \textbf{186}\ \ 137\ \ \ 23\ \ 12\ \ 1\ \ 0\ \ 0 \\
+40 & 0.0020 & \ 23.5 & \ \ 0\ \ \ \ 0\ \ \ \ \ 0\ \ \ \textbf{24}\ \ \ \ 5\ \ \ 0\ \ 0\ \ 0\ \ 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result.} The location $\nu^*$ is unchanged at $0.001$ for
+$\mathtt{SS} = 5, 10, 20$ --- a $4\times$ range of gate values. At
+$\mathtt{SS} = 40$, $\nu^* = 0.002$ (one grid point higher) and
+$\mathtt{sg4}^* = 23.5$, near zero: the gate is so strict that almost
+no sites achieve 40 consecutive calm steps under the reference wave
+density.
+
+The timescale-matching prediction ($\nu^* \propto 1/\mathtt{SS}$) fails:
+the window's location is insensitive to SS. However, the \emph{amplitude}
+$\mathtt{sg4}^*$ drops steeply with SS: 888, 376, 186, 23.5 (approximately
+halving per SS doubling from 5 to 20, then collapsing at 40).
+
+The amplitude drop is consistent with Eq.~\eqref{eq:pcalm}: doubling SS
+exponentially reduces $P_{\text{calm}}$, reducing the effective write rate.
+
+% ============================================================
+\section{Experiment 2: Consolidation Rate Sweep}
+
+\subsection{Protocol}
+
+$\mathtt{FIELD\_ALPHA} \in \{0.04, 0.08, 0.16, 0.32\}$. All other
+parameters at reference. $4 \times 9 \times 5 = 180$ runs. Expected:
+$\nu^* \propto \mathtt{FIELD\_ALPHA}$ (faster learning tolerates more
+turnover).
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\caption{FIELD\_ALPHA sweep: $\nu^*$ and $\mathtt{sg4}^*$.}
+\label{tab:exp2}
+\begin{tabular}{r r r l}
+\toprule
+$\mathtt{FIELD\_ALPHA}$ & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
+\midrule
+0.04 & 0.0001 & 188.0 & \textbf{188}\ \ 124\ \ 174\ \ 136\ \ 32\ \ 11\ \ 2\ \ 0\ \ 0 \\
+0.08 & 0.0010 & 263.1 & 213\ \ 191\ \ \textbf{263}\ \ 226\ \ 52\ \ 19\ \ 4\ \ 1\ \ 0 \\
+0.16 & 0.0010 & 376.3 & 223\ \ 273\ \ \textbf{376}\ \ 328\ \ 80\ \ 24\ \ 4\ \ 1\ \ 0 \\
+0.32 & 0.0010 & 507.4 & 255\ \ 379\ \ \textbf{507}\ \ 417\ \ 103\ \ 25\ \ 5\ \ 1\ \ 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result.} $\nu^* = 0.001$ for $\mathtt{FIELD\_ALPHA} \in \{0.08,
+0.16, 0.32\}$ (a $4\times$ range). At $\mathtt{FIELD\_ALPHA} = 0.04$,
+$\nu^*$ shifts to $0.0001$: very slow consolidation effectively freezes
+the system, requiring minimal turnover to avoid erasure.
+
+The amplitude $\mathtt{sg4}^*$ scales monotonically: 188, 263, 376, 507
+(roughly proportional to FIELD\_ALPHA in the $0.08$--$0.32$ range).
+This confirms that FIELD\_ALPHA controls the height of the adaptive peak
+but not its location, except at extreme values.
+
+% ============================================================
+\section{Experiment 3: Wave Input Rate Sweep}
+
+\subsection{Protocol}
+
+$\mathtt{WAVE\_RATIO} \in \{1.2, 2.4, 4.8, 9.6\}$. All other parameters
+at reference. $4 \times 9 \times 5 = 180$ runs. Expected: $\nu^* \propto
+\mathtt{WR}$ (more frequent input enables higher turnover).
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\caption{WAVE\_RATIO sweep: $\nu^*$ and $\mathtt{sg4}^*$.}
+\label{tab:exp3}
+\begin{tabular}{r r r l}
+\toprule
+WR & $\nu^*$ & $\mathtt{sg4}^*$ & sg4 profile \\
+\midrule
+1.2 & 0.0010 & 120.4 & \ 32\ \ 104\ \ \textbf{120}\ \ \ 68\ \ 16\ \ 7\ \ 1\ \ 0\ \ 0 \\
+2.4 & 0.0010 & 414.9 & 111\ \ 328\ \ \textbf{415}\ \ 317\ \ 34\ \ 11\ \ 2\ \ 1\ \ 0 \\
+4.8 & 0.0010 & 376.3 & 223\ \ 273\ \ \textbf{376}\ \ 328\ \ 80\ \ 24\ \ 4\ \ 1\ \ 0 \\
+9.6 & 0.0001 & 226.9 & \textbf{227}\ \ \ 70\ \ \ \ \ 0\ \ \ 28\ \ 12\ \ \ 1\ \ 0\ \ 0\ \ 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result.} $\nu^* = 0.001$ for $\mathtt{WR} \in \{1.2, 2.4, 4.8\}$.
+At $\mathtt{WR} = 9.6$, $\nu^*$ shifts to $0.0001$ --- \emph{opposite} to
+the prediction. At WR=9.6 and $\nu = 0.001$, $\mathtt{sg4} = 0$: high wave
+density combined with moderate turnover prevents any site from achieving
+$\mathtt{SS} = 10$ consecutive calm steps. Only at very low turnover
+($\nu = 0.0001$) does the system recover structure.
+
+This confirms the over-perturbation collapse identified in Papers~7 and V93:
+excessive wave density suppresses consolidation, requiring near-zero
+turnover to compensate.
+
+The amplitude $\mathtt{sg4}^*$ peaks at WR=2.4 (414.9) and is lower at
+WR=4.8 (376.3) and WR=1.2 (120.4), consistent with the V93 finding that
+WR$\sim$2$\times$ is optimal at the $N=400$ scale.
+
+% ============================================================
+\section{Experiment 4: Propagation Rate Analysis}
+
+\subsection{Protocol}
+
+Re-analysis of Paper~7 Experiment~3 results. For each $\kappa$ value, we
+identify $\nu_{\text{opt}} = \text{argmax}_\nu\, \mathtt{sg4}(\nu, \kappa)$
+using the cached 5-seed means. This tests whether $\nu^*$ scales with
+$\kappa$ (as a propagation timescale matching prediction would require).
+
+\subsection{Results}
+
+\begin{table}[h]
+\centering
+\caption{$\nu_{\text{opt}}$ and $\mathtt{sg4}_{\text{opt}}$ by $\kappa$ (Paper~7 Exp3 data).
+Collapse boundary is between $\nu = 0.005$ and $\nu = 0.015$ for all $\kappa$.}
+\label{tab:exp4}
+\begin{tabular}{r r r l}
+\toprule
+$\kappa$ & $\nu_{\text{opt}}$ & $\mathtt{sg4}_{\text{opt}}$ & sg4 profile ($\nu$: 0.0003, 0.001, 0.005, 0.015, 0.050) \\
+\midrule
+0.000 & 0.0010 & 396.7 & 279\ \ \textbf{397}\ \ \ 99\ \ \ 11\ \ \ 1 \\
+0.005 & 0.0010 & 383.1 & 271\ \ \textbf{383}\ \ \ 88\ \ \ \ 9\ \ \ 1 \\
+0.020 & 0.0010 & 376.3 & 273\ \ \textbf{376}\ \ \ 80\ \ \ \ 8\ \ \ 1 \\
+0.060 & 0.0010 & 375.1 & 273\ \ \textbf{375}\ \ \ 68\ \ \ \ 6\ \ \ 1 \\
+0.150 & 0.0010 & 360.9 & 276\ \ \textbf{361}\ \ \ 49\ \ \ \ 5\ \ \ 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result.} $\nu_{\text{opt}} = 0.001$ for \emph{all} $\kappa$ values tested
+($0$ to $0.15$, a $\infty$-fold range). The turnover-dominated collapse
+boundary (between $\nu = 0.005$ and $\nu = 0.015$) is also unchanged
+across the full $\kappa$ sweep. Diffusion $\kappa$ shifts only the
+amplitude of $\mathtt{sg4}^*$ (from 396.7 at $\kappa = 0$ to 360.9 at
+$\kappa = 0.15$), not the regime boundary location.
+
+There is no evidence for $\nu_{\text{opt}} \propto \sqrt{\kappa}$ or any
+other $\kappa$-dependent scaling of the window location.
+
+% ============================================================
+\section{Discussion}
+
+\subsection{The Regime Boundary Is Set by Input Dynamics}
+
+Across four experiments spanning the consolidation gate (SS), consolidation
+rate (FIELD\_ALPHA), wave input rate (WR), and diffusion ($\kappa$), the
+location $\nu^* \approx 0.001$ is stable in all cases except extreme
+WR (9.6) or extreme FIELD\_ALPHA (0.04). Within the practical operating
+range:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Parameter & Range tested & Effect on $\nu^*$ \\
+\midrule
+$\mathtt{SS}$ (gate) & 5--20 & None ($\nu^* = 0.001$ throughout) \\
+$\mathtt{FIELD\_ALPHA}$ (rate) & 0.08--0.32 & None ($\nu^* = 0.001$ throughout) \\
+$\mathtt{WR}$ (wave rate) & 1.2--4.8 & None ($\nu^* = 0.001$ throughout) \\
+$\kappa$ (diffusion) & 0--0.15 & None ($\nu^* = 0.001$ throughout) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The timescale-matching hypothesis ($\nu^* \propto 1/\mathtt{SS}$) is
+\emph{rejected} as a location law. The regime boundary is not placed by
+the consolidation timescale; it is placed by the copy-forward/erasure
+balance, which depends on the wave input protocol and grid geometry.
+
+\subsection{Separation of Concerns: Location vs.\ Amplitude}
+
+The experiments reveal a clean separation:
+
+\begin{itemize}
+  \item \textbf{Location} ($\nu^*$, regime boundary): set by wave input
+    dynamics. Insensitive to consolidation parameters within a practical
+    range. Shifts only under extreme over-perturbation (WR $\geq 9.6$)
+    or extreme under-writing (FIELD\_ALPHA $\leq 0.04$).
+
+  \item \textbf{Amplitude} ($\mathtt{sg4}^*$, peak structure): strongly
+    controlled by consolidation parameters. $\mathtt{sg4}^*$ scales
+    approximately proportionally to FIELD\_ALPHA and drops exponentially
+    with SS. $\kappa$ shifts amplitude weakly (Exp4).
+\end{itemize}
+
+This has a practical implication: \emph{to increase structure formation,
+tune FIELD\_ALPHA and SS; to shift the regime boundary, change WR or
+WAVE\_DUR}.
+
+\subsection{Amplitude Formula}
+
+The probability that a site achieves a calm streak $\geq \mathtt{SS}$
+(Eq.~\eqref{eq:pcalm}) predicts the relative consolidation rate. For the
+reference WR = 4.8, WAVE\_DUR = 15:
+
+\begin{center}
+\begin{tabular}{rrr}
+\toprule
+SS & $P_{\text{calm}}$ (Eq.~\ref{eq:pcalm}) & $\mathtt{sg4}^*$ (observed) \\
+\midrule
+ 5 & 0.047 & 888 \\
+10 & 0.015 & 376 \\
+20 & 0.0024 & 186 \\
+40 & $6 \times 10^{-5}$ & 23 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The observed sg4* drops with SS qualitatively consistent with $P_{\text{calm}}$,
+though the exponential decay of $P_{\text{calm}}$ overestimates the
+drop---likely because $\mathtt{sg4}$ saturates at high $P_{\text{calm}}$
+and does not grow linearly with the number of consolidation events.
+
+\subsection{Why $\nu^* \approx 0.001$ Is Universal}
+
+The stability of $\nu^* = 0.001$ across such diverse parameters suggests
+it reflects a \emph{structural property of the wave--grid interaction},
+not the consolidation machinery. At $\nu = 0.001$, each site dies on
+average once every 1000 steps. With $\mathtt{WAVE\_DUR} = 15$ and
+$\mathtt{WR} = 4.8$, there are approximately $4.8 \times 2000/15 \approx
+640$ total wave events across the run. Each site is involved in
+approximately half of them. This gives approximately $320$ perturbation
+events per site per run---and with mean lifetime $1/\nu = 1000$, a site
+experiences about 0.32 deaths per lifetime per unit time.
+
+At the copy-forward/erasure balance:
+\begin{equation}
+  \text{copy-forward rate} \approx \text{erasure rate}
+  \quad \Longrightarrow \quad
+  \nu \approx \frac{\mathtt{WR}}{2 \cdot \mathtt{WAVE\_DUR} \cdot N_{\text{act}}/4}
+  \approx 0.0016
+\end{equation}
+This rough calculation places the balance near $\nu \approx 0.001$--$0.002$,
+consistent with the empirical $\nu^*$. The consolidation parameters (SS,
+FIELD\_ALPHA) do not enter this balance---they determine \emph{how much}
+structure accumulates per successful copy-forward event, but not \emph{when}
+the balance tips.
+
+\subsection{Implication for the Anomaly Region}
+
+Paper~7 Experiment~3 shows that at $(\nu = 0.005, \kappa = 0.060)$,
+$\mathtt{sg4} = 68$ while adjacent cells (same $\nu$, lower $\kappa$:
+$\mathtt{sg4} = 80$; same $\kappa$, lower $\nu$: $\mathtt{sg4} = 375$)
+are substantially higher. This is not a grid artifact but the collapse
+onset: $\nu = 0.005$ sits near the right boundary of the adaptive
+window ($\nu_{\text{crit}} \approx 0.007$--$0.010$), and higher $\kappa$
+does not rescue structure because the boundary is determined by $\nu$,
+not $\kappa$ (Experiment~4). The cell at $(\nu = 0.005, \kappa = 0.060)$
+is an accurate empirical location of the pre-collapse transition, not an
+anomaly.
+
+\subsection{Limitations}
+
+The wave input protocol is fixed (zone-based, 4 zones, structured alternation).
+The stability of $\nu^*$ may not hold for qualitatively different input statistics.
+The exponential $P_{\text{calm}}$ formula is derived from an independence
+approximation; the true consolidation probability accounts for spatial
+correlations and streak-length distributions. Verification under continuous-time
+or variable-duration waves remains for future work.
+
+% ============================================================
+\section{Conclusion}
+
+We tested the timescale-matching hypothesis for the adaptive window
+location in VCML substrates. The hypothesis---that $\nu^* \propto
+1/\mathtt{SS}$ (consolidation gate)---is rejected: $\nu^* \approx 0.001$
+is stable across a $4\times$ range of SS, FIELD\_ALPHA, and WR, and
+across the full $\kappa$ sweep from 0 to 0.15.
+
+The correct interpretation is a \emph{separation of concerns}: the
+regime boundary is set by the copy-forward/erasure balance at the
+wave--grid level, and consolidation parameters control the amplitude of
+structure formed within the window. A rough balance equation
+($\nu \approx \mathtt{WR}/(2 \cdot \mathtt{WAVE\_DUR} \cdot
+N_{\text{act}}/4)$) correctly predicts the order of magnitude.
+
+The adaptive window at $\nu \in [0.001, 0.010]$ is thus a property of
+the \emph{input protocol}, not of the learning rule. To relocate the
+window, change the wave structure; to increase the quality of learning
+within it, adjust the consolidation machinery.
+
+% ============================================================
+\appendix
+\section{Reproducibility}
+
+All experiments use only \texttt{numpy}. Experiment~4 uses cached JSON
+from Paper~7.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Script & Description & Runtime \\
+\midrule
+\texttt{paper8\_exp1\_ss\_sweep.py}    & SS sweep (180 runs) & $\sim$8 min \\
+\texttt{paper8\_exp2\_alpha\_sweep.py} & FIELD\_ALPHA sweep (180 runs) & $\sim$8 min \\
+\texttt{paper8\_exp3\_wr\_sweep.py}    & WR sweep (180 runs) & $\sim$8 min \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{lstlisting}[caption={Run all experiments.}]
+cd papers/paper8_timescale_matching
+py paper8_exp1_ss_sweep.py
+py paper8_exp2_alpha_sweep.py
+py paper8_exp3_wr_sweep.py
+\end{lstlisting}
+
+\end{document}

@@ -20,6 +20,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 5 | A Unified Constraint Framework for Viability-Gated Adaptive Systems | [PDF](papers/paper5_unified_framework.pdf) · [TeX](papers/paper5_unified_framework.tex) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918310.svg)](https://doi.org/10.5281/zenodo.18918310) |
 | 6 | Adaptive Memory in Artificial Systems: A Constraint-Based Framework | [PDF](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.pdf) · [TeX](papers/paper6_adaptive_memory_theory/paper6_adaptive_memory_theory.tex) · [Code](papers/paper6_adaptive_memory_theory/) | [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18918322.svg)](https://doi.org/10.5281/zenodo.18918322) |
 | 7 | Regime Structure of Adaptive Memory Systems | [PDF](papers/paper7_regime_structure/paper7_regime_structure.pdf) · [TeX](papers/paper7_regime_structure/paper7_regime_structure.tex) · [Code](papers/paper7_regime_structure/) | -- |
+| 8 | Timescale Robustness of the Adaptive Window in Viability-Constrained Memory Systems | [PDF](papers/paper8_timescale_matching/paper8_timescale_matching.pdf) · [TeX](papers/paper8_timescale_matching/paper8_timescale_matching.tex) · [Code](papers/paper8_timescale_matching/) | -- |
 
 ---
 
