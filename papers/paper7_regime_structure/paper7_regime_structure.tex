@@ -224,13 +224,14 @@ $\kappa$ & sg4 & nonadj/adj & Regime \\
 
 \textbf{Key finding.} The two metrics diverge: $\mathtt{sg4}$ \emph{decreases}
 with $\kappa$ (stronger diffusion homogenizes zone-mean magnitudes) while
-$\mathtt{nonadj/adj}$ \emph{increases} (stronger diffusion sharpens the spatial
-gradient). This reveals a structural trade-off:
+$\mathtt{nonadj/adj}$ \emph{increases} (stronger diffusion stabilizes coherent
+spatial gradients by reducing local variance). This reveals a structural
+trade-off:
 \begin{itemize}
   \item Raw zone separation ($\mathtt{sg4}$) reflects field magnitude, which is
     diluted by diffusion.
   \item Location encoding quality ($\mathtt{nonadj/adj}$) reflects gradient
-    shape, which is sharpened by diffusion.
+    shape, which is stabilized and made more coherent by diffusion.
 \end{itemize}
 At $\kappa = 0$, nonadj/adj $= 1.76 > 1$: even without diffusion, the shared
 wave input creates some zone structure. But the ratio remains lower than in the
@@ -468,6 +469,9 @@ $\nu$ & coll/site & Accuracy & Regime \\
 \textbf{Result.} Accuracy exceeds chance at all $\nu$ values, reflecting that
 zone structure is partially encoded even in non-adaptive regimes (the wave input
 itself creates transient zone correlations that persist in the final fieldM).
+This is an important distinction: classifier accuracy reflects instantaneous
+signal correlations present in the final snapshot, whereas $\mathtt{sg4}$
+measures persistent spatial memory that survives across perturbation phases.
 Critically, accuracy peaks in the adaptive regime ($\nu = 0.002$--$0.005$:
 $0.57$--$0.60$), consistent with $\mathtt{sg4}$ identifying the same window.
 The regime pattern is independent of the choice of metric.
@@ -514,8 +518,9 @@ $= 1.52$ at $\nu = 0.002$). In the frozen regime, copy-forward has no effect
 (structure is erased before it can consolidate). The amplification is uniquely
 concentrated in the adaptive window, where rebirth rate is sufficient for
 copy-forward to contribute and slow enough for consolidation to write. This
-confirms copy-forward as a causally necessary mechanism for the adaptive peak,
-not merely a correlated feature.
+confirms copy-forward as a mechanism that amplifies adaptive structure formation,
+not merely a correlated feature. (The peak persists at reduced amplitude after
+ablation, so copy-forward amplifies rather than strictly enables the regime.)
 
 \subsection{Scaling Robustness (Experiment 7)}
 
@@ -616,7 +621,7 @@ Three additional experiments address potential objections:
   \item \textbf{Mechanism attribution} (Experiment~6): Ablating the copy-forward
     loop (SEED\_BETA $= 0$) reduces the adaptive peak by up to 52\%, while
     having no effect in the frozen or turnover-dominated regimes. Copy-forward is
-    causally sufficient for the amplification.
+    a necessary amplifier of the adaptive peak.
   \item \textbf{Finite-size} (Experiment~7): The adaptive window structure
     persists at $N = 200$ and $N = 800$, ruling out finite-size artifact.
 \end{itemize}
@@ -627,8 +632,10 @@ Regime boundaries reported here are specific to this substrate (VCML, 400 active
 sites, HS=2) and one input protocol (structured zone waves). Precise boundary
 locations shift with system size and other hyperparameters; the structural form
 of the map (four regimes, interior adaptive window) is the robust prediction,
-not the exact $\nu$ and $\kappa$ thresholds. Testing under different wave
-amplitudes, frequencies, or spatial patterns remains for future work; the
+not the exact $\nu$ and $\kappa$ thresholds. The current map samples a
+5$\times$5 parameter grid; finer sampling could in principle reveal internal
+structure within the adaptive window and will be explored in future work.
+Testing under different wave amplitudes, frequencies, or spatial patterns also remains for future work; the
 shift-magnitude robustness (Experiment~4, Adaptive-2$\times$) provides partial
 confidence that the signatures are input-independent. The frozen regime in VCML
 is not completely rigid: cells still consolidate through the normal gate. Full
@@ -646,11 +653,15 @@ substrate across the turnover--propagation plane. Four regimes emerge: frozen
 three converging signatures: (1) a non-monotone peak in $\mathtt{sg4}$ as a
 function of $\nu$; (2) a $\mathtt{nonadj/adj} > 1$ location encoding signature;
 and (3) a dip-and-recovery trajectory in $\mathtt{sg4}$ at a mid-run pattern
-shift. Each regime boundary corresponds to violation of one of the four
+shift. The four regimes correspond to qualitatively distinct dynamical behaviors---not
+merely different performance levels on a continuous landscape. Experiment~4
+documents the divergent fingerprint trajectories (frozen lock-in,
+dip-and-recovery, turnover-dominated structural collapse) that separate them
+regardless of metric choice. Each regime boundary corresponds to violation of one of the four
 fundamental constraints derived in Papers~1--5. Three robustness experiments
 validate the claims against reviewer concerns: an orthogonal logistic classifier
 confirms the regime map with a different metric; a copy-forward ablation
-causally validates the key mechanism; and scaling to $N = 800$ rules out
+validates copy-forward as the amplification mechanism; and scaling to $N = 800$ rules out
 finite-size artifacts. The empirical regime map transforms the theoretical
 framework into a measurable landscape.
 
