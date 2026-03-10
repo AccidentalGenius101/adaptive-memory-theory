@@ -44,6 +44,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 29 | The FA Threshold for Zone Differentiation: Smooth Crossover, Not a Bifurcation; Spatial Amplification Reduces K_eff by 3x | [PDF](papers/paper29_fa_threshold/paper29_fa_threshold.pdf) · [TeX](papers/paper29_fa_threshold/paper29_fa_threshold.tex) · [Code](papers/paper29_fa_threshold/) | -- |
 | 30 | The Spatial Amplification Factor Gamma: Scaling with Diffusion, Zone Width, and Collapse Rate; Partial Confirmation of Gamma ~ ZONE_W/sqrt(kappa) with Revised Exponent 0.6 | [PDF](papers/paper30_amplification_factor/paper30_amplification_factor.pdf) · [TeX](papers/paper30_amplification_factor/paper30_amplification_factor.tex) · [Code](papers/paper30_amplification_factor/) | -- |
 | 31 | Zone Field Structure in VCML: Flat Attractors at Low Diffusion, Gradient Zones at High Diffusion; Low-Amplitude Saturation in the High-Turnover Regime | [PDF](papers/paper31_field_coherence/paper31_field_coherence.pdf) · [TeX](papers/paper31_field_coherence/paper31_field_coherence.tex) · [Code](papers/paper31_field_coherence/) | -- |
+| 32 | The Zone Attractor Structure: Diffuse Noisy Attractor (CV=0.44), Non-Monotone Zone-Width Optimum at ZONE_W~5-7, and FA Recovery of the nu=0.003 Failure Mode | [PDF](papers/paper32_attractor_structure/paper32_attractor_structure.pdf) · [TeX](papers/paper32_attractor_structure/paper32_attractor_structure.tex) · [Code](papers/paper32_attractor_structure/) | -- |
 
 ---
 
