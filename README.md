@@ -43,6 +43,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 28 | The Zone Boundary as a Dynamical Extended Object: Not an Allen--Cahn Kink; Copy-Forward Stochasticity and Consolidation Rate as Primary Drivers | [PDF](papers/paper28_interface_theory/paper28_interface_theory.pdf) · [TeX](papers/paper28_interface_theory/paper28_interface_theory.tex) · [Code](papers/paper28_interface_theory/) | -- |
 | 29 | The FA Threshold for Zone Differentiation: Smooth Crossover, Not a Bifurcation; Spatial Amplification Reduces K_eff by 3x | [PDF](papers/paper29_fa_threshold/paper29_fa_threshold.pdf) · [TeX](papers/paper29_fa_threshold/paper29_fa_threshold.tex) · [Code](papers/paper29_fa_threshold/) | -- |
 | 30 | The Spatial Amplification Factor Gamma: Scaling with Diffusion, Zone Width, and Collapse Rate; Partial Confirmation of Gamma ~ ZONE_W/sqrt(kappa) with Revised Exponent 0.6 | [PDF](papers/paper30_amplification_factor/paper30_amplification_factor.pdf) · [TeX](papers/paper30_amplification_factor/paper30_amplification_factor.tex) · [Code](papers/paper30_amplification_factor/) | -- |
+| 31 | Zone Field Structure in VCML: Flat Attractors at Low Diffusion, Gradient Zones at High Diffusion; Low-Amplitude Saturation in the High-Turnover Regime | [PDF](papers/paper31_field_coherence/paper31_field_coherence.pdf) · [TeX](papers/paper31_field_coherence/paper31_field_coherence.tex) · [Code](papers/paper31_field_coherence/) | -- |
 
 ---
 
