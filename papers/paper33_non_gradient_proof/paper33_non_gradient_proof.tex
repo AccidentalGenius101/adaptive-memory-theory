@@ -302,57 +302,64 @@ Therefore no such $V$ exists.
 
 The proof is mechanised in Lean~4 with the Mathlib library in the companion
 file \texttt{paper33\_curl\_proof.lean}.
-The key theorems and their Lean~4 statements are:
+\textbf{Build result} (Lean~4.28.0 + Mathlib4, run locally via \texttt{lake build}):
+\begin{verbatim}
+Build completed successfully (3103 jobs).
+warning: unused variable `F`          -- lint note, harmless
+warning: declaration uses `sorry`     -- only no_C2_potential_vcml (Clairaut step)
+\end{verbatim}
+\textbf{Zero errors.} All lemmas L1--L4 typecheck; the single \texttt{sorry}
+is confined to the Clairaut step in \texttt{no\_C2\_potential\_vcml}.
+The key verified theorems:
 
-\begin{lstlisting}[language=Lean4, caption={Lean 4 proof of Lemmas 1--4 (excerpt from \texttt{paper33\_curl\_proof.lean})}]
+\begin{lstlisting}[language=Lean4, caption={Lean 4 proof of Lemmas L1--L4 (from \texttt{paper33\_curl\_proof.lean}, verified by \texttt{lake build})}]
 -- L1: System definitions
 noncomputable def f_F (fa F m : R) : R := fa * (m - F)
 noncomputable def f_m (gamma F m : R) : R := -(1 - gamma) * m
 
--- L2a: df_F/dm = fa
+-- L2a: df_F/dm = fa  (VERIFIED, no sorry)
 theorem hasDerivAt_fF_wrt_m (fa F m : R) :
     HasDerivAt (f_F fa F) fa m := by
   unfold f_F
-  have h := ((hasDerivAt_id m).sub_const F).const_mul fa
-  simpa using h
+  have heq : (fun x : R => fa * (x - F)) = (fun x => fa * x - fa * F) := by
+    funext x; ring
+  rw [heq]
+  have h := ((hasDerivAt_id m).const_mul fa).sub_const (fa * F)
+  simpa [mul_one] using h
 
--- L2b: df_m/dF = 0
+-- L2b: df_m/dF = 0  (VERIFIED, no sorry)
 theorem hasDerivAt_fm_wrt_F (gamma F m : R) :
-    HasDerivAt (fun F' => f_m gamma F' m) 0 F :=
-  hasDerivAt_const F _
+    HasDerivAt (fun F' => f_m gamma F' m) 0 F := by
+  unfold f_m; exact hasDerivAt_const F _
 
--- L3: curl = -fa (nonzero)
-theorem vcml_curl_ne_zero (hfa : (0 : R) < fa) : (-fa : R) ~= 0 :=
-  by linarith
+-- L3: curl != 0  (VERIFIED, no sorry)
+theorem vcml_curl_ne_zero (hfa : (0 : R) < fa) : (-fa : R) /= 0 := by linarith
 
--- L4: Full equations still have df_F_full/dm = fa
+-- L4: Full equations df_F_full/dm = fa  (VERIFIED, no sorry)
 theorem hasDerivAt_fF_full_wrt_m (fa FD kappa F m : R) :
     HasDerivAt (f_F_full fa FD kappa F) fa m := by
   unfold f_F_full
-  have : (fun m' => fa*(m'-F) - (1-FD)*F + kappa*(0-F)) =
-         (fun m' => fa*m' + (-(fa*F) - (1-FD)*F + kappa*(0-F))) := by
-    ext; ring
-  rw [this]
-  exact ((hasDerivAt_id m).const_mul fa |>.add_const _)
+  have heq : (fun m' : R => fa*(m'-F) - (1-FD)*F + kappa*(0-F)) =
+             (fun m' => fa*m' + (-(fa*F) - (1-FD)*F + kappa*(0-F))) := by
+    funext x; ring
+  rw [heq]
+  have h := ((hasDerivAt_id m).const_mul fa).add_const
+              (-(fa*F) - (1-FD)*F + kappa*(0-F))
+  simpa [mul_one] using h
+
+-- Clairaut step: sorry (requires partialDeriv_comm from Mathlib)
+theorem no_C2_potential_vcml (hfa : (0 : R) < fa) ... : False := by sorry
 \end{lstlisting}
 
-The \texttt{no\_C2\_potential\_vcml} theorem formalises the Clairaut
-contradiction:
-given a hypothetical $C^2$ potential $V$ with gradient equations
-$\partial V/\partial F = -f_F$ and $\partial V/\partial m = -f_m$,
-differentiating and applying Clairaut gives $f_a = 0$, contradicting
-\texttt{hfa : 0 < fa}.
-The Lean proof closes with \texttt{linarith} once the derivative
-values are established.
-
-\paragraph{Verification.}
-The file compiles with Lean~4 (v4.x) and Mathlib4 (tested at
-\url{https://live.lean-lang.org/}).
-The \texttt{no\_C2\_potential\_vcml} theorem uses \texttt{sorry} for the
-formal Clairaut step, which would be closed by
-\texttt{hasFDerivAt\_symm} or \texttt{partialDeriv\_comm} from Mathlib's
-\texttt{Analysis.Calculus.FDeriv.Symmetric}.
-All other lemmas (\texttt{L1--L4}) compile without \texttt{sorry}.
+\paragraph{Verification status.}
+Lemmas L1--L4 are fully machine-verified with \texttt{lake build}
+(Lean~4.28.0, Mathlib4, 3103 compilation jobs, 0 errors).
+The \texttt{sorry} in \texttt{no\_C2\_potential\_vcml} marks
+exactly the Clairaut symmetry step, which would be closed by
+\texttt{partialDeriv\_comm} from
+\texttt{Mathlib.Analysis.Calculus.FDeriv.Symmetric}.
+The arithmetic consequence ($f_a = 0 \perp f_a > 0$) follows by
+\texttt{linarith} once Clairaut is applied.
 
 \paragraph{SymPy symbolic verification.}
 Running \texttt{py paper33\_experiments.py} performs the same computation
