@@ -41,6 +41,7 @@ A constraint-based framework for adaptive memory systems, grounded in VCSM (Viab
 | 26 | Unified Stochastic PDE for VCML: Burgers Reversal, Zone-Width Optimality, and the Temporal Anti-Correlation Signature | [PDF](papers/paper26_unified_theory/paper26_unified_theory.pdf) · [TeX](papers/paper26_unified_theory/paper26_unified_theory.tex) · [Code](papers/paper26_unified_theory/) | -- |
 | 27 | The Zone Formation Commitment Epoch: Oscillatory Polarity, Perturbation-Rate-Controlled Timing, and Mixed Pitchfork-Spinodal Symmetry Breaking | [PDF](papers/paper27_commitment_epoch/paper27_commitment_epoch.pdf) · [TeX](papers/paper27_commitment_epoch/paper27_commitment_epoch.tex) · [Code](papers/paper27_commitment_epoch/) | -- |
 | 28 | The Zone Boundary as a Dynamical Extended Object: Not an Allen--Cahn Kink; Copy-Forward Stochasticity and Consolidation Rate as Primary Drivers | [PDF](papers/paper28_interface_theory/paper28_interface_theory.pdf) · [TeX](papers/paper28_interface_theory/paper28_interface_theory.tex) · [Code](papers/paper28_interface_theory/) | -- |
+| 29 | The FA Threshold for Zone Differentiation: Smooth Crossover, Not a Bifurcation; Spatial Amplification Reduces K_eff by 3x | [PDF](papers/paper29_fa_threshold/paper29_fa_threshold.pdf) · [TeX](papers/paper29_fa_threshold/paper29_fa_threshold.tex) · [Code](papers/paper29_fa_threshold/) | -- |
 
 ---
 
