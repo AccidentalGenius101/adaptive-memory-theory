@@ -16,6 +16,10 @@
 #include <cstdint>
 #include <cmath>
 
+typedef uint32_t u32;
+typedef int32_t  i32;
+typedef uint8_t  u8;
+
 namespace py = pybind11;
 
 /* ─── compile-time hypers ──────────────────────────────────────────── */
@@ -129,6 +133,7 @@ __global__ void k_metro_sub(f32* s, const i32* cb, const i32* nb4,
                + s[bid*N + nb4[li*4+1]]
                + s[bid*N + nb4[li*4+2]]
                + s[bid*N + nb4[li*4+3]];
+
     f32 dE  = 2.f * si * (nb_sum + h_ext[gi]);
     if (dE <= 0.f || curand_uniform(&rng[gi]) < expf(-2.f * BETA_ISING * dE)) {
         s[gi] = -si;
