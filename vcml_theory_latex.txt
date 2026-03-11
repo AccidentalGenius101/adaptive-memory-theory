@@ -1,0 +1,299 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+(./VCML_THEORY_COMPLETE.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-11-14>
+(c:/texlive/2025/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(c:/texlive/2025/texmf-dist/tex/latex/base/size11.clo))
+(c:/texlive/2025/texmf-dist/tex/latex/geometry/geometry.sty
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/keyval.sty)
+(c:/texlive/2025/texmf-dist/tex/generic/iftex/ifvtex.sty
+(c:/texlive/2025/texmf-dist/tex/generic/iftex/iftex.sty)))
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amstext.sty
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/amssymb.sty
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/amsfonts.sty))
+(c:/texlive/2025/texmf-dist/tex/latex/amscls/amsthm.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/graphicx.sty
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/graphics.sty
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/trig.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+(c:/texlive/2025/texmf-dist/tex/latex/graphics-def/pdftex.def)))
+(c:/texlive/2025/texmf-dist/tex/latex/booktabs/booktabs.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/hyperref.sty
+(c:/texlive/2025/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty)
+(c:/texlive/2025/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty)
+(c:/texlive/2025/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+(c:/texlive/2025/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty)
+(c:/texlive/2025/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+(c:/texlive/2025/texmf-dist/tex/generic/infwarerr/infwarerr.sty)))
+(c:/texlive/2025/texmf-dist/tex/latex/hycolor/hycolor.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/nameref.sty
+(c:/texlive/2025/texmf-dist/tex/latex/refcount/refcount.sty)
+(c:/texlive/2025/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+(c:/texlive/2025/texmf-dist/tex/latex/kvoptions/kvoptions.sty)))
+(c:/texlive/2025/texmf-dist/tex/latex/etoolbox/etoolbox.sty)
+(c:/texlive/2025/texmf-dist/tex/generic/stringenc/stringenc.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(c:/texlive/2025/texmf-dist/tex/generic/intcalc/intcalc.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/puenc.def)
+(c:/texlive/2025/texmf-dist/tex/latex/url/url.sty)
+(c:/texlive/2025/texmf-dist/tex/generic/bitset/bitset.sty
+(c:/texlive/2025/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty)))
+(c:/texlive/2025/texmf-dist/tex/latex/hyperref/hpdftex.def
+(c:/texlive/2025/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+(c:/texlive/2025/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty)))
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/microtype.sty
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/microtype-pdftex.def)
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/microtype.cfg))
+(c:/texlive/2025/texmf-dist/tex/latex/xcolor/xcolor.sty
+(c:/texlive/2025/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(c:/texlive/2025/texmf-dist/tex/latex/graphics/mathcolor.ltx))
+(c:/texlive/2025/texmf-dist/tex/latex/tools/array.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/enumitem/enumitem.sty)
+(c:/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
+(./VCML_THEORY_COMPLETE.aux)
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+(c:/texlive/2025/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (c:/texlive/2025/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+(c:/texlive/2025/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg))
+(./VCML_THEORY_COMPLETE.out) (./VCML_THEORY_COMPLETE.out)
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/mt-cmr.cfg)
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd)
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/mt-msa.cfg)
+(c:/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd)
+(c:/texlive/2025/texmf-dist/tex/latex/microtype/mt-msb.cfg)
+(./VCML_THEORY_COMPLETE.toc [1{c:/texlive/2025/texmf-var/fonts/map/pdftex/updma
+p/pdftex.map}] [2]) [3]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\not' on input line 85.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 85.
+
+[4] [5] [6] [7] [8] [9] [10] [11] [12] [13] [14{c:/texlive/2025/texmf-dist/font
+s/enc/dvips/cm-super/cm-super-ts1.enc}]
+Overfull \hbox (0.61105pt too wide) in paragraph at lines 825--835
+ [] 
+
+Overfull \hbox (56.83075pt too wide) in paragraph at lines 845--861
+ [] 
+[15] [16]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 963.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\Omega' on input line 963.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 963.
+
+[17]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 998.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\delta' on input line 998.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 998.
+
+[18]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1048.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 1048.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1048.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1086.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\beta' on input line 1086.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 1086.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1086.
+
+[19] [20] [21] [22] [23] [24] [25]
+Overfull \hbox (74.23775pt too wide) in paragraph at lines 1632--1642
+ [] 
+[26]
+Overfull \hbox (76.18451pt too wide) in paragraph at lines 1701--1713
+ [] 
+[27] [28] [29] [30] [31] [32] [33] [34] [35] [36]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2330.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 2330.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `superscript' on input line 2330.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2330.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2367.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 2367.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `superscript' on input line 2367.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2367.
+
+[37]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2397.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\phi' on input line 2397.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2397.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2397.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 2397.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2397.
+
+[38]
+! Undefined control sequence.
+l.2530 \citep
+             {Vespignani1998}.
+[39] [40]
+Overfull \hbox (24.27322pt too wide) in paragraph at lines 2587--2597
+[]\OT1/cmr/bx/n/10.95 (-20) Phase A \OT1/cmr/m/n/10.95 (-20) (2D phase map, $\O
+ML/cmm/m/it/10.95 L \OT1/cmr/m/n/10.95 (-20) = 80$, Pro-to-col A, $\OML/cmm/m/i
+t/10.95 r[] \OMS/cmsy/m/n/10.95 2 f\OT1/cmr/m/n/10.95 (-20) 1\OML/cmm/m/it/10.9
+5 ; \OT1/cmr/m/n/10.95 (-20) 2\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 (-20) 3\
+OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 (-20) 4\OML/cmm/m/it/10.95 ; \OT1/cmr/m
+/n/10.95 (-20) 5\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 (-20) 6\OML/cmm/m/it/1
+0.95 ; \OT1/cmr/m/n/10.95 (-20) 8\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 (-20)
+ 10\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 (-20) 12\OMS/cmsy/m/n/10.95 g$\OT1/
+cmr/m/n/10.95 (-20) , $\OML/cmm/m/it/10.95 P \OMS/cmsy/m/n/10.95 2 f\OT1/cmr/m/
+n/10.95 (-20) 0\OML/cmm/m/it/10.95 :\OT1/cmr/m/n/10.95 (-20) 005\OML/cmm/m/it/1
+0.95 ; [] ; \OT1/cmr/m/n/10.95 (-20) 0\OML/cmm/m/it/10.95 :\OT1/cmr/m/n/10.95 (
+-20) 200\OMS/cmsy/m/n/10.95 g$\OT1/cmr/m/n/10.95 (-20) ,
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2642.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\xi' on input line 2642.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2642.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2642.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\beta' on input line 2642.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2642.
+
+[41]
+Overfull \hbox (33.182pt too wide) in paragraph at lines 2719--2721
+\OT1/cmr/m/n/10.95 (-20) Three phases tar-geted the dy-namic ex-po-nent $\OML/c
+mm/m/it/10.95 z$ \OT1/cmr/m/n/10.95 (-20) via the tem-po-ral au-to-cor-re-la-to
+r $\OML/cmm/m/it/10.95 C\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/m/it/10.95 t\OT1/cmr
+/m/n/10.95 (-20) ) = \OMS/cmsy/m/n/10.95 hj\OML/cmm/m/it/10.95 M\OT1/cmr/m/n/10
+.95 (-20) (\OML/cmm/m/it/10.95 ^^\\OT1/cmr/m/n/10.95 (-20) )\OMS/cmsy/m/n/10.95
+ jj\OML/cmm/m/it/10.95 M\OT1/cmr/m/n/10.95 (-20) (\OML/cmm/m/it/10.95 ^^\[]t\OT
+1/cmr/m/n/10.95 (-20) )\OMS/cmsy/m/n/10.95 ji[]$
+[42] [43]
+Overfull \hbox (1.2054pt too wide) in paragraph at lines 2841--2844
+ []\OT1/cmr/bx/n/10.95 (-20) CUDAGraph speedup.[] \OT1/cmr/m/n/10.95 (-20) A ma
+n-ual \OT1/cmtt/m/n/10.95 torch.cuda.CUDAGraph \OT1/cmr/m/n/10.95 (-20) im-ple-
+men-ta-tion (\OT1/cmtt/m/n/10.95 vcml[]gpu[]v3.py\OT1/cmr/m/n/10.95 (-20) )
+[44] [45] (./VCML_THEORY_COMPLETE.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
+(see the transcript file for additional information)<c:/texlive/2025/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2025/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2025/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmex10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmmi10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
+12.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb><c:
+/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2
+025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2025/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb><c:/texlive/2025/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmr12.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmr6.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.
+pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/tex
+live/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb><c:/texlive/2025/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2025/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2025/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmsy9.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmti10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.p
+fb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/te
+xlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb><c:/texliv
+e/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texlive/20
+25/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb>
+Output written on VCML_THEORY_COMPLETE.pdf (45 pages, 535861 bytes).
+Transcript written on VCML_THEORY_COMPLETE.log.

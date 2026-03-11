@@ -1,0 +1,672 @@
+Device: cuda
+  GPU: NVIDIA GeForce RTX 3060
+  VRAM: 12.9 GB
+
+============================================================
+PHASE A: chi_int vs P, L=80 (ordered-phase gamma fit)
+============================================================
+
+Phase A: P=0.003, L=80, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.003  U4=-0.031  |M|=0.00049  chi=3.772e-07  chi_int=2.414e-03
+  Phase A P=0.003 done.
+
+Phase A: P=0.005, L=80, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.005  U4=0.009  |M|=0.00049  chi=3.768e-07  chi_int=2.411e-03
+  Phase A P=0.005 done.
+
+Phase A: P=0.010, L=80, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.010  U4=0.002  |M|=0.00051  chi=3.766e-07  chi_int=2.410e-03
+  Phase A P=0.010 done.
+
+Phase A: P=0.020, L=80, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.020  U4=-0.000  |M|=0.00055  chi=3.680e-07  chi_int=2.355e-03
+  Phase A P=0.020 done.
+
+Phase A: P=0.030, L=80, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.030  U4=0.117  |M|=0.00063  chi=3.579e-07  chi_int=2.291e-03
+  Phase A P=0.030 done.
+
+Phase A: P=0.050, L=80, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.050  U4=0.256  |M|=0.00086  chi=3.782e-07  chi_int=2.421e-03
+  Phase A P=0.050 done.
+
+============================================================
+PHASE B: chi_int vs L, P=0.01 (FSS gamma/nu)
+============================================================
+
+Phase B: L=40, P=0.01, 8 seeds, 200000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 200000 steps...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  L=40  U4=-0.070  |M|=0.00101  chi=1.548e-06  chi_int=2.477e-03
+  Phase B L=40 done.
+
+Phase B: L=60, P=0.01, 8 seeds, 200000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 200000 steps...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  L=60  U4=0.000  |M|=0.00066  chi=6.617e-07  chi_int=2.382e-03
+  Phase B L=60 done.
+
+Phase B: L=80, P=0.01, 8 seeds, 200000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 200000 steps...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  L=80  U4=-0.061  |M|=0.00050  chi=3.799e-07  chi_int=2.431e-03
+  Phase B L=80 done.
+
+Phase B: L=100, P=0.01, 8 seeds, 200000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 200000 steps...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  L=100  U4=0.004  |M|=0.00041  chi=2.341e-07  chi_int=2.341e-03
+  Phase B L=100 done.
+
+Phase B: L=120, P=0.01, 8 seeds, 200000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 200000 steps...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  L=120  U4=0.024  |M|=0.00034  chi=1.554e-07  chi_int=2.237e-03
+  Phase B L=120 done.
+
+Phase B: L=160, P=0.01, 8 seeds, 200000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 200000 steps...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  L=160  U4=0.032  |M|=0.00026  chi=7.941e-08  chi_int=2.033e-03
+  Phase B L=160 done.
+
+============================================================
+PHASE C: chi_int vs P, L=120 (extend range)
+============================================================
+
+Phase C: P=0.002, L=120, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.002  U4=-0.022  |M|=0.00031  chi=1.538e-07  chi_int=2.215e-03
+  Phase C P=0.002 done.
+
+Phase C: P=0.003, L=120, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.003  U4=-0.041  |M|=0.00031  chi=1.537e-07  chi_int=2.213e-03
+  Phase C P=0.003 done.
+
+Phase C: P=0.005, L=120, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.005  U4=0.036  |M|=0.00032  chi=1.572e-07  chi_int=2.264e-03
+  Phase C P=0.005 done.
+
+Phase C: P=0.010, L=120, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.010  U4=-0.001  |M|=0.00034  chi=1.595e-07  chi_int=2.297e-03
+  Phase C P=0.010 done.
+
+Phase C: P=0.020, L=120, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.020  U4=0.074  |M|=0.00040  chi=1.544e-07  chi_int=2.223e-03
+  Phase C P=0.020 done.
+
+Phase C: P=0.030, L=120, 8 seeds, 300000 steps ...
+    Warming up (compile + 3 eager steps)...
+    Capturing CUDA graph...
+    Graph captured. Running 300000 steps...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  P=0.030  U4=0.213  |M|=0.00051  chi=1.570e-07  chi_int=2.261e-03
+  Phase C P=0.030 done.
+
+Raw results -> C:\Users\briel\Documents\vcsm-theory\papers\paper76_gamma2\results\paper76_results.json
+
+============================================================
+ANALYSIS
+============================================================
+
+=== PHASE A (L=80, chi_int vs P) ===
+         P      U4      absM         chi       chi_int
+     0.003  -0.031   0.00049   3.772e-07     2.414e-03
+     0.005   0.009   0.00049   3.768e-07     2.411e-03
+     0.010   0.002   0.00051   3.766e-07     2.410e-03
+     0.020  -0.000   0.00055   3.680e-07     2.355e-03
+     0.030   0.117   0.00063   3.579e-07     2.291e-03
+     0.050   0.256   0.00086   3.782e-07     2.421e-03
+  gamma_A = 0.009  (R2=0.182)
+
+=== PHASE B (P=0.01, chi_int vs L) ===
+      L      U4      absM         chi       chi_int
+     40  -0.070   0.00101   1.548e-06     2.477e-03
+     60   0.000   0.00066   6.617e-07     2.382e-03
+     80  -0.061   0.00050   3.799e-07     2.431e-03
+    100   0.004   0.00041   2.341e-07     2.341e-03
+    120   0.024   0.00034   1.554e-07     2.237e-03
+    160   0.032   0.00026   7.941e-08     2.033e-03
+  gamma/nu (FSS) = -0.126  (R2=0.758)
+  gamma_B (=gonu*nu) = -0.123
+
+=== PHASE C (L=120, chi_int vs P) ===
+         P      U4      absM         chi       chi_int
+     0.002  -0.022   0.00031   1.538e-07     2.215e-03
+     0.003  -0.041   0.00031   1.537e-07     2.213e-03
+     0.005   0.036   0.00032   1.572e-07     2.264e-03
+     0.010  -0.001   0.00034   1.595e-07     2.297e-03
+     0.020   0.074   0.00040   1.544e-07     2.223e-03
+     0.030   0.213   0.00051   1.570e-07     2.261e-03
+  gamma_C = -0.006  (R2=0.183)
+
+=== GLOBAL gamma (Phases A+C combined) ===
+  gamma_all = -0.006  (R2=0.036)
+
+=== SCALING RELATIONS (gamma=0.009, beta=0.628, nu=0.98) ===
+  Fisher:     eta_eff  = 2 - gamma/nu        = 1.991
+  Widom:      delta    = 1 + gamma/beta       = 1.014
+  Rushbrooke: alpha    = 2 - 2*beta - gamma   = 0.735
+  Josephson d=0: alpha_hyp = 2 (hyperscaling BREAKS for d_eff=0)
+  Paper71 eta (indirect 2*beta/nu): 1.282
+  Paper75 eta_eff (cross-phase, unreliable): 1.61
+
+Done.
+Analysis -> C:\Users\briel\Documents\vcsm-theory\papers\paper76_gamma2\results\paper76_analysis.json

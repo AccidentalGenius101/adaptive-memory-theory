@@ -1,0 +1,66 @@
+Phase A: 42 runs -- L=80, P=0.02, r_w in [1, 2, 3, 4, 5, 6, 8], areas={1: 5, 2: 13, 3: 25, 4: 41, 5: 61, 6: 85, 8: 145} ...
+Phase A done.
+
+Phase B: 240 runs -- r_w in [1, 5], L in [40, 60, 80, 100, 120], P in [0.005, 0.01, 0.02, 0.05], 10000 steps (matched coverage) ...
+Phase B done.
+
+Phase C: 60 runs -- r_w=1, L=160, p_wave=1.0000 (matched coverage), 10000 steps ...
+Phase C done.
+
+=== PHASE A: r_w sweep (L=80, P=0.02, protocol-A constant rate) ===
+  r_w    area       U4      se       absM    p_wave
+-------------------------------------------------------
+    1       5   0.1515  0.0215    0.00008    0.1600
+    2      13  -0.1022  0.1303    0.00012    0.1600
+    3      25   0.1443  0.0692    0.00022    0.1600
+    4      41   0.1510  0.0824    0.00033    0.1600
+    5      61   0.2444  0.0533    0.00041    0.1600
+    6      85   0.0897  0.1321    0.00044    0.1600
+    8     145   0.3385  0.0475    0.00083    0.1600
+
+=== PHASE B: FSS exponent comparison (r_w=1 vs r_w=5, matched coverage) ===
+
+--- r_w = 1 (wave area = 5) ---
+        P  absM(L=40)  absM(L=60)  absM(L=80)  absM(L=100)  absM(L=120)
+   0.0050     0.00052     0.00044     0.00019     0.00012     0.00009
+   0.0100     0.00054     0.00045     0.00020     0.00013     0.00010
+   0.0200     0.00059     0.00048     0.00022     0.00014     0.00010
+   0.0500     0.00081     0.00062     0.00034     0.00021     0.00015
+        P     slope  note
+   0.0050   -1.7060  disorder
+   0.0100   -1.7042  disorder
+   0.0200   -1.7127  disorder
+   0.0500   -1.6121  disorder
+
+--- r_w = 5 (wave area = 61) ---
+        P  absM(L=40)  absM(L=60)  absM(L=80)  absM(L=100)  absM(L=120)
+   0.0050     0.00051     0.00045     0.00029     0.00025     0.00020
+   0.0100     0.00053     0.00046     0.00032     0.00028     0.00022
+   0.0200     0.00058     0.00053     0.00041     0.00037     0.00032
+   0.0500     0.00097     0.00085     0.00082     0.00080     0.00075
+        P     slope  note
+   0.0050   -0.8782  disorder
+   0.0100   -0.8096  disorder
+   0.0200   -0.5640  critical
+   0.0500   -0.2146  ordered
+
+=== PHASE C: Fine P scan r_w=1, L=160 (matched coverage) ===
+       P       absM       U4  comparison with Paper68 (r_w=5)
+-------------------------------------------------------
+  0.0010    0.00005   0.1148  P68=1.3e-04  ratio=0.38
+  0.0020    0.00005   0.1231  P68=1.3e-04  ratio=0.39
+  0.0030    0.00005   0.1466  P68=1.3e-04  ratio=0.39
+  0.0050    0.00005   0.1412  P68=1.4e-04  ratio=0.36
+  0.0070    0.00005   0.1392  P68=1.4e-04  ratio=0.36
+  0.0100    0.00005   0.1444  P68=1.6e-04  ratio=0.33
+  0.0150    0.00005   0.1395  P68=2.1e-04  ratio=0.26
+  0.0200    0.00006   0.1697  P68=2.8e-04  ratio=0.21
+  0.0300    0.00007   0.2338  P68=4.1e-04  ratio=0.16
+  0.0500    0.00009   0.3513  P68=7.0e-04  ratio=0.12
+
+Power-law fit r_w=1: beta=0.1128, R^2=0.6325
+  cf. Paper63 r_w=5: beta=0.650, Paper68 r_w=5 direct: beta=0.406
+  DP prediction: beta=0.584
+  -> NEITHER DP NOR PAPER63: novel class persists at r_w=1.
+
+Saved -> C:\Users\briel\Documents\vcsm-theory\papers\paper69_wave_range\results\paper69_analysis.json

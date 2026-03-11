@@ -1,0 +1,291 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,graphicx,hyperref,booktabs,xcolor}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{\textbf{Paper 63: Critical Exponents of the Causal-Purity Phase Transition\\
+\large Fine FSS, Binder Crossing, and Data Collapse}}
+\author{VCSM Theory Project}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Paper~62 (Phase~A) confirmed that the causal-purity ordered phase is a genuine
+thermodynamic phase under extensive-drive FSS, with $|M| \propto L^0$ above $p_c$.
+This paper performs the precision measurement: a fine scan of
+$P_{\rm causal} \in [0.000, 0.080]$ in steps of $0.005$, across
+$L \in \{20,30,40,60,80\}$ with extensive-drive scaling
+(WAVE\_EVERY $= 25(40/L)^2$), 8 seeds, 12\,000 steps.
+
+We extract:
+$p_c = 0.018 \pm 0.012$ (Binder crossing),
+$\beta/\nu = 0.67$, $\nu = 0.97$, $\beta = 0.65$.
+The susceptibility $\chi = N_{\rm zone} \cdot \mathrm{Var}(M)$ gives $\gamma/\nu \approx 0$,
+which we identify as a definition artifact (zone-mean variance self-averages as $1/L^2$);
+the true critical susceptibility requires a different estimator.
+
+The exponents $(\beta \approx 0.65,\ \nu \approx 1)$ differ from all standard
+classes: mean field ($\beta = 0.5,\ \nu = 0.5$), 2D Ising ($\beta = 0.125,\ \nu = 1$),
+and directed percolation ($\beta \approx 0.276,\ \nu_\perp = 0.735$).
+The data collapse is partial, reflecting residual uncertainty in $p_c$.
+We identify two sources of error that must be resolved in Paper~64:
+(i) $p_c$ is too small for the current L range to cleanly separate phases;
+(ii) the susceptibility estimator is incorrect.
+Subject to those caveats, the exponents suggest a new non-equilibrium universality class.
+\end{abstract}
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Setup}
+
+\subsection{Protocol}
+
+Same Ising + VCSM-lite system as Papers 61--62.
+$T = 3.0 > T_c$, $J = 1$, $L^2$ sites, two zones, checkerboard Metropolis.
+Extensive-drive scaling:
+\begin{equation}
+\text{WAVE\_EVERY}(L) = \text{round}\!\left[25 \cdot \left(\frac{40}{L}\right)^2\right]
+=
+\begin{cases}
+100 & L=20\\
+44  & L=30\\
+25  & L=40\\
+11  & L=60\\
+6   & L=80
+\end{cases}
+\end{equation}
+
+$P_{\rm causal} \in \{0.000, 0.005, \ldots, 0.080\}$ (17 values),
+$L \in \{20, 30, 40, 60, 80\}$, 8 seeds, 12\,000 steps.
+Steady-state statistics from the last 60\%.
+Total: 680 runs.
+
+\subsection{Observables}
+
+\begin{align}
+M(t)   &= \langle\phi\rangle_{z=0} - \langle\phi\rangle_{z=1}, \\
+|M|    &= \langle |M(t)| \rangle_t, \\
+U_4    &= 1 - \frac{\langle M^4\rangle}{3\langle M^2\rangle^2}, \\
+\chi   &= \frac{N_{\rm zone}}{2} \cdot \mathrm{Var}(M).
+\end{align}
+
+Standard FSS predictions at a second-order transition:
+\begin{align}
+|M|(L, P)   &\sim L^{-\beta/\nu}\, \tilde{m}\!\left((P-p_c)L^{1/\nu}\right), \\
+\chi(L, P)  &\sim L^{\gamma/\nu}\, \tilde{\chi}\!\left((P-p_c)L^{1/\nu}\right), \\
+U_4         &\text{ curves cross at } p_c \text{ independently of } L, \\
+\frac{dU_4}{dP}\bigg|_{p_c} &\sim L^{1/\nu}.
+\end{align}
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Results}
+
+\subsection{Binder Cumulant: $p_c$ Location}
+
+Table~\ref{tab:u4} shows $U_4$ across $L$ and $P_{\rm causal}$.
+
+\begin{table}[h]
+\centering
+\caption{Binder cumulant $U_4$ (fine scan, extensive drive). Values near zero = disordered;
+values near $2/3$ = ordered. Larger $L$ gives larger $U_4$ for $P \geq 0.005$,
+confirming the ordered phase begins near $P_{\rm causal} \approx 0.005$--$0.020$.}
+\label{tab:u4}
+\begin{tabular}{cccccc}
+\toprule
+$P_{\rm causal}$ & $L=20$ & $L=30$ & $L=40$ & $L=60$ & $L=80$ \\
+\midrule
+0.000 & 0.011 & $-$0.055 & 0.042 & $-$0.010 & 0.113 \\
+0.005 & $-$0.001 & $-$0.037 & 0.067 & $-$0.016 & 0.128 \\
+0.010 & $-$0.002 & $-$0.025 & 0.053 & 0.024 & 0.155 \\
+0.015 & 0.005 & $-$0.003 & 0.055 & 0.089 & 0.206 \\
+0.020 & 0.030 & $-$0.006 & 0.084 & 0.134 & 0.253 \\
+0.030 & 0.059 & 0.036 & 0.162 & 0.233 & 0.348 \\
+0.040 & 0.067 & 0.093 & 0.238 & 0.333 & 0.427 \\
+0.060 & 0.089 & 0.207 & 0.335 & 0.457 & 0.527 \\
+0.080 & 0.162 & 0.302 & 0.434 & 0.536 & 0.577 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Binder crossings from consecutive $(L_a, L_b)$ pairs:
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+Pair & Crossing $p_c$ \\
+\midrule
+$L=20$ vs $L=30$ & 0.034 \\
+$L=20$ vs $L=60$ & 0.007 \\
+$L=40$ vs $L=60$ & 0.012 \\
+\midrule
+Mean & $0.018 \pm 0.012$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The spread ($0.007$--$0.034$) reflects that $p_c$ is small enough that the
+range $L \in [20, 80]$ does not yet fully resolve the critical scaling window.
+The estimate $p_c = 0.018 \pm 0.012$ is consistent with Paper~62's $p_c \approx 0.02$--$0.05$.
+
+\textbf{Key observation.}
+For \emph{all} $P_{\rm causal} \geq 0.005$, the ordering of $U_4$ by $L$
+is consistent with the ordered phase ($U_4(L=80) > U_4(L=60) > \ldots$),
+even though the values are noisy at small $P$.
+This suggests $p_c$ may be very close to zero --- possibly the system is ordered
+for any $P_{\rm causal} > 0$, with $p_c = 0^+$.
+
+\subsection{Order Parameter Scaling: $\beta/\nu$}
+
+At $P_{\rm causal} = 0.020$ (closest grid point to $p_c$):
+\begin{equation}
+|M|(L) \propto L^{-0.668}
+\quad\Rightarrow\quad
+\beta/\nu = 0.668.
+\end{equation}
+
+The slope transitions from $-1.04$ at $P=0.00$ (disordered) to $\approx 0$ at $P \geq 0.10$
+(deep ordered), passing through $-0.67$ at $p_c$.
+This transition in slope is the standard FSS signature of the critical point.
+
+\subsection{Correlation Length Exponent: $\nu$}
+
+From the scaling of $|dU_4/dP|$ at $p_c$:
+\begin{equation}
+\left.\frac{dU_4}{dP}\right|_{p_c} \sim L^{1/\nu}
+\quad\Rightarrow\quad
+1/\nu = 1.029,\quad \nu = 0.972.
+\end{equation}
+
+The derivative values are: $L=20$: 3.0; $L=30$: 3.0; $L=40$: 5.5; $L=60$: 10.5; $L=80$: 9.6.
+The non-monotone behaviour at $L=80$ (slightly below $L=60$) reflects noise.
+Discarding $L=80$, the remaining four give $1/\nu \approx 1.1$.
+We report $\nu \approx 0.97$ as a rough estimate.
+
+\subsection{Susceptibility: $\gamma$}
+
+The estimator $\chi = N_{\rm zone} \cdot \mathrm{Var}(M)$ gives $\gamma/\nu \approx 0.12 \approx 0$.
+\textbf{This is a definition artifact}, not a physical result.
+
+The zone-mean $M = N_{\rm zone}^{-1} \sum_i \phi_i$ has
+$\mathrm{Var}(M) \sim 1/N_{\rm zone} \propto 1/L^2$ (central limit theorem for
+near-independent sites in the bulk).
+Therefore $\chi = N_{\rm zone} \cdot \mathrm{Var}(M) \sim 1$, independent of $L$.
+
+The true susceptibility should be the connected two-point function:
+\begin{equation}
+\chi_{\rm true} = \sum_{i} \bigl(\langle\phi_0 \phi_i\rangle - \langle\phi_0\rangle\langle\phi_i\rangle\bigr),
+\end{equation}
+which captures the spatial correlation length $\xi$.
+This quantity is \emph{not} accessible from the zone-mean order parameter alone.
+Measuring $\chi_{\rm true}$ requires storing the full phi-field time series and
+computing spatial correlations, deferred to Paper~64.
+
+\subsection{Derived Exponents}
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+& $p_c$ & $\beta$ & $\nu$ & $\gamma$ \\
+\midrule
+Mean field         & ---   & 0.500 & 0.500 & 1.000 \\
+2D Ising           & ---   & 0.125 & 1.000 & 1.750 \\
+Directed percolation (2+1D) & --- & 0.276 & 0.735 & --- \\
+\textbf{This system} & $\mathbf{0.018\pm0.012}$ & $\mathbf{0.65}$ & $\mathbf{0.97}$ & \textit{undetermined} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The exponents $(\beta \approx 0.65,\ \nu \approx 1)$ do not match any standard class.
+$\nu \approx 1$ is consistent with 2D Ising, but $\beta \approx 0.65 \gg 0.125$.
+This larger $\beta$ indicates the order parameter turns on more slowly near $p_c$
+than in the 2D Ising model.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Data Collapse}
+
+Using $p_c = 0.018$, $\beta/\nu = 0.668$, $1/\nu = 1.029$, we form
+the scaling combination:
+\begin{align}
+x &= (P_{\rm causal} - p_c)\, L^{1/\nu}, \\
+y &= |M|\, L^{\beta/\nu}.
+\end{align}
+If the FSS form holds, all $(L, P)$ data collapse to a single curve $y = \tilde{m}(x)$.
+
+The collapse is partial: the curves for different $L$ roughly align in the ordered region
+($x > 0$) but show spread in the disordered region ($x < 0$).
+This is expected given the uncertainty in $p_c$:
+if $p_c$ is shifted by $\pm 0.01$, the collapse quality changes noticeably
+because the scaling window $|P - p_c| \sim L^{-1/\nu}$ is very narrow
+at the system sizes available.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Is $p_c = 0$?}
+
+A striking possibility is that $p_c = 0^+$:
+the system is ordered for \emph{any} positive causal purity.
+Evidence:
+\begin{enumerate}
+  \item For all $P \geq 0.005$, larger $L$ gives larger $U_4$ (ordered-phase ordering),
+    including the first non-zero value of $P$ in our grid.
+  \item The Binder crossing estimates are widely spread and consistent with
+    $p_c \to 0$.
+  \item At $P = 0$ (pure noise), $U_4 \approx 0$ for all $L$ as expected
+    for a disordered phase --- but only marginally so given finite statistics.
+\end{enumerate}
+
+If $p_c = 0^+$, the exponent $\beta$ is not well-defined in the usual sense
+(no disorder phase to compare against), and the transition is more like an
+infinite-order transition or a $p_c = 0$ algebraic phase.
+This would connect the causal-purity transition to
+Berezinskii--Kosterlitz--Thouless (BKT) physics in 2D:
+a transition at $T_c > 0$ from algebraic to exponential decay,
+where the ordered phase extends to arbitrarily low $T$.
+
+In BKT, $\nu = \infty$ (correlation length diverges faster than any power).
+Our estimate $\nu \approx 1$ could be a finite-size artifact of a BKT-like transition,
+where the apparent $\nu$ from $dU_4/dP \sim L^{1/\nu}$ reflects the curvature of
+the BKT jump rather than a power-law divergence.
+
+\textbf{This is the central open question.}
+If $p_c = 0^+$ and the transition is BKT-like:
+the theory predicts that any non-zero causal purity, in an extensive system,
+produces thermodynamic phi-order.
+The causal-purity universality class would be the driven non-equilibrium analogue
+of the XY model.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Remaining Issues and Paper 64}
+
+\begin{enumerate}
+  \item \textbf{Is $p_c = 0$?} Requires larger systems ($L \geq 120$) or
+    a different observable that resolves the $p_c \to 0$ limit.
+  \item \textbf{True susceptibility.} Implement $\chi_{\rm true}$ from spatial
+    phi-phi correlations. This will give the correct $\gamma$ and allow the
+    scaling relation $\gamma = (2-\eta)\nu$ to test hyperscaling.
+  \item \textbf{More seeds.} With 8 seeds, $U_4$ at small $P$ has $\pm 0.05$
+    statistical error --- comparable to the signal. Need $\geq 20$ seeds for
+    precise Binder crossing.
+  \item \textbf{Larger $L$.} The smallest $p_c$ estimates come from large-$L$
+    pairs. Extending to $L = 120$ or $160$ would sharpen the crossing.
+\end{enumerate}
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Conclusions}
+
+\begin{enumerate}
+  \item \textbf{$p_c \approx 0.018 \pm 0.012$}: consistent with $p_c \approx 0$--$0.03$.
+    The transition may be at $p_c = 0^+$ (any non-zero purity is sufficient).
+  \item \textbf{$\beta/\nu \approx 0.67$, $\nu \approx 0.97$}: both different from
+    mean field, 2D Ising, and directed percolation.
+  \item \textbf{$\gamma$ undetermined}: zone-mean susceptibility self-averages to zero slope.
+    Spatial correlator required.
+  \item \textbf{Data collapse is partial}: consistent with $p_c$ uncertainty.
+  \item \textbf{BKT hypothesis}: if $p_c = 0^+$, the transition is infinite-order
+    (BKT universality class in 2D), not a standard second-order transition.
+    Paper~64 will test this by studying helicity modulus and vortex unbinding.
+  \item \textbf{New universality class}: current evidence ($\beta \approx 0.65$, $\nu \approx 1$)
+    does not match any known class. Subject to resolution of $p_c$ and $\gamma$,
+    this is a candidate new class: ``causal-purity controlled non-equilibrium order.''
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,397 @@
+Device: cuda
+  GPU: NVIDIA GeForce RTX 3060
+  VRAM: 12.9 GB
+
+Phase A: P=0.0010, L=160, 8 seeds, 200000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  Phase A P=0.0010 done.
+
+Phase A: P=0.0020, L=160, 8 seeds, 200000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  Phase A P=0.0020 done.
+
+Phase A: P=0.0050, L=160, 8 seeds, 200000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/200000
+    step 20000/200000
+    step 30000/200000
+    step 40000/200000
+    step 50000/200000
+    step 60000/200000
+    step 70000/200000
+    step 80000/200000
+    step 90000/200000
+    step 100000/200000
+    step 110000/200000
+    step 120000/200000
+    step 130000/200000
+    step 140000/200000
+    step 150000/200000
+    step 160000/200000
+    step 170000/200000
+    step 180000/200000
+    step 190000/200000
+    step 200000/200000
+  Phase A P=0.0050 done.
+
+Phase B: P=0.00003, L=80, 8 seeds, 300000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  Phase B P=0.00003 done.
+
+Phase B: P=0.00005, L=80, 8 seeds, 300000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  Phase B P=0.00005 done.
+
+Phase B: P=0.00010, L=80, 8 seeds, 300000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  Phase B P=0.00010 done.
+
+Phase B: P=0.00020, L=80, 8 seeds, 300000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  Phase B P=0.00020 done.
+
+Phase B: P=0.00050, L=80, 8 seeds, 300000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/300000
+    step 20000/300000
+    step 30000/300000
+    step 40000/300000
+    step 50000/300000
+    step 60000/300000
+    step 70000/300000
+    step 80000/300000
+    step 90000/300000
+    step 100000/300000
+    step 110000/300000
+    step 120000/300000
+    step 130000/300000
+    step 140000/300000
+    step 150000/300000
+    step 160000/300000
+    step 170000/300000
+    step 180000/300000
+    step 190000/300000
+    step 200000/300000
+    step 210000/300000
+    step 220000/300000
+    step 230000/300000
+    step 240000/300000
+    step 250000/300000
+    step 260000/300000
+    step 270000/300000
+    step 280000/300000
+    step 290000/300000
+    step 300000/300000
+  Phase B P=0.00050 done.
+
+Phase C: L=40, P=0.0005, 8 seeds, 150000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/150000
+    step 20000/150000
+    step 30000/150000
+    step 40000/150000
+    step 50000/150000
+    step 60000/150000
+    step 70000/150000
+    step 80000/150000
+    step 90000/150000
+    step 100000/150000
+    step 110000/150000
+    step 120000/150000
+    step 130000/150000
+    step 140000/150000
+    step 150000/150000
+  Phase C L=40 done.
+
+Phase C: L=60, P=0.0005, 8 seeds, 150000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/150000
+    step 20000/150000
+    step 30000/150000
+    step 40000/150000
+    step 50000/150000
+    step 60000/150000
+    step 70000/150000
+    step 80000/150000
+    step 90000/150000
+    step 100000/150000
+    step 110000/150000
+    step 120000/150000
+    step 130000/150000
+    step 140000/150000
+    step 150000/150000
+  Phase C L=60 done.
+
+Phase C: L=80, P=0.0005, 8 seeds, 150000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/150000
+    step 20000/150000
+    step 30000/150000
+    step 40000/150000
+    step 50000/150000
+    step 60000/150000
+    step 70000/150000
+    step 80000/150000
+    step 90000/150000
+    step 100000/150000
+    step 110000/150000
+    step 120000/150000
+    step 130000/150000
+    step 140000/150000
+    step 150000/150000
+  Phase C L=80 done.
+
+Phase C: L=100, P=0.0005, 8 seeds, 150000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/150000
+    step 20000/150000
+    step 30000/150000
+    step 40000/150000
+    step 50000/150000
+    step 60000/150000
+    step 70000/150000
+    step 80000/150000
+    step 90000/150000
+    step 100000/150000
+    step 110000/150000
+    step 120000/150000
+    step 130000/150000
+    step 140000/150000
+    step 150000/150000
+  Phase C L=100 done.
+
+Phase C: L=120, P=0.0005, 8 seeds, 150000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/150000
+    step 20000/150000
+    step 30000/150000
+    step 40000/150000
+    step 50000/150000
+    step 60000/150000
+    step 70000/150000
+    step 80000/150000
+    step 90000/150000
+    step 100000/150000
+    step 110000/150000
+    step 120000/150000
+    step 130000/150000
+    step 140000/150000
+    step 150000/150000
+  Phase C L=120 done.
+
+Phase C: L=160, P=0.0005, 8 seeds, 150000 steps (GPU+compile) ...
+    Warming up compiler...
+    step 10000/150000
+    step 20000/150000
+    step 30000/150000
+    step 40000/150000
+    step 50000/150000
+    step 60000/150000
+    step 70000/150000
+    step 80000/150000
+    step 90000/150000
+    step 100000/150000
+    step 110000/150000
+    step 120000/150000
+    step 130000/150000
+    step 140000/150000
+    step 150000/150000
+  Phase C L=160 done.
+
+=== PHASE A (L=160, large-L validation) ===
+       P       U4       absM         chi         tau       R2
+  0.0010    0.003    0.00023      0.0000      2445.9    0.461
+  0.0020    0.048    0.00022      0.0000      2678.2    0.418
+  0.0050    0.019    0.00024      0.0000      3011.7    0.418
+
+=== PHASE B (L=80, deep P) ===
+        P       U4       absM         chi         tau       R2
+  0.00003   -0.017    0.00050      0.0000      2596.9    0.326
+  0.00005    0.003    0.00049      0.0000      5053.5    0.146
+  0.00010   -0.003    0.00049      0.0000      5893.7    0.141
+  0.00020   -0.016    0.00049      0.0000      5521.3    0.171
+  0.00050   -0.013    0.00048      0.0000      6659.3    0.090
+
+=== PHASE C (FSS P=0.0005) ===
+    L       U4       absM         chi         tau       R2
+   40   -0.147    0.00098      0.0000      2646.4    0.419
+   60   -0.066    0.00066      0.0000      5216.7    0.177
+   80    0.014    0.00049      0.0000      5526.4    0.182
+  100   -0.002    0.00038      0.0000      2848.3    0.276
+  120    0.022    0.00033      0.0000      3740.0    0.277
+  160   -0.038    0.00022      0.0000      4477.0    0.255
+
+=== z FIT ===
+  z (all phases):  0.082  R2=0.121
+  z (Phase B):     -0.271  R2=0.641
+  z (Phase C FSS): 0.155  R2=0.062
+  Model A:   z=2.000  |  KPZ: z=1.500
+
+=== gamma FIT (chi~P^{-gamma}) ===
+  gamma (all):     0.382  R2=0.739
+  gamma (Phase B): 0.017  R2=0.653
+  Implied eta_eff (from Fisher gamma=nu*(2-eta)): 1.610
+  Implied delta (from Widom gamma=beta*(delta-1)):  1.609
+  Implied alpha (Rushbrooke 2-2beta-gamma):         0.362
+
+Done. Analysis -> C:\Users\briel\Documents\vcsm-theory\papers\paper75_gamma\results\paper75_analysis.json

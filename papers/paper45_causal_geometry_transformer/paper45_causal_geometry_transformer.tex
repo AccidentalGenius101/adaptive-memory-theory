@@ -1,0 +1,457 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,booktabs,geometry,hyperref,graphicx,microtype}
+\usepackage[font=small,labelfont=bf]{caption}
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{\textbf{Paper 45: Causal Influence and Representation Geometry in GPT-2}\\
+\large Do Causally Linked Token Representations Converge in Transformer Space?}
+
+\author{VCML Research Series}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We ask whether causal influence between tokens---measured by mean-ablation
+perturbation---predicts representational geometry in a pre-trained transformer.
+Using GPT-2 (12 layers, 117M parameters) and 50 sentences from the Universal
+Dependencies English EWT corpus (11{,}706 token pairs), we compute layer-wise
+partial correlations between ablation influence and cosine-geometric distance,
+controlling for sequence distance.
+We find a consistent \emph{sign flip} at layer 4: early layers show positive
+partial correlation (more influence $\to$ more distant representations),
+while middle and late layers show negative partial correlation
+(more influence $\to$ closer representations), peaking at layer~7
+($r_p = -0.337$, $p \ll 0.001$).
+A random-token control nearly replicates the ablation profile at all layers
+($r_p = -0.331$ at layer~7), indicating that the effect reflects
+attention routing structure rather than token-specific semantics.
+A dependency-distance-matched test confirms that syntactically linked pairs
+are geometrically closer than unlinked pairs at matched sequence-distance
+bands (all three bands $p < 0.05$), consistent with the hypothesis that
+transformer geometry encodes causal structure.
+We interpret the sign flip as a phase transition from \emph{feature construction}
+(early layers, diverge to build representations) to \emph{causal integration}
+(middle layers, converge under influence).
+These findings motivate the causal reparametrisation of VCML's $C_2$ manifold,
+in which correlation length $\xi \approx r_w$ is a causal invariant rather than
+a diffusion constant, and representational geometry reflects causal adjacency.
+\end{abstract}
+
+\section{Introduction}
+
+In a transformer, token representations evolve through 12--96 layers of
+self-attention and feed-forward processing.
+The geometry of the final representational space encodes semantic, syntactic,
+and positional relationships.
+But does geometry encode \emph{causal} relationships---the fact that one
+token's representation influences another's through attention?
+
+The question is not trivial.
+High attention weight between two tokens does not guarantee that ablating one
+token substantially perturbs the other's representation.
+Conversely, strong ablation influence does not require direct attention:
+indirect paths through intermediate tokens can transmit causal effects.
+The standard tool for probing influence is mean-ablation (or zero-ablation)
+of individual tokens and measurement of the downstream perturbation
+\cite{vig2020causal,meng2022rome}.
+
+We operationalise \emph{geometric distance} as $1 - \cos(\mathbf{h}_i, \mathbf{h}_j)$
+and \emph{ablation influence} as the $\ell^2$ change in token $j$'s
+hidden state when token $i$'s word embedding is replaced by the
+mean over the vocabulary.
+For each layer, we compute the partial correlation between these two
+quantities, controlling for sequence distance (which dominates
+both variables via positional encoding).
+
+The hypothesis is the \emph{causal geometry conjecture}:
+tokens that causally influence each other will, in the layers where
+integration occurs, have closer representations than token pairs
+with low mutual influence, after controlling for sequence distance.
+
+This probe is motivated directly by the VCML causal geometry framework,
+where the empirical finding $\xi \approx r_w$ (the system's correlation
+length equals the causal propagation radius of a wave event, regardless
+of diffusion parameters) suggests that representation geometry is
+determined by causal reachability rather than by Euclidean proximity.
+If transformers obey an analogous principle, the probe should detect it.
+
+\section{Methods}
+
+\paragraph{Model.}
+GPT-2 small \cite{radford2019gpt2} (12 transformer blocks, $d = 768$, 12 attention
+heads, 117M parameters), loaded from HuggingFace Transformers with
+\texttt{attn\_implementation=``eager''} to obtain per-layer attention weight matrices.
+
+\paragraph{Data.}
+50 sentences randomly sampled from the Universal Dependencies English EWT
+treebank \cite{silveira2014gold}, downloaded programmatically from the
+UD GitHub repository and parsed with the \texttt{conllu} library.
+Dependency arcs from the UD annotation define syntactically linked pairs.
+Total: 11{,}706 token pairs across 50 sentences; 891 syntactically dependent pairs.
+
+\paragraph{Ablation influence.}
+For token $i$ in sentence $s$, we replace the word-embedding lookup
+$\mathbf{e}_i = \mathrm{WTE}[t_i]$ with the vocabulary mean
+$\bar{\mathbf{e}} = \frac{1}{|\mathcal{V}|}\sum_{v} \mathrm{WTE}[v]$
+and run a forward pass.
+Ablation influence of $i$ on $j$ at layer $\ell$:
+\begin{equation}
+  A_{ij}^\ell = \|\mathbf{h}_j^{(\ell)}[\text{ablated}] - \mathbf{h}_j^{(\ell)}[\text{original}]\|_2
+\end{equation}
+
+\paragraph{Random-token control.}
+As a control, the same procedure is repeated with a fixed randomly chosen
+token id ($t_{\mathrm{rand}} = 4667$, the word ``\textit{the}'') replacing token $i$
+instead of the vocabulary mean.
+This tests whether the observed geometry--influence correlation reflects
+attention routing structure (which the random substitution preserves)
+or token-specific semantic content (which it does not).
+
+\paragraph{Attention rollout.}
+We compute rollout \cite{abnar2020quantifying} as the cumulative attention
+propagation from layer~0 through layer~$\ell$, adding residual identity
+connections ($\mathbf{A}^{(\ell)}_\mathrm{roll} = 0.5\,\overline{\mathbf{A}}^{(\ell)} + 0.5\,\mathbf{I}$,
+averaged over heads, then composed across layers).
+Rollout quantifies how information flows, complementary to ablation which
+quantifies causal impact on representations.
+
+\paragraph{Geometric distance.}
+At layer $\ell$ with residual-stream output $\mathbf{h}^{(\ell)}$:
+\begin{equation}
+  G_{ij}^\ell = 1 - \frac{\mathbf{h}_i^{(\ell)} \cdot \mathbf{h}_j^{(\ell)}}
+                          {\|\mathbf{h}_i^{(\ell)}\|\,\|\mathbf{h}_j^{(\ell)}\|}
+\end{equation}
+
+\paragraph{Partial correlation (main analysis).}
+For each layer $\ell$, we compute the Pearson partial correlation of
+$(G_{ij}^\ell, A_{ij}^\ell)$ controlling for sequence distance
+$d_{ij} = |i - j|$:
+\begin{equation}
+  r_p^\ell = \mathrm{pcorr}(G_{ij}^\ell,\; A_{ij}^\ell \mid d_{ij})
+\end{equation}
+using standard residualization on the linear component of $d_{ij}$.
+$p$-values are from a two-tailed $t$-test on $r_p\sqrt{(n-2)/(1-r_p^2)}$.
+
+\paragraph{Dependency-distance-matched test (main analysis 2).}
+Syntactic dependency arcs define ``dep pairs'' ($n=891$).
+To isolate the geometric effect of syntactic structure from the
+confound that dependency arcs tend to link nearby tokens, we bin all
+pairs by sequence-distance band $[1,3)$, $[3,6)$, $[6,15)$ and
+compare dep vs.\ non-dep geometric distance within each band
+at the middle layer ($\ell = 6$, the first stably negative partial correlation layer)
+via a two-sample $t$-test.
+
+\paragraph{Mixed-effects regression.}
+We fit a linear mixed-effects model (random intercept per sentence):
+\begin{equation}
+  G_{ij}^\ell = \beta_0 + \beta_1 A_{ij}^\ell + \beta_2 d_{ij}
+              + \beta_3 \mathbf{1}[\mathrm{dep}_{ij}] + u_s + \varepsilon_{ij}
+\end{equation}
+at layers 6 and 12, using statsmodels \texttt{MixedLM}.
+
+\section{Results}
+
+\subsection{Layer profile: sign flip at layer 4}
+
+Table~\ref{tab:layers} reports the partial correlations by layer.
+The profile has three regimes:
+
+\begin{itemize}
+\item \textbf{Layers 1--3 (divergence regime):}
+  Positive partial correlation ($r_p = +0.256$ to $+0.316$, all $p \ll 0.001$).
+  Tokens that causally influence each other have \emph{more distant}
+  representations, controlling for sequence distance.
+  This is the feature-construction regime: the model is building
+  distinct representations for each token, and high-influence pairs
+  (close tokens with strong attention routing) are being maximally
+  differentiated to avoid overwriting.
+
+\item \textbf{Layer 4 (transition):}
+  Sign flip. Partial correlation crosses zero ($r_p = -0.055$, $p = 2.2 \times 10^{-9}$).
+  This marks the transition from feature construction to causal integration.
+
+\item \textbf{Layers 5--11 (integration regime):}
+  Negative partial correlation, peaking at layer~7 ($r_p = -0.337$, $p \approx 10^{-308}$).
+  High-influence token pairs have \emph{closer} representations than low-influence pairs
+  at the same sequence distance.
+  The model's representations organise according to causal coupling.
+
+\item \textbf{Layer 12 (output, re-expansion):}
+  Partial correlation reverts to positive ($r_p = +0.175$).
+  The output layer may be re-expanding representations for prediction,
+  decoupling geometry from causal coupling.
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Layer-wise partial correlations: geom $\sim$ ablation influence $|$ seq distance.
+  Sign flip occurs at layer~4. Rollout remains positive throughout.}
+\label{tab:layers}
+\begin{tabular}{rrrrrrrr}
+\toprule
+Layer & $r_p$ (abl) & $p$ (abl) & $r_p$ (rand) & $r_p$ (roll) \\
+\midrule
+0  & ---          & ---              & ---       & $+0.600$ \\
+1  & $+0.256$     & $10^{-174}$      & $+0.270$  & $+0.863$ \\
+2  & $+0.316$     & $10^{-270}$      & $+0.384$  & $+0.889$ \\
+3  & $+0.092$     & $10^{-23}$       & $+0.132$  & $+0.661$ \\
+4  & $-0.055$     & $2\times10^{-9}$ & $-0.025$  & $+0.555$ \\
+5  & $-0.186$     & $10^{-92}$       & $-0.163$  & $+0.436$ \\
+6  & $-0.296$     & $10^{-235}$      & $-0.289$  & $+0.314$ \\
+7  & $\mathbf{-0.337}$ & $\mathbf{10^{-308}}$ & $-0.331$ & $+0.245$ \\
+8  & $-0.335$     & $10^{-305}$      & $-0.328$  & $+0.260$ \\
+9  & $-0.319$     & $10^{-274}$      & $-0.304$  & $+0.329$ \\
+10 & $-0.279$     & $10^{-208}$      & $-0.251$  & $+0.486$ \\
+11 & $-0.188$     & $10^{-93}$       & $-0.130$  & $+0.804$ \\
+12 & $+0.175$     & $10^{-81}$       & $+0.212$  & $+0.142$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Random-token control: structure, not semantics}
+
+The random-token control (replacing token $i$ with a fixed token ``\textit{the}'')
+nearly replicates the ablation partial-correlation profile at every layer.
+At the peak layer~7: ablation $r_p = -0.337$, random $r_p = -0.331$.
+The difference is negligible.
+
+This is the most important finding: the geometry--influence correlation
+does not depend on what the ablated representation becomes.
+It depends on \emph{which token is ablated} and \emph{how strongly
+attention routes influence from position $i$ to position $j$}.
+The signal is in the attention routing structure, not in the semantic
+content of the replacement.
+
+Attention rollout, by contrast, remains strongly positive throughout all layers
+(ranging from $+0.245$ to $+0.889$).
+Rollout captures the \emph{accumulated attention weight} along paths from $i$ to $j$.
+The fact that rollout and ablation influence have opposite signs in the integration
+regime (layers 5--11) is a dissociation: high accumulated attention weight does
+not guarantee that ablating the source perturbs the target's representation---but
+when it does, the representations converge.
+
+\subsection{Dependency-distance matched: syntax is encoded geometrically}
+
+Table~\ref{tab:matched} shows the matched-distance comparison at layer~6
+(first stably negative partial-correlation layer).
+Across all three sequence-distance bands, syntactically dependent pairs
+have closer representations than syntactically independent pairs.
+
+\begin{table}[h]
+\centering
+\caption{Dependency-distance-matched geometry at layer~6 ($\ell = n_L/2$).
+  Dep = syntactically linked (UD arc), Non-dep = no arc, matched within
+  sequence-distance band. Geometric distance = $1 - \cos(\mathbf{h}_i, \mathbf{h}_j)$.}
+\label{tab:matched}
+\begin{tabular}{lrrrc}
+\toprule
+Seq dist band & Dep mean & Non-dep mean & $t$ & $p$ \\
+\midrule
+$[1, 3)$  & 0.388 & 0.400 & $-2.48$ & $0.013^*$ \\
+$[3, 6)$  & 0.430 & 0.452 & $-3.58$ & $0.000^{***}$ \\
+$[6, 15)$ & 0.459 & 0.478 & $-2.19$ & $0.029^*$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The effect is strongest at medium sequence distances ($[3,6)$: $\Delta = 0.022$),
+which is the regime where sequence distance confounds are weakest and syntactic
+structure has the most independent signal.
+At short distances ($[1,3)$), adjacent tokens are both syntactically linked
+and geometrically close for positional reasons, reducing the discrimination.
+At long distances ($[6,15)$), both dep and non-dep pairs are sparse,
+reducing power.
+
+\subsection{Mixed-effects regression}
+
+At layer~6, ablation influence is a significant negative predictor of geometric
+distance ($\hat{\beta}_{\mathrm{abl}} = -0.00309$, $p \approx 10^{-196}$),
+consistent with the partial correlation.
+Syntactic dependency label is \emph{not} an independent predictor beyond
+ablation influence ($\hat{\beta}_{\mathrm{dep}} = 0.00211$, $p = 0.509$).
+This confirms that the geometric effect of syntax is mediated by causal influence:
+syntactically linked pairs are closer because they have higher mutual influence,
+not because the model has a separate internal variable for syntactic arc membership.
+
+At layer~12 (output), ablation influence is a positive predictor
+($\hat{\beta}_{\mathrm{abl}} = +0.000469$, $p \approx 10^{-62}$), consistent
+with the sign flip, and dependency is again not independent ($p = 0.882$).
+
+\section{Discussion}
+
+\subsection{The sign flip as a phase transition}
+
+The positive-to-negative transition at layer~4 has a natural interpretation
+within the causal geometry framework:
+\begin{enumerate}
+\item \textbf{Early layers (divergence)}: the model constructs token-level
+  features. Tokens that strongly attend to each other are being \emph{differentiated}---
+  the residual stream is accumulating information to distinguish them.
+  High causal coupling at this stage pulls representations apart (positive partial correlation).
+
+\item \textbf{Middle layers (integration)}: the model \emph{integrates} contextual
+  information. Tokens that causally influence each other have had their representations
+  shaped by that mutual influence, converging in the direction of the causal signal.
+  The result is negative partial correlation: causally coupled tokens become
+  more similar as information flows between them.
+
+\item \textbf{Output layer (re-expansion)}: the final layer may expand representations
+  back toward token-level predictions, re-introducing differentiation.
+\end{enumerate}
+
+This three-phase structure mirrors the three-timescale architecture of VCML:
+a fast timescale (hidden state $\mathbf{h}$) for current context,
+an intermediate timescale (mid-memory $\mathbf{m}$) for within-episode integration,
+and a slow timescale (field $\mathbf{F}$) for consolidated structure.
+The GPT-2 sign flip marks the transition from the fast to the intermediate timescale
+in representation space.
+
+\subsection{Attention routing vs.\ causal impact}
+
+The close tracking of the ablation and random-token profiles shows that what matters
+is \emph{which} position is the source of influence, not \emph{what content} flows.
+This supports the interpretation of attention routing as the primary carrier of
+causal structure.
+Attention heads act as causal channels; the geometry of the resulting representations
+is shaped by these channels, independent of the specific token content.
+
+This connects directly to the VCML finding that fieldM encodes \emph{position}
+rather than perturbation direction (Papers V73+, nonadj/adj $> 1$ universally).
+In both systems, the structural dimension of the representation is causal-topological,
+not content-semantic.
+
+\subsection{Dependency without direct arc-membership signal}
+
+The mixed-effects regression shows that syntactic dependency arcs predict geometry
+only through their correlation with ablation influence---dependency arc membership
+itself adds no independent variance.
+This is the expected result if the transformer has learned to route influence
+\emph{along} syntactic arcs rather than \emph{representing} arc membership explicitly.
+The geometry reflects causal coupling; the coupling has been shaped by training
+to follow syntactic structure.
+
+\subsection{Implications for the VCML causal reparametrisation}
+
+The transformer findings support the causal geometry programme for VCML:
+
+\begin{enumerate}
+\item \textbf{$\xi \approx r_w$ as causal invariant}: the transformer analog is that
+  the geometric coherence scale (distance at which representations converge under
+  influence) is set by the effective causal reach of the attention mechanism,
+  not by embedding dimensionality.
+  Paper~36's finding that $\xi \approx r_w$ independent of diffusion parameters
+  is structurally analogous to the random-token control result here:
+  the geometric effect is in the routing, not in the content.
+
+\item \textbf{Spatial vs.\ dimensional capacity}: the transformer uses 768 dimensions
+  ($d_h = 768$) to separate causal channels.
+  This conflates independent channels in a shared Euclidean space,
+  which is the ``curse of dimensionality'': independent causal channels
+  are forced to interfere geometrically.
+  VCML uses spatial separation instead (distinct cells for distinct zones);
+  the HS$=1$ result shows that a single-float cell is sufficient
+  because the spatial routing does the separating.
+
+\item \textbf{Timescale conflation}: all GPT-2 layers operate at the same
+  computational step (forward pass time), so fast and slow causal influences
+  arrive simultaneously.
+  VCML's three explicit timescales (cell-step $h$, mid-memory $m$, field $F$)
+  solve this by construction: influences are physically separated by consolidation
+  timescale.
+  The integration-then-re-expansion pattern at the output layer may be the
+  transformer's implicit attempt to perform this separation within a single
+  forward pass.
+\end{enumerate}
+
+\subsection{Limitations}
+
+\begin{itemize}
+\item \textbf{50 sentences}: the dataset is small. Results are statistically
+  significant ($n > 10{,}000$ pairs) but may not generalise to all syntactic
+  constructions. Replication with the full EWT treebank (12,543 sentences)
+  is planned.
+
+\item \textbf{GPT-2 only}: GPT-2 is a generative model trained on next-token
+  prediction. The causal geometry probe may differ for encoder models
+  (BERT, RoBERTa) trained on masked prediction, or for instruction-tuned models.
+
+\item \textbf{Mean-ablation}: replacing token $i$ with the vocabulary mean is a
+  specific perturbation. Zero-ablation or resampling ablation
+  \cite{zhang2022resampling} may yield different profiles.
+  The near-identical random-token control mitigates this concern for the
+  routing-structure claim.
+
+\item \textbf{Mixed-effects AIC}: the mixed-effects regression reported $\Delta$AIC $= -\infty$
+  (singular random effects covariance in statsmodels), indicating degenerate random structure.
+  Fixed effects and $p$-values are reported as-is; the result is robust to the
+  partial-correlation analysis.
+\end{itemize}
+
+\section{Conclusion}
+
+We demonstrated that causal influence (measured by mean-ablation perturbation)
+predicts representational geometry in GPT-2, with a sign flip at layer~4 from
+positive (early feature construction) to negative (middle-layer causal integration).
+The random-token control shows this effect is carried by attention routing structure,
+not token-specific content.
+Syntactically linked pairs are geometrically closer at matched sequence distance
+across all distance bands ($p < 0.05$), and this geometric proximity is fully
+mediated by causal influence rather than arc membership.
+
+These findings constitute an external validation of the causal geometry conjecture:
+transformer geometry is organised by causal coupling, not Euclidean proximity.
+They support the VCML reparametrisation of $C_2$ in causal coordinates
+($\phi_w$, $\Omega$, $\delta$), in which structural organisation is predicted
+by causal reachability rather than diffusion length.
+The spatial-vs.-dimensional capacity distinction---VCML's spatial separation
+at HS$=1$ vs.\ transformers' dimensional separation at $d_h = 768$---is
+now grounded in an empirical comparison: both systems organise representation
+geometry by causal structure, but VCML's spatial routing avoids the
+channel-conflation problem inherent in shared high-dimensional space.
+
+\bigskip
+\noindent\textbf{Data and code.}
+All code available at:
+\texttt{papers/paper45\_causal\_geometry\_transformer/paper45\_experiments.py}
+and \texttt{paper45\_figure1.py}.
+Raw results in \texttt{paper45\_results.json}; analysis in \texttt{paper45\_analysis.json}.
+
+\begin{thebibliography}{9}
+\bibitem{radford2019gpt2}
+A.\ Radford, J.\ Wu, R.\ Child, D.\ Luan, D.\ Amodei, I.\ Sutskever.
+\emph{Language Models are Unsupervised Multitask Learners}. 2019.
+
+\bibitem{silveira2014gold}
+N.\ Silveira et al.
+\emph{A Gold Standard Dependency Corpus for English}.
+LREC, 2014.
+
+\bibitem{vig2020causal}
+J.\ Vig, S.\ Gehrmann, Y.\ Belinkov, S.\ Qian, D.\ Nevo, Y.\ Singer, S.\ Shieber.
+\emph{Investigating Gender Bias in Language Models Using Causal Mediation Analysis}.
+NeurIPS, 2020.
+
+\bibitem{meng2022rome}
+K.\ Meng, D.\ Bau, A.\ Andonian, Y.\ Belinkov.
+\emph{Locating and Editing Factual Associations in GPT}.
+NeurIPS, 2022.
+
+\bibitem{abnar2020quantifying}
+S.\ Abnar, W.\ Zuidema.
+\emph{Quantifying Attention Flow in Transformers}.
+ACL, 2020.
+
+\bibitem{zhang2022resampling}
+C.\ Zhang et al.
+\emph{Resampling-based Causal Ablation for Transformers}. 2022.
+
+\bibitem{elhage2022superposition}
+N.\ Elhage et al.
+\emph{Toy Models of Superposition}.
+Transformer Circuits Thread, 2022.
+\end{thebibliography}
+
+\end{document}

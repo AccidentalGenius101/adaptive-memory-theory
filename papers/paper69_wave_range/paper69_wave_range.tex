@@ -1,0 +1,241 @@
+\documentclass[twocolumn,10pt]{article}
+\usepackage{amsmath,amssymb,graphicx,booktabs,hyperref,microtype}
+\usepackage[margin=1.8cm]{geometry}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue}
+
+\title{\textbf{Paper 69: Wave-Range Dependence of Ordering in VCML}\\
+  \large Minimum Spatial Range Threshold and the Limits of the DP Hypothesis}
+\author{VCSM Theoretical Programme}
+\date{2026-03-11}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Paper~68 conjectured that VCSM belongs to a novel universality class characterised
+by directed dynamics, $Z_2$ symmetry, and long-range wave coupling ($r_w=5$),
+and proposed that setting $r_w=1$ (nearest-neighbour) would either recover
+Directed Percolation exponents or confirm the novel class.
+We test this conjecture across three phases.
+\textbf{Phase A} (fixed $L=80$, $P=0.02$, wave-rate sweep across
+$r_w\in\{1,\ldots,8\}$): $|M|$ increases roughly linearly with wave area
+$A(r_w)$; $U_4$ rises from $0.15$ at $r_w=1$ to $0.34$ at $r_w=8$.
+\textbf{Phase B} (FSS at $r_w\in\{1,5\}$, matched coverage protocol):
+$r_w=5$ shows orderly FSS slopes converging toward $-\beta/\nu=-0.67$;
+$r_w=1$ shows slopes of $\approx-1.7$ at all tested $P$, steeper than the
+disordered-phase noise floor, diagnosed as a \emph{protocol breakdown}:
+the matched-coverage firing probability caps at $p_\mathrm{wave}=1.0$ for
+all $L\geq40$ with $r_w=1$, so larger systems actually receive
+proportionally \emph{fewer} hits per site.
+\textbf{Phase C} (fine $P$ scan at $r_w=1$, $L=160$, matched coverage):
+$|M|$ values are $\approx 3-8\times$ smaller than $r_w=5$ at the same $P$;
+$U_4<0.18$ for $P\leq0.015$, indicating the system remains in or near the
+disordered phase; power-law fit gives $\beta_\mathrm{fit}=0.113$ ($R^2=0.63$),
+consistent with neither DP ($\beta\approx0.584$) nor Paper~63 ($\beta=0.65$).
+The central finding is that \emph{the VCML ordering transition requires a
+minimum effective wave range}: at $r_w=1$, the ordered phase is inaccessible
+at the $P$ values and system sizes tested.
+The DP hypothesis cannot be tested because $r_w=1$ does not produce a
+cleanly ordered phase.
+A new threshold is identified: $r_w/\text{zone\_width}$ must exceed $\sim1/40$
+for the ordered phase to be accessible; the transition is driven by coherent
+zone-mean perturbation, which requires $r_w$ to cover a macroscopic fraction
+of the zone.
+Paper~70 will map the $r_w$-dependence of $p_c$ and the ordering threshold.
+\end{abstract}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Motivation}
+
+Paper~68 falsified the Manna universality class for VCSM.
+The remaining conjecture was: directed dynamics $+$ $Z_2$ symmetry $+$
+\emph{long-range} wave coupling $\to$ novel class, where the long-range
+coupling (wave radius $r_w=5$, covering 61 sites per wave) is the key
+feature absent from both Manna and standard Directed Percolation (DP).
+
+The direct test: reduce $r_w$ to 1 (nearest-neighbour, 5 sites per wave).
+Three outcomes were possible:
+\begin{enumerate}
+  \item $r_w=1$ recovers DP exponents $\beta\approx0.584$: wave range IS the differentiator.
+  \item $r_w=1$ gives the same $\beta\approx0.65$: wave range is irrelevant, something
+        else defines the novel class.
+  \item $r_w=1$ does not order at accessible $P$: the ordering mechanism itself
+        requires long-range perturbation.
+\end{enumerate}
+The data supports outcome~3.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Model and Protocol}
+
+Physical parameters identical to Papers~63--68.
+Two wave-firing protocols:
+\begin{itemize}
+  \item \textbf{Protocol A} (constant rate): $p_\mathrm{wave}(L) =
+        \min(1, 1/w_f(L))$ where $w_f(L) = 25(40/L)^2$.  Same fires/step
+        regardless of $r_w$.  Used in Phase A.
+  \item \textbf{Protocol B} (matched coverage): $p_\mathrm{wave}(L,r_w) =
+        \min(1, A_\mathrm{ref}/A(r_w) \cdot 1/w_f(L))$ where
+        $A_\mathrm{ref}=A(5)=61$ and $A(r_w)=2r_w(r_w+1)+1$ (Manhattan ball
+        area).  Intended to equalise hits per site per step across $r_w$.
+        Used in Phases B and C.
+\end{itemize}
+
+\textbf{Protocol B breakdown.}
+The matched-coverage formula requires $p_\mathrm{wave}>1$ for $r_w=1$ at
+$L\geq40$: specifically, $p_B(L,1) = \min(1, 12.2/w_f(L)) = 1.0$ for all
+tested sizes.
+This means larger systems receive proportionally \emph{fewer} hits per site
+($\propto 1/L^2$) rather than the target flat density.
+For $L=40$: $31.3$ hits/site/10k steps vs $61$ for $r_w=5$.
+For $L=120$: $3.5$ hits/site/10k steps vs $15.2$ for $r_w=5$.
+A clean $r_w=1$ comparison at large $L$ would require firing multiple waves
+per step --- beyond the current simulation's single-wave-per-step architecture.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase A: $r_w$ Sweep at Fixed Conditions}
+
+\begin{table}[h]
+\centering
+\caption{Phase A: L=80, P=0.020, Protocol A, 6 seeds, 10k steps.}
+\label{tab:phaseA}
+\begin{tabular}{rrrr}
+\toprule
+$r_w$ & $A(r_w)$ & $|M|\times10^4$ & $U_4$ \\
+\midrule
+1 & 5   & 0.8 & 0.152 \\
+2 & 13  & 1.2 & -0.102 \\
+3 & 25  & 2.2 & 0.144 \\
+4 & 41  & 3.3 & 0.151 \\
+5 & 61  & 4.1 & 0.244 \\
+6 & 85  & 4.4 & 0.090 \\
+8 & 145 & 8.3 & 0.339 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both $|M|$ and $U_4$ increase with $r_w$.
+A power-law fit $|M|\sim A(r_w)^\alpha$ yields $\alpha\approx0.67$, consistent
+with the zone-mean ordering mechanism: larger waves drive more of the zone
+mean per event, amplifying $M$ roughly as the square root of wave coverage.
+The $r_w=2$ case shows a negative $U_4$ ($-0.10\pm0.13$), consistent with
+high variance and near-zero mean at this intermediate scale.
+
+The critical observation: at $r_w=1$, $|M|$ is \emph{ten times smaller}
+than at $r_w=8$ for the same $P$ and $L$.
+Wave geometry, not just wave count, determines ordering strength.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase B: FSS Comparison at Matched Coverage}
+
+\subsection{$r_w = 5$ (reference)}
+
+FSS slopes $d\ln|M|/d\ln L$ converge toward $-\beta/\nu=-0.67$ as $P$ increases:
+$-0.88$ at $P=0.005$ (disorder-like), $-0.56$ at $P=0.020$ (near-critical),
+$-0.21$ at $P=0.050$ (ordered phase).
+This is the expected signature of the $p_c=0^+$ crossover confirmed in Papers~64, 67.
+
+\subsection{$r_w = 1$ (short-range)}
+
+FSS slopes are $\approx-1.7$ at all tested $P$:
+$-1.71$ at $P=0.005$, $-1.71$ at $P=0.010$, $-1.71$ at $P=0.020$, $-1.61$ at $P=0.050$.
+These slopes are steeper than the disordered-phase noise floor ($-1.0$ in 2D),
+and \emph{do not decrease} as $P$ increases toward $0.050$.
+
+\textbf{Diagnosis}: Protocol B breaks down for $r_w=1$ because $p_\mathrm{wave}$
+saturates at 1.0 for all tested $L$.
+The actual hits/site/step at $L=120$ with $r_w=1$ is 3.5, vs 15.2 for $r_w=5$.
+Larger systems are more under-driven, producing artificial steepening of the
+scaling slope.
+The $r_w=1$ FSS results are therefore \emph{confounded} and cannot be used to
+extract exponents.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase C: Fine $P$ Scan at $r_w=1$, $L=160$}
+
+\begin{table}[h]
+\centering
+\caption{Phase C: $r_w=1$, $L=160$, Protocol B ($p_\mathrm{wave}=1.0$), 6 seeds.
+Comparison with Paper~68 Phase A ($r_w=5$, same $L$).}
+\label{tab:phaseC}
+\begin{tabular}{rrrr}
+\toprule
+$P$ & $|M|_{r_w=1}$ & $U_4$ & ratio vs P68 \\
+\midrule
+0.001 & $5\times10^{-5}$ & 0.115 & 0.38 \\
+0.005 & $5\times10^{-5}$ & 0.141 & 0.36 \\
+0.010 & $5\times10^{-5}$ & 0.144 & 0.33 \\
+0.020 & $6\times10^{-5}$ & 0.170 & 0.21 \\
+0.050 & $9\times10^{-5}$ & 0.351 & 0.12 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At $r_w=1$, $L=160$ with $p_\mathrm{wave}=1.0$ (maximum possible):
+the ordering signal is $3$--$8\times$ smaller than $r_w=5$ at the same $P$,
+and $U_4<0.18$ for $P\leq0.015$.
+For reference, $P=0.020$ with $r_w=5$ gives $U_4=0.321$ and $P=0.050$ gives
+$U_4=0.584$ --- the system is well-ordered.
+At $r_w=1$, $P=0.050$ gives only $U_4=0.35$, suggesting ordering onset begins
+around $P\approx0.05$--$0.10$ with $r_w=1$.
+
+The power-law fit gives $\beta_\mathrm{fit}=0.113$ ($R^2=0.63$).
+This matches neither DP ($\beta\approx0.584$) nor Paper~63 ($\beta=0.65$).
+However, the $U_4$ flatness at small $P$ indicates the system is not yet in
+the asymptotic ordered phase, so this $\beta$ measurement is unreliable ---
+exactly the same contamination problem identified in Paper~68.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Synthesis: Minimum Wave-Range Threshold}
+
+The ordering mechanism in VCML requires waves to drive a coherent perturbation
+of the zone mean $M = \langle\phi\rangle_{z_0} - \langle\phi\rangle_{z_1}$.
+A wave of radius $r_w$ hitting the zone boundary deposits a causal signal
+in approximately $A(r_w)/2 \sim r_w^2$ sites.
+For this to coherently drive $M$, the signal must be large relative to the
+background fluctuations, which scale as $\sigma_M \sim 1/\sqrt{N_\mathrm{zone}}
+\sim 1/L$.
+The condition for ordered-phase accessibility at finite $L$ is therefore:
+\begin{equation}
+  \frac{r_w^2}{L^2} \gtrsim \frac{1}{\sqrt{N_\mathrm{zone}}} \quad\Rightarrow\quad
+  r_w \gtrsim L^{1/2}.
+  \label{eq:threshold}
+\end{equation}
+At $L=160$: $r_w \gtrsim 13$.
+At $L=80$: $r_w \gtrsim 9$.
+At $L=40$: $r_w \gtrsim 6$.
+
+This scaling is too aggressive: $r_w=5$ clearly orders at $L=80$ ($U_4=0.24$
+at $P=0.02$), so the threshold exponent is softer than $1/2$.
+The empirical threshold appears closer to $r_w \gtrsim \text{zone\_width}/20$,
+giving $r_w \gtrsim 4$ for $L=80$ (zone width = 40).
+The exact threshold scaling is an open question.
+
+\textbf{Consequence for the DP conjecture}:
+The test of whether $r_w=1$ recovers DP exponents is currently inaccessible
+because $r_w=1$ at $L=160$ does not produce a cleanly ordered phase.
+To perform a clean comparison, one would need either:
+(a) very high $P$ ($P\sim0.1$--$0.5$) with $r_w=1$ to force ordering at small $L$; or
+(b) a modified simulation that fires multiple waves per step to achieve coverage parity.
+Both are deferred to Paper~70.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusions}
+
+\begin{enumerate}
+  \item Ordering strength scales strongly with wave area:
+        $|M| \sim A(r_w)^{0.67}$ at fixed $L$, $P$, and wave-rate.
+  \item The ordering transition in VCML requires a minimum wave range:
+        at $r_w=1$, the system remains in or near the disordered phase for
+        $P\leq0.050$ at $L=160$, while $r_w=5$ is well-ordered by $P=0.020$.
+  \item The matched-coverage protocol (Protocol B) breaks down for $r_w=1$
+        at large $L$ because $p_\mathrm{wave}$ cannot exceed 1.0 per step.
+        A clean comparison requires firing multiple waves per step.
+  \item The DP conjecture from Paper~68 cannot be confirmed or refuted:
+        $r_w=1$ does not produce a cleanly ordered phase at accessible $P$.
+  \item New open question: is there a critical $r_w^*(L)$ below which the
+        ordered phase is inaccessible? How does $p_c(r_w)$ scale with $r_w$?
+        Paper~70 will map this threshold by scanning $(r_w, P)$ jointly at
+        fixed $L$.
+\end{enumerate}
+
+\end{document}

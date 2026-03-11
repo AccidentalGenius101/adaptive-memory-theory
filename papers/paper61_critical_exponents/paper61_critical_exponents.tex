@@ -1,0 +1,391 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,graphicx,hyperref,booktabs,xcolor}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{\textbf{Paper 61: Finite-Size Scaling of the Causal-Purity Phase Transition\\
+\large Geometric Dilution, Binder Cumulants, and the Thermodynamic Limit}}
+\author{VCSM Theory Project}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We attempt a finite-size scaling (FSS) analysis of the causal-purity order--disorder
+transition in the Ising + VCSM-lite system introduced in Paper~60.
+We measure the order parameter $|M|$, susceptibility $\chi$, Binder cumulant $U_4$,
+and phi-order $S_\phi$ across system sizes $L \in \{20, 30, 40, 60\}$ and causal
+purity $P_{\rm causal} \in [0,\, 0.65]$ at $T = 3.0 > T_c$ (disordered spins).
+The FSS reveals $|M| \propto L^{-2}$ at all values of $P_{\rm causal}$,
+with a slope of $-2.02 \pm 0.03$ independent of the purity.
+The Binder cumulant $U_4$ shows no $L$-dependent crossing — all system sizes
+agree on a sharp transition near $P_{\rm causal} \approx 0.05$--$0.15$ regardless of~$L$.
+We interpret these findings as evidence that the causal-purity transition, as simulated,
+is a \emph{finite-size crossover} rather than a true second-order phase transition.
+The $L^{-2}$ scaling is geometric in origin: wave perturbations cover a fixed area
+$\pi r_w^2$ while the system grows as $L^2$, diluting the signal density.
+A genuine thermodynamic phase transition requires the wave density to scale
+extensively with system size (events $\propto L^2$).
+We identify the correct thermodynamic limit and derive the resulting condition
+for a true causal-purity universality class.
+\end{abstract}
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Introduction}
+\label{sec:intro}
+
+Paper~60 demonstrated that in an Ising spin system augmented with the VCSM-lite
+memory layer, the order parameter $S_\phi$ (phi-order) is controlled by causal
+purity $P_{\rm causal}$ independently of temperature $T$.
+Above the Ising critical temperature $T_c \approx 2.27$, where the spin
+magnetization $m \approx 0$, the phi-field still orders when $P_{\rm causal}$
+is sufficiently high.
+This orthogonality was proposed as evidence of a new universality class:
+``causal-purity controlled non-equilibrium order.''
+
+The natural next step is to characterize this transition using the standard
+machinery of renormalization group (RG) theory:
+measure the critical exponents $\beta$, $\nu$, $\gamma$ via finite-size scaling,
+and compare to known universality classes (mean field: $\beta{=}1/2$, $\nu{=}1/2$;
+2D Ising: $\beta{=}1/8$, $\nu{=}1$).
+
+This paper reports that FSS, applied directly to the current simulation setup,
+reveals a fundamental complication: the order parameter $|M|$ decays as $L^{-2}$
+for \emph{all} values of $P_{\rm causal}$, not just at the critical point.
+This scaling is not a critical exponent --- it is a geometric artifact.
+Understanding why, and how to cure it, is the main contribution of this paper.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Setup}
+\label{sec:setup}
+
+\subsection{Model}
+
+We use the same Ising + VCSM-lite system as Paper~60:
+a 2D Ising model on an $L \times L$ lattice with periodic boundary conditions,
+$J = 1$, temperature $T = 3.0$ (disordered phase), checkerboard Metropolis updates.
+The VCSM-lite memory layer maintains a slow phi-field updated by zone-specific
+wave perturbations and a causal gate.
+
+\textbf{Order parameter.}
+The raw order parameter is the zone difference in the phi-field:
+\begin{equation}
+  M(t) = \langle \phi(t) \rangle_{\rm zone\,0} - \langle \phi(t) \rangle_{\rm zone\,1}
+\end{equation}
+In steady state we measure the time-series $\{M(t)\}$ over the last 60\% of a run
+and compute moments $\langle |M| \rangle$, $\langle M^2 \rangle$, $\langle M^4 \rangle$.
+
+\textbf{Wave mechanism.}
+Every 25 Metropolis sweeps, an external field $h_{\rm ext} = \pm 1.5$
+is applied for 5 sweeps within a Manhattan-radius-5 disc centered at a
+zone-specific random location.
+Zone-0 waves have positive field (bias spins toward $+1$);
+zone-1 waves have negative field.
+A fraction $P_{\rm causal}$ of sites in the hit region receive the correct zone signal;
+the remainder receive Gaussian noise.
+
+\subsection{FSS Protocol}
+
+\textbf{Phase 1 (scan).} Dense sweep over $P_{\rm causal} \in [0.00, 0.68]$ at $L = 40$,
+5 seeds, 8000 steps, to locate $p_c$.
+
+\textbf{Phase 2 (FSS).} System sizes $L \in \{20, 30, 40, 60\}$,
+$P_{\rm causal} \in [0.00, 0.60]$ in steps of 0.05,
+5 seeds, 8000 steps.
+Steady-state statistics from the last 60\% of each run.
+
+\textbf{Observables.}
+\begin{align}
+  U_4 &= 1 - \frac{\langle M^4 \rangle}{3 \langle M^2 \rangle^2}
+  \quad\text{(Binder cumulant)},\\
+  \chi &= \frac{N}{2} \,\mathrm{Var}(M)
+  \quad\text{(susceptibility)}.
+\end{align}
+Under standard FSS:
+$|M|(L, P) \sim L^{-\beta/\nu} \tilde{m}((P - p_c) L^{1/\nu})$,
+$\chi(L, P) \sim L^{\gamma/\nu} \tilde{\chi}((P - p_c) L^{1/\nu})$,
+and $U_4$ curves for different $L$ should cross at $p_c$.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Results}
+\label{sec:results}
+
+\subsection{Phase-1 Scan}
+
+At $L = 40$, $S_\phi$ grows monotonically from 0.07 ($P = 0.00$) to 0.68 ($P = 0.68$).
+The susceptibility $\chi$ is small throughout ($\chi \lesssim 0.001$) and shows
+no prominent peak.
+The Binder cumulant $U_4$ transitions from $\approx 0$ (Gaussian, disordered)
+to $\approx 0.66$ (ordered, bimodal) with the inflection near $P_{\rm causal} \approx 0.04$--$0.12$.
+The automated chi-peak estimator returns $p_c = 0.60$, but this reflects
+the small positive trend in $\chi$, not a genuine divergence.
+
+\subsection{Binder Cumulant — No $L$-Dependent Crossing}
+
+Table~\ref{tab:u4} shows $U_4$ for all four system sizes.
+For $P_{\rm causal} \geq 0.15$, all sizes give $U_4 \in [0.55, 0.66]$,
+with no systematic ordering by $L$.
+Specifically, neither the pattern ``$U_4(L_1) < U_4(L_2)$ for $L_1 < L_2$''
+(which would indicate being above $p_c$) nor the reverse (below $p_c$) is
+consistently observed across the range.
+Instead, the curves for different $L$ nearly overlap for $P_{\rm causal} > 0.15$
+and diverge from each other only at $P_{\rm causal} \lesssim 0.10$.
+
+\begin{table}[h]
+\centering
+\caption{Binder cumulant $U_4$ vs.\ $P_{\rm causal}$ for four system sizes.
+No $L$-dependent crossing is observed.}
+\label{tab:u4}
+\begin{tabular}{ccccc}
+\toprule
+$P_{\rm causal}$ & $L=20$ & $L=30$ & $L=40$ & $L=60$ \\
+\midrule
+0.00 & 0.126 & 0.075 & 0.013 & 0.199 \\
+0.05 & 0.383 & 0.274 & 0.314 & 0.193 \\
+0.10 & 0.519 & 0.462 & 0.494 & 0.473 \\
+0.15 & 0.572 & 0.551 & 0.572 & 0.575 \\
+0.20 & 0.606 & 0.599 & 0.606 & 0.614 \\
+0.30 & 0.642 & 0.627 & 0.639 & 0.639 \\
+0.40 & 0.650 & 0.640 & 0.650 & 0.648 \\
+0.50 & 0.655 & 0.647 & 0.656 & 0.656 \\
+0.60 & 0.657 & 0.654 & 0.658 & 0.658 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The absence of a crossing means standard FSS cannot locate $p_c$ or extract $1/\nu$.
+
+\subsection{Order Parameter Scaling: $|M| \propto L^{-2}$}
+
+Figure~\ref{fig:fss}(c) shows $|M|$ vs.\ $L$ on a log-log scale.
+Power-law fits $|M| \propto L^\alpha$ yield:
+
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+$P_{\rm causal}$ & slope $\alpha$ \\
+\midrule
+0.20 & $-2.041$ \\
+0.30 & $-2.065$ \\
+0.40 & $-2.048$ \\
+0.50 & $-2.025$ \\
+0.60 & $-2.016$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The slope is $\alpha \approx -2.03 \pm 0.02$ \emph{independent of $P_{\rm causal}$}.
+This is not critical scaling ($\alpha = -\beta/\nu$ at $p_c$ only);
+it is the same exponent throughout the entire range.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Interpretation: Geometric Dilution}
+\label{sec:dilution}
+
+\subsection{Why $|M| \propto L^{-2}$}
+
+The order parameter $M = \langle\phi\rangle_0 - \langle\phi\rangle_1$ measures
+the zone-mean difference of the phi-field.
+Each phi update is driven by wave perturbations.
+A single wave event perturbs sites within Manhattan radius $r_w = 5$,
+covering an area $A_w \approx \pi r_w^2 \approx 79$ sites --- fixed,
+independent of $L$.
+
+The zone contains $N_{\rm zone} = L^2/2$ sites.
+In steady state, the contribution of each wave event to $\langle\phi\rangle$
+is proportional to:
+\begin{equation}
+  \frac{A_w}{N_{\rm zone}} = \frac{2\pi r_w^2}{L^2} \propto L^{-2}.
+\end{equation}
+Hence $M \propto L^{-2}$, regardless of $P_{\rm causal}$.
+This is \emph{geometric dilution}, not a critical exponent.
+
+\subsection{The Binder Result}
+
+The fact that $U_4$ still shows the Gaussian-to-bimodal transition
+(from $U_4 \approx 0$ to $U_4 \approx 2/3$) confirms that the
+\emph{character} of fluctuations changes with $P_{\rm causal}$:
+at low purity, phi fluctuations are Gaussian (pure noise);
+at high purity, phi fluctuations are bimodal (the phi-field spends time
+near two values $\pm M_0$).
+But because $M_0 \propto L^{-2} \to 0$, the bimodal peaks collapse in the
+thermodynamic limit.
+This is consistent with a finite-size crossover whose width in $P_{\rm causal}$
+is $L$-independent.
+
+\subsection{The Proper Thermodynamic Limit}
+
+For a genuine second-order phase transition, the order parameter must survive
+$L \to \infty$.
+This requires the driving signal to be \emph{extensive}: the number of wave
+events per unit area must be held constant as $L$ grows.
+
+In the current simulation, wave events occur every 25 Metropolis sweeps
+regardless of $L$ --- an \emph{intensive} drive rate.
+The correct thermodynamic limit fixes the wave density:
+\begin{equation}
+  \text{wave events per time step} \propto L^2
+  \quad\Leftrightarrow\quad
+  \text{WAVE\_EVERY} \propto 1/L^2.
+\end{equation}
+Under this scaling, $M$ becomes independent of $L$ in the ordered phase,
+and standard FSS applies.
+We predict that under wave-density scaling:
+\begin{itemize}
+  \item $U_4$ curves for different $L$ will show a true crossing at some $p_c$,
+  \item $|M| \sim L^{-\beta/\nu}$ only at $p_c$,
+  \item $\chi$ will diverge as $L^{\gamma/\nu}$ at $p_c$.
+\end{itemize}
+The resulting exponents will characterize the true universality class of
+the causal-purity transition.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{What the Binder Data Do Tell Us}
+\label{sec:binder}
+
+Despite the absence of an $L$-dependent crossing, the Binder data are informative.
+
+\textbf{(i) The transition is sharp and early.}
+$U_4$ rises from $\approx 0$ to $\approx 0.55$ between $P_{\rm causal} = 0.00$
+and $P_{\rm causal} = 0.10$, independent of $L$ for $L \in [20, 60]$.
+This places the crossover point near $p_c^{\rm finite} \approx 0.05$--$0.10$.
+
+\textbf{(ii) The crossover width is $L$-independent.}
+The inflection of $U_4(P)$ does not shift with $L$ in the range we tested.
+In a standard infinite-order transition (Berezinskii--Kosterlitz--Thouless),
+the crossover width narrows as $L^{-1/\nu}$.
+The absence of this narrowing over a factor of 3 in $L$ (20 to 60) suggests
+either: (a) very large $\nu$ (weakly first order or infinite-order transition),
+or (b) the crossover is zero-dimensional (size-independent) in the current setup,
+consistent with the geometric dilution interpretation.
+
+\textbf{(iii) The ordered phase is robust once reached.}
+For $P_{\rm causal} \geq 0.20$, $U_4 \approx 0.65$ for all $L$ ---
+the distribution is deeply bimodal in all system sizes tested.
+The crossover from Gaussian to bimodal is the genuine signature that
+causal purity controls the statistics of phi-fluctuations.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Implications for the Universality Class Claim}
+\label{sec:universality}
+
+Paper~60 proposed that $S_\phi$ vs.\ $P_{\rm causal}$ defines a new universality class:
+``causal-purity controlled non-equilibrium order.''
+This paper constrains that claim:
+
+\textbf{The transition is real but not thermodynamic (yet).}
+In the current setup, the phi-field does order (bimodal $U_4$) when
+$P_{\rm causal}$ is sufficient, confirming the transition exists.
+But the order parameter vanishes as $L \to \infty$ with fixed wave density
+--- it is a finite-size coherence effect.
+
+\textbf{Causal coherence length $\xi_c$.}
+The data are consistent with a finite causal coherence length $\xi_c$
+that depends on $P_{\rm causal}$ but does not grow without bound.
+The system is ordered on scales $\ell < \xi_c$ and disordered on $\ell > \xi_c$.
+For the system sizes tested ($L \leq 60$), all sizes may be below $\xi_c$,
+giving the $L$-independent $U_4$ behavior.
+
+\textbf{Next step: extensive wave density.}
+Running FSS under wave-density scaling
+(WAVE\_EVERY $\propto 1$, i.e., wave events $\propto N$)
+would test whether a true thermodynamic transition exists.
+If yes: extract $\beta$, $\nu$, $\gamma$ and compare to mean field and 2D Ising.
+If $\xi_c$ is infinite (true transition) and the exponents differ from both ---
+new universality class confirmed.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Is This a Failure?}
+
+No. FSS on a driven non-equilibrium system is not guaranteed to work
+with the naive order parameter.
+The $L^{-2}$ scaling is a clean, reproducible result that encodes real physics:
+the wave-signal density is intensive in the current protocol.
+This tells us \emph{exactly} what to change for the next experiment.
+
+Moreover, the Binder cumulant result is unambiguous: causal purity drives
+a genuine change in the statistics of phi-fluctuations, from Gaussian to bimodal.
+This is the non-equilibrium phase transition --- it just needs to be placed
+in the correct thermodynamic limit to extract its exponents.
+
+\subsection{Comparison to Standard Phase Transitions}
+
+In equilibrium systems, the natural thermodynamic limit holds automatically:
+the noise (temperature) is uniform across the system, and any local fluctuation
+propagates globally.
+In the VCSM system, the ``signal'' is injected locally (waves of fixed radius)
+and must propagate via the phi-field dynamics.
+The propagation range is limited by the phi decay length
+$\ell_\phi = 1/\kappa$ (from the Model A field equation, Paper~59).
+If $\ell_\phi < L$, the system is effectively a collection of independent
+coherence domains, and the order parameter averages down with volume.
+Extensive wave density ensures $\ell_\phi$ is the relevant scale,
+not the system size $L$.
+
+\subsection{Analogy: Driven Dissipative Systems}
+
+The scaling issue we identify is analogous to that in driven-dissipative
+quantum systems, where taking the thermodynamic limit requires the
+drive amplitude to scale with system size.
+A key reference class is the Dicke model transition (superradiance),
+where the coherent field vanishes as $1/\sqrt{N}$ unless the coupling
+is taken to scale with $\sqrt{N}$.
+Our $L^{-2}$ result is the classical non-equilibrium analogue.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Conclusions}
+\label{sec:conclusions}
+
+We report the following results from FSS analysis of the causal-purity transition:
+
+\begin{enumerate}
+  \item \textbf{$|M| \propto L^{-2}$ at all $P_{\rm causal}$}: geometric dilution, not critical scaling.
+    The wave-signal density is intensive (fixed area) in a growing system.
+  \item \textbf{No $L$-dependent Binder crossing}: consistent with a zero-dimensional
+    (size-independent) crossover in the current protocol.
+  \item \textbf{$U_4$: Gaussian $\to$ bimodal near $P_{\rm causal} \approx 0.05$--$0.10$},
+    independent of $L$ --- the transition character is confirmed.
+  \item \textbf{Standard FSS does not apply here}: the proper thermodynamic limit
+    requires extensive wave density (events $\propto L^2$).
+  \item \textbf{Prediction}: under wave-density scaling, a genuine thermodynamic
+    transition should appear with critical exponents that characterize the
+    causal-purity universality class.
+\end{enumerate}
+
+The analysis does not falsify the universality class claim.
+It refines it: the causal-purity transition is genuine, but its RG fixed point
+can only be accessed in the extensive-drive thermodynamic limit.
+Paper~62 will run the FSS analysis under that correct scaling.
+
+%──────────────────────────────────────────────────────────────────────────────
+\appendix
+\section{Simulation Parameters}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Parameter & Value & Role \\
+\midrule
+$J$ & 1.0 & Ising coupling \\
+$T$ & 3.0 & Temperature (above $T_c$) \\
+$\beta_{\rm base}$ & 0.005 & Baseline EMA rate \\
+$FA$ & 0.30 & Phi update amplitude \\
+FIELD\_DECAY & 0.999 & Phi decay per step \\
+MID\_DECAY & 0.97 & Mid-memory decay \\
+SS & 8 & Streak threshold for write gate \\
+WAVE\_EVERY & 25 & Steps between wave events \\
+WAVE\_RADIUS & 5 & Wave perturbation radius \\
+WAVE\_DUR & 5 & Metropolis steps per wave \\
+EXT\_FIELD & 1.5 & External field amplitude \\
+$N_{\rm steps}$ & 8000 & Total Metropolis sweeps \\
+SS\_START\_FRAC & 0.40 & Steady-state start fraction \\
+Seeds & 5 & Independent runs per condition \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

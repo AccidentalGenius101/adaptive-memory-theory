@@ -1,0 +1,378 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,graphicx,xcolor,hyperref,microtype}
+\usepackage{authblk}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{\textbf{Paper 54: Order Parameter, Correlation Length Law, and Cross-Axis Surface}\\
+\large Three Open Questions from the VCML Behavioral Phase Diagram}
+
+\author[1]{Gabriel Aubin-Moreau}
+\affil[1]{Independent research}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Paper~53 identified five experimentally separable control directions for the VCML
+behavioral phase diagram and posed three open questions:
+(1) Is sg\_C = sg4/$\sigma_w$ the unified order parameter that collapses the five
+axes?
+(2) Does zone coherence scale with wave radius (correlation length law)?
+(3) Does the write trigger--perturbation intensity interaction (Exp C prediction:
+C\_perturb fails at low amplitude) hold?
+This paper tests all three.
+
+\textit{Exp A (sg\_C test):}
+Sweeping perturbation amplitude at S1 shows that snr = sg4/$\sigma_w$ is
+roughly flat ($\approx 0.105$) across the identity-encoding regime and drops
+slightly ($\approx 0.094$) in the parity regime.
+sg\_C is \emph{not} the unified order parameter: it is smoother than sg4 but
+does not predict regime identity.
+The na\_ratio remains the most diagnostic single metric for the
+identity/parity transition.
+
+\textit{Exp B (correlation length law):}
+At S2 (zone\_width=20), sweeping r\_wave reveals two distinct failure modes.
+At r\_wave=1 ($\delta=20$, well above the Axis~II wave-bleed threshold),
+na\_ratio = 0.748 (parity) --- a correlation-length failure, not wave bleed.
+This confirms that copy-forward loop coherence requires $r_\text{wave} \geq
+r_\text{crit}$ independent of $\delta$.
+sg4 peaks at r\_wave=4 ($\delta=5$); na\_ratio peaks at r\_wave=8 ($\delta=2.5$).
+
+\textit{Exp C (cross-axis surface):}
+The prediction is inverted.
+C\_perturb maintains identity encoding at \emph{all} amplitude levels tested
+(na = 1.493, 1.390, 1.252 for sub-threshold, optimal, and over-perturbed),
+while C\_ref exhibits a parity/identity/parity transition as amplitude increases.
+Mechanism: C\_perturb's trigger selectivity minimizes $\sigma_w$ (within-zone
+fieldM variance), producing high SNR even with small absolute sg4.
+The cross-axis interaction is: trigger selectivity provides noise-gating, not
+signal-boosting.
+\end{abstract}
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Introduction}
+
+Paper~53 synthesized Papers~0--52 into a five-axis behavioral phase diagram
+and identified three open questions.
+This paper tests each.
+
+\paragraph{The three questions.}
+\begin{enumerate}
+  \item \textbf{Unified order parameter.}
+    Paper~53 identified sg\_C = sg4/$\sigma_w$ as a candidate that might
+    collapse the five-axis diagram.
+    If sg\_C is monotone where sg4 is not, it is the better coordinate.
+
+  \item \textbf{Correlation length law.}
+    The Axis~V finding (patch formation at S4) implied a finite copy-forward
+    loop correlation length.
+    The claim: correlation\_length $\approx r_\text{wave}$.
+    The test: sweep $r_\text{wave}$ at fixed zone\_width and show where coherence fails.
+
+  \item \textbf{Cross-axis surface.}
+    Axis~IV (write trigger) and Axis~I (perturbation intensity) were predicted
+    to interact: C\_perturb should fail when wave events are absent (low
+    amplitude).
+\end{enumerate}
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Methods}
+
+All experiments use the FastVCML system with 5 seeds, STEPS=2000.
+
+\paragraph{Exp A.}
+S1 grid (W=80, H=40, HALF=40, WR=4.8, r\_wave=2).
+Six amplitude levels: (supp=0.06, exc=0.12) through (supp=1.20, exc=2.40).
+Metrics: sg4, $\sigma_w$, snr=sg4/$\sigma_w$, na\_ratio, coll/site.
+
+\paragraph{Exp B.}
+S2 grid (W=160, H=80, HALF=80, WR=19.2), optimal amplitude (supp=0.25, exc=0.50).
+Five r\_wave levels: 1, 2, 4, 8, 16.
+$\delta = W_\text{zone}/r_\text{wave} = 20/r_\text{wave}$.
+
+\paragraph{Exp C.}
+S1 grid. Three amplitude levels $\times$ two write modes (C\_ref, C\_perturb) $\times$ 5 seeds = 30 runs.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Results}
+
+\subsection{Exp A: sg\_C Is Not the Unified Order Parameter}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{lrrrrl}
+\toprule
+Condition & coll/site & sg4 & $\sigma_w$ & snr & na (encoding) \\
+\midrule
+A1 (deep sub) & 0.00061 & 0.0174 & 0.162 & 0.104 & 0.945 [parity] \\
+A2 (near thresh) & 0.00122 & 0.0200 & 0.195 & 0.104 & 1.067 [IDENTITY] \\
+A3 (optimal) & 0.00241 & 0.0209 & 0.202 & 0.105 & 1.026 [IDENTITY] \\
+A4 (over-pert) & 0.00347 & 0.0258 & 0.225 & 0.115 & 1.014 [IDENTITY] \\
+A5 (strong over) & 0.00525 & 0.0215 & 0.230 & 0.094 & 0.872 [parity] \\
+A6 (extreme) & 0.00861 & 0.0248 & 0.253 & 0.098 & 0.856 [parity] \\
+\bottomrule
+\end{tabular}
+\caption{Exp A: sg\_C (snr) across amplitude sweep. snr is flat in the
+identity regime ($\approx 0.105$) and drops slightly in the parity regime
+($\approx 0.094$--0.098). na\_ratio is the clearer regime indicator.}
+\end{table}
+
+\textbf{Finding.}
+snr = sg4/$\sigma_w$ does not collapse the amplitude axis.
+It is smoother than sg4 (less prone to apparent non-monotone noise) but
+does not improve regime prediction: the identity/parity transition is captured
+more cleanly by na\_ratio than by snr.
+
+\textbf{Implication.}
+sg\_C = snr is not the unified order parameter.
+The identity/parity transition (na\_ratio threshold) and the signal amplitude
+(sg4) are not reducible to a single ratio at this level.
+This does not rule out a deeper unification; it rules out the simple
+sg4/$\sigma_w$ ratio as that unification.
+
+\subsection{Exp B: Correlation Length Law Confirmed}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{rrrrrl}
+\toprule
+r\_wave & $\delta$ & coll/site & sg4 & snr & na (encoding) \\
+\midrule
+1 & 20.0 & 0.00082 & 0.0046 & 0.041 & 0.748 [parity] \\
+2 & 10.0 & 0.00238 & 0.0090 & 0.046 & 0.865 [parity] \\
+4 & 5.0  & 0.00797 & 0.0132 & 0.052 & 1.002 [IDENTITY borderline] \\
+8 & 2.5  & 0.02759 & 0.0121 & 0.065 & 1.274 [IDENTITY] \\
+16 & 1.25 & 0.07542 & 0.0063 & 0.072 & 1.064 [IDENTITY] \\
+\bottomrule
+\end{tabular}
+\caption{Exp B: r\_wave sweep at S2 (zone\_width=20). Both sg4 and na\_ratio
+show non-monotone behavior. At r\_wave=1 ($\delta=20$, well above wave-bleed
+threshold), na\_ratio=0.748 (parity) from correlation-length failure.}
+\end{table}
+
+\textbf{Finding 1: Correlation-length failure at r\_wave=1.}
+At r\_wave=1 and $\delta=20$ (well above the Axis~II wave-bleed threshold of
+$\delta \approx 2.5$), na\_ratio = 0.748 (parity).
+This failure is not Axis~II (wave bleed): $\delta$ is adequate.
+It is a failure of the copy-forward loop to propagate fieldM across the
+zone width (20 sites) when the wave radius is only 1.
+
+This directly confirms the correlation length hypothesis: the copy-forward loop
+has a finite effective range proportional to $r_\text{wave}$.
+When zone\_width $\gg r_\text{wave}$, structure forms in patches rather than
+zone-wide gradients.
+
+\textbf{Finding 2: Two-sided non-monotone in sg4.}
+sg4 peaks at r\_wave=4 ($\delta=5$, the Axis~II peak from Paper~47).
+It falls both for smaller r\_wave (correlation-length failure) and larger
+r\_wave (wave bleed starting as coll/site rises sharply).
+na\_ratio peaks later, at r\_wave=8 ($\delta=2.5$).
+
+The sg4 peak and na\_ratio peak occur at different r\_wave values because they
+measure different aspects of structure:
+sg4 measures mean inter-zone distance (maximized by balanced suppression/excitation);
+na\_ratio measures whether the correct zones are more distinct (maximized by
+clean zone-to-zone gradient).
+
+\textbf{Finding 3: snr increases monotonically with r\_wave.}
+Unlike sg4 and na\_ratio, snr increases from 0.041 at r\_wave=1 to 0.072 at
+r\_wave=16.
+This is because $\sigma_w$ decreases at large r\_wave (large waves create more
+uniform fieldM within zones, reducing within-zone variance).
+sg\_C therefore fails to capture the parity failure at large r\_wave: it
+\emph{increases} exactly where na\_ratio deteriorates (r\_wave=16, na=1.064).
+Further evidence that snr is not the unified order parameter.
+
+\textbf{Correlation length bound.}
+From this sweep: identity encoding (na $>$ 1) requires $r_\text{wave} \geq 4$
+for zone\_width=20, i.e., $r_\text{wave}/\text{zone\_width} \geq 0.2$.
+Equivalently, zone\_width $\leq 5 \times r_\text{wave}$.
+This is the empirical correlation length law: beyond 5 wave radii per zone,
+the copy-forward loop cannot maintain zone-wide coherence.
+
+\subsection{Exp C: Prediction Inverted --- C\_perturb Is Noise-Robust}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{llrrrl}
+\toprule
+Amplitude & Mode & sg4 & $\sigma_w$ & snr & na (encoding) \\
+\midrule
+sub-threshold & C\_ref & 0.0174 & 0.162 & 0.104 & 0.945 [parity] \\
+sub-threshold & C\_perturb & 0.0069 & 0.0115 & 0.611 & \textbf{1.493} [IDENTITY] \\
+optimal & C\_ref & 0.0209 & 0.202 & 0.105 & 1.026 [IDENTITY] \\
+optimal & C\_perturb & 0.0048 & 0.0093 & 0.522 & \textbf{1.390} [IDENTITY] \\
+over-perturbed & C\_ref & 0.0215 & 0.230 & 0.094 & 0.872 [parity] \\
+over-perturbed & C\_perturb & 0.0036 & 0.0100 & 0.361 & \textbf{1.252} [IDENTITY] \\
+\bottomrule
+\end{tabular}
+\caption{Exp C: write trigger $\times$ amplitude. C\_perturb maintains identity
+encoding at all amplitudes. C\_ref fails at both extremes. Mechanism: C\_perturb
+has extremely low $\sigma_w$ (0.009--0.012), producing high snr even with tiny
+sg4.}
+\end{table}
+
+\textbf{Finding.}
+The Paper~53 prediction (C\_perturb fails at low amplitude because no wave
+events occur) is wrong.
+C\_perturb maintains identity encoding at \emph{all} amplitude levels tested.
+At sub-threshold amplitude, C\_perturb achieves na=1.493 --- the highest
+na\_ratio of any condition in this paper.
+
+\textbf{Mechanism: noise gating, not signal boosting.}
+C\_perturb's sg4 is consistently \emph{smaller} than C\_ref (0.007--0.0048 vs
+0.017--0.022).
+But C\_perturb's $\sigma_w$ is 10--20$\times$ smaller (0.009--0.012 vs 0.162--0.230).
+The result: C\_perturb's snr is 4--6$\times$ higher (0.36--0.61 vs 0.094--0.105).
+
+Trigger selectivity does not write more informative content into fieldM.
+It writes to fewer cells, keeping within-zone variance ($\sigma_w$) near zero.
+The resulting fieldM has small absolute magnitude (low sg4) but extremely low
+noise (low $\sigma_w$) and thus high SNR.
+High SNR, not high sg4, determines whether the na\_ratio crosses the identity
+threshold.
+
+\textbf{C\_ref failure modes.}
+C\_ref fails at sub-threshold because the viability contrast between
+suppressed and excited zones is weak (small amplitude), but it writes to all
+quiescent cells, accumulating high $\sigma_w$ from noisy writes.
+C\_ref fails at over-perturbed because rapid collapse cycles prevent the
+quiescence streak from accumulating, mixing formation and re-encoding signals.
+C\_perturb avoids both: it only writes during wave events, so it accumulates
+only the zone-specific signal regardless of amplitude level.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Discussion}
+
+\subsection{The Actual Order Parameter}
+
+sg\_C = sg4/$\sigma_w$ (snr) is not the unified order parameter.
+However, the Exp C results reveal what the actual ordering quantity is:
+\emph{zone-specific SNR} evaluated at the level of na\_ratio, not sg4.
+Formally, na\_ratio measures whether the inter-zone signal exceeds the
+intra-zone noise for the correct zone pairs (nonadj vs adj).
+The C\_perturb results show this can be achieved with tiny sg4 if $\sigma_w$ is
+also tiny.
+
+A candidate order parameter is therefore not the scalar snr = sg4/$\sigma_w$
+but the vectorial quantity:
+\begin{equation}
+  C_\text{order} = \frac{\|\mu_\text{nonadj} - \mu_\text{adj}\|}{\sigma_w}
+\end{equation}
+where $\mu_\text{nonadj}$ and $\mu_\text{adj}$ are the mean fieldM distances
+for non-adjacent and adjacent zone pairs respectively.
+This is the na\_ratio with an explicit noise normalization.
+Whether this quantity collapses the full five-axis diagram remains an open
+question.
+
+\subsection{The Correlation Length Law}
+
+The empirical bound (identity encoding requires
+zone\_width $\leq 5 \times r_\text{wave}$) is a testable, falsifiable claim.
+It predicts that:
+\begin{enumerate}
+  \item Increasing $r_\text{wave}$ at fixed S3 (zone\_width=80) should
+    recover identity encoding.
+    Prediction: na\_ratio $> 1$ at r\_wave $\geq 16$ (zone\_width/5=16).
+  \item The scale failure at S4 (zone\_width=320) should be recoverable with
+    $r_\text{wave} \geq 64$.
+  \item Systems with local learning rules (biological cortex, ~50--100~$\mu$m
+    propagation range) should show analogous patch formation at
+    zone\_width $> 5 \times$ propagation\_range.
+\end{enumerate}
+
+The correlation length bound also explains why $\delta$ (Axis~II) and
+$r_\text{wave}$ (correlation length) appear as separate axes:
+$\delta = W_\text{zone}/r_\text{wave}$ captures wave containment,
+while zone\_width/r\_wave captures loop propagation range.
+These are not the same quantity: wave containment requires large $\delta$,
+while loop coherence requires small zone\_width/$r_\text{wave}$.
+Both conditions must be satisfied simultaneously.
+
+\subsection{Revised Axis IV Understanding}
+
+The Exp C result changes the theoretical interpretation of the trigger
+selectivity axis.
+The original framing (Paper~52) was: C\_perturb writes only during boundary
+events, selecting more informative writes.
+The correct framing is: C\_perturb writes to fewer cells total, maintaining
+low $\sigma_w$, which produces high SNR regardless of whether individual
+writes are more informative.
+
+This is a mechanistic distinction.
+Signal-boosting predicts C\_perturb should fail at low amplitude (less
+informative writes).
+Noise-gating predicts C\_perturb should succeed at any amplitude (always writes
+to few cells).
+The data confirms noise-gating.
+
+The implication: C\_perturb's adversarial resistance (Paper~52) and its
+cross-amplitude robustness (this paper) both follow from the same mechanism.
+Trigger selectivity is a noise-reduction operation, not an information-selection
+operation.
+
+\subsection{Toward the Stability Condition}
+
+The regime diagram now points toward an analytical gap.
+The three experiments show regime transitions at:
+\begin{itemize}
+  \item na\_ratio: parity $\leftrightarrow$ identity as amplitude, r\_wave, or
+    trigger selectivity varies.
+  \item A stability condition exists but is not yet derived analytically.
+\end{itemize}
+
+The natural framing: if the population field dynamics can be approximated by a
+PDE (e.g., of Burgers or KPZ type, per the nonlinear birth term),
+the regime boundaries should correspond to analytical stability conditions on
+that PDE.
+Specifically:
+\begin{itemize}
+  \item The correlation length law
+    (zone\_width $\leq 5 r_\text{wave}$) should emerge from the propagation
+    term.
+  \item The amplitude peak (Axis~I non-monotone) should correspond to a
+    balance between nonlinear amplification and dissipative smoothing.
+  \item The na\_ratio identity threshold should correspond to a condition on
+    the inter-zone forcing vs.\ within-zone noise.
+\end{itemize}
+Deriving these conditions analytically from the field equation would convert
+the regime diagram from an empirical observation to a predicted consequence
+of the system's dynamics.
+This is the target for Paper~55.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+
+Three open questions from Paper~53 are resolved.
+
+\textbf{Order parameter}: sg\_C is not the unified order parameter.
+na\_ratio remains the most diagnostic metric.
+The candidate order parameter is a vectorial SNR measuring whether
+correct zone pairs are separated beyond within-zone noise.
+
+\textbf{Correlation length law}: Confirmed.
+Identity encoding requires zone\_width $\leq 5 \times r_\text{wave}$.
+The failure at r\_wave=1 ($\delta=20$) is not wave bleed; it is a distinct
+correlation-length mechanism.
+Two-sided non-monotone in sg4 (correlation-length failure and wave bleed
+at opposite extremes).
+
+\textbf{Cross-axis surface}: Prediction inverted.
+C\_perturb maintains identity at all amplitude levels via noise-gating, not
+signal-boosting.
+Trigger selectivity reduces $\sigma_w$, not the write-level information content.
+C\_ref transitions parity$\to$identity$\to$parity as amplitude increases;
+C\_perturb stays identity throughout.
+
+The most important theoretical revision: the Axis IV trigger mechanism is
+noise-gating.
+The most important empirical finding: the correlation length bound
+(zone\_width $\leq 5 r_\text{wave}$) is falsifiable and testable at scale.
+
+\end{document}

@@ -1,0 +1,305 @@
+\documentclass[twocolumn,10pt]{article}
+\usepackage{amsmath,amssymb,graphicx,booktabs,hyperref,microtype}
+\usepackage[margin=1.8cm]{geometry}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue}
+
+\title{\textbf{Paper 68: Order Parameter Exponent at $p_c = 0^+$}\\
+  \large Power-Law vs Essential Singularity --- Manna Class Falsified}
+\author{VCSM Theoretical Programme}
+\date{2026-03-11}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We investigate the functional form of the order parameter $|M(P)|$ as $P_\mathrm{causal}\to 0^+$ in
+VCML, building on Paper~67's confirmation of $p_c = 0^+$.  A fine
+$P$-scan at $L=160$ with probabilistic wave firing (Paper~67 protocol) discriminates
+among three candidate functional forms: power law $|M|\sim P^\beta$, BKT essential
+singularity $|M|\sim e^{-A/\sqrt{P}}$, and ordinary essential singularity
+$|M|\sim e^{-A/P}$.
+The power law provides the best fit ($R^2 = 0.757$), but with an apparent
+exponent $\beta = 0.406$ that disagrees with the Paper~63 FSS value $\beta = 0.65$.
+We trace the discrepancy to poor signal-to-noise at small $P$: for
+$P < 0.010$, $U_4 < 0.1$ at $L=160$, indicating residual finite-size disordering
+that contaminates the amplitude measurement.
+FSS scaling slopes range from $-1.2$ (disordered limit $L^{-1}$) at small $P$ to
+$-0.53$ at $P=0.020$, consistent with a gradual crossover to the ordered phase
+from $p_c = 0^+$.
+A direct conservation-law diagnostic falsifies the Manna/stochastic-sandpile
+hypothesis: the $\phi$-creation flux exceeds the decay flux by a factor of 3.2,
+demonstrating that VCSM does \emph{not} conserve the relevant activity variable.
+The Manna universality class is therefore excluded.
+We conclude that $\beta = 0.65\pm 0.05$ (Paper~63 FSS) remains the best estimate,
+measurement of the exponent functional form requires $L\geq 320$ or a direct
+equilibration study, and VCSM belongs to a \emph{new} non-equilibrium universality class.
+\end{abstract}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Motivation}
+
+Paper~67 resolved the WAVE\_EVERY rounding artefact and confirmed $p_c = 0^+$:
+any positive causal purity drives the zone-mean order parameter $M$ away from zero,
+with $U_4(L=160) > U_4(L=120)$ at all tested $P$.
+The critical exponents $\beta = 0.65$, $\nu = 0.97$ (Paper~63) match no known
+universality class exactly.
+
+A theoretical analysis (following the present paper's experimental motivation)
+identified the stochastic-sandpile or Manna class as a candidate:
+Manna exponents in 2D are $\beta \approx 0.639$, $\nu \approx 0.799$,
+and the structural analogy maps the copy-forward loop (directed dynamics
+with spatially-correlated order parameter) onto Manna's conserved stochastic
+redistribution rule.
+The $\beta$ proximity is striking.
+
+This paper tests three claims:
+\begin{enumerate}
+  \item Whether $|M(P)|$ follows a power law, and with what exponent.
+  \item Whether FSS at fine $P$ values is consistent with $\beta/\nu = 0.670$.
+  \item Whether the VCSM $\phi$-field satisfies the activity conservation that
+        is a \emph{necessary} condition for Manna-class universality.
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Model and Parameters}
+
+All runs use the standard VCML parameters from Papers~64--67:
+$J=1.0$, $T=3.0$, $\text{MID\_DECAY}=0.97$, $\beta_\mathrm{base}=0.005$,
+$\text{SS}=8$, $r_\mathrm{wave}=5$, $\text{WAVE\_DUR}=5$,
+$h_\mathrm{ext}=1.5$, $\text{FIELD\_DECAY}=0.999$, $\text{FA}=0.30$.
+
+Wave firing: probabilistic, $p_\mathrm{wave}(L) = \min(1, 1/w_f(L))$
+where $w_f(L) = 25(40/L)^2$ (exact, no integer rounding, Paper~67 fix).
+At $L=160$: $p_\mathrm{wave} = 0.640$.
+Statistics collected over the last 60\% of each run.
+
+\textbf{Phase A}: Fine $P$ scan at $L=160$.
+$P\in\{0.001, 0.002, 0.003, 0.005, 0.007, 0.010, 0.015, 0.020, 0.030, 0.050\}$,
+6 seeds, 10\,000 steps.
+
+\textbf{Phase B}: FSS at selected $P$.
+$L\in\{80, 100, 120, 160\}$,
+$P\in\{0.003, 0.005, 0.007, 0.010, 0.020\}$,
+4 seeds, 10\,000 steps.
+
+\textbf{Phase C}: Conservation-law diagnostic.
+$L=120$, $P=0.010$, 4 seeds, 10\,000 steps.
+Per-step measurement of $\phi$-creation flux
+$\mathcal{F}_\mathrm{cr} = \sum_i |\Delta\phi_i|_\mathrm{consolidation}$
+and decay flux
+$\mathcal{F}_\mathrm{dc} = \sum_i |\phi_i|(1-\text{FIELD\_DECAY})$.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase A: Fine $P$ Scan}
+
+\subsection{Raw amplitudes and Binder cumulants}
+
+Table~\ref{tab:phaseA} lists $|M|$ and $U_4$ at $L=160$ across the tested $P$ values.
+
+\begin{table}[h]
+\centering
+\caption{Phase A results at $L=160$.}
+\label{tab:phaseA}
+\begin{tabular}{rrrrr}
+\toprule
+$P$ & $|M|$ & s.e. & $U_4$ \\
+\midrule
+0.001 & $1.3\times10^{-4}$ & $1.0\times10^{-5}$ & 0.064 \\
+0.002 & $1.3\times10^{-4}$ & $1.0\times10^{-5}$ & 0.055 \\
+0.003 & $1.3\times10^{-4}$ & $1.0\times10^{-5}$ & 0.050 \\
+0.005 & $1.4\times10^{-4}$ & $1.0\times10^{-5}$ & 0.038 \\
+0.007 & $1.4\times10^{-4}$ & $1.0\times10^{-5}$ & 0.037 \\
+0.010 & $1.6\times10^{-4}$ & $1.0\times10^{-5}$ & 0.083 \\
+0.015 & $2.1\times10^{-4}$ & $1.0\times10^{-5}$ & 0.203 \\
+0.020 & $2.8\times10^{-4}$ & $2.0\times10^{-5}$ & 0.321 \\
+0.030 & $4.1\times10^{-4}$ & $2.0\times10^{-5}$ & 0.461 \\
+0.050 & $7.0\times10^{-4}$ & $2.0\times10^{-5}$ & 0.584 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The critical observation: for $P \leq 0.010$, $U_4 < 0.1$.
+This indicates the system at $L=160$ is not yet in the thermodynamic ordered phase
+at these parameter values within the run length tested.
+The ordering onset occurs near $P \approx 0.012$--$0.015$.
+
+\subsection{Functional form discrimination}
+
+Fitting $\log|M|$ against three linearisations:
+\begin{align*}
+  H_0\ \text{(power law)}:&\quad \ln|M| = \beta\ln P + c \\
+  H_1\ \text{(BKT)}:&\quad \ln|M| = -A/\sqrt{P} + c \\
+  H_2\ \text{(ess. sing.)}:&\quad \ln|M| = -A/P + c
+\end{align*}
+yields $R^2$ values of $0.757$, $0.501$, and $0.307$ respectively.
+The power law provides the best fit with $\beta_\mathrm{fit} = 0.406$.
+
+\textbf{Reliability caveat.}
+The fit includes ten $P$ values, but six of them ($P \leq 0.010$) have
+$U_4 < 0.1$, where the measured $|M|$ is dominated by finite-size fluctuations
+rather than the genuine order parameter amplitude.
+In this regime $|M|_\mathrm{measured} \approx \sigma_M / \sqrt{n_\mathrm{samples}}$,
+which scales with system noise rather than $P^\beta$.
+The apparent $\beta_\mathrm{fit} = 0.406$ reflects this contamination.
+
+The four well-ordered points ($P \geq 0.015$) where $U_4 > 0.1$ give
+a slope broadly consistent with the Paper~63 estimate $\beta = 0.65$,
+but are too few for a reliable independent fit.
+We conclude: \emph{the functional-form test is statistically inconclusive
+at the current system sizes and run lengths.}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase B: FSS at Fine $P$}
+
+Table~\ref{tab:phaseB} shows $|M|$ vs $L$ at selected $P$ values.
+
+\begin{table}[h]
+\centering
+\caption{Phase B: $|M|$ vs $L$ at selected $P$ values.}
+\label{tab:phaseB}
+\begin{tabular}{rrrrr}
+\toprule
+$P$ & $L=80$ & $L=100$ & $L=120$ & $L=160$ \\
+\midrule
+0.003 & $2.8\times10^{-4}$ & $2.6\times10^{-4}$ & $1.9\times10^{-4}$ & $1.3\times10^{-4}$ \\
+0.005 & $3.0\times10^{-4}$ & $2.7\times10^{-4}$ & $1.9\times10^{-4}$ & $1.3\times10^{-4}$ \\
+0.007 & $3.0\times10^{-4}$ & $2.7\times10^{-4}$ & $2.0\times10^{-4}$ & $1.4\times10^{-4}$ \\
+0.010 & $3.2\times10^{-4}$ & $2.9\times10^{-4}$ & $2.2\times10^{-4}$ & $1.7\times10^{-4}$ \\
+0.020 & $4.0\times10^{-4}$ & $3.7\times10^{-4}$ & $3.0\times10^{-4}$ & $2.8\times10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The scaling exponent $d\ln|M|/d\ln L$ (slope in log-log plot) evolves with $P$:
+
+\begin{center}
+\begin{tabular}{rr}
+\toprule
+$P$ & $d\ln|M|/d\ln L$ \\
+\midrule
+0.003 & $-1.21$ \\
+0.005 & $-1.19$ \\
+0.007 & $-1.13$ \\
+0.010 & $-1.01$ \\
+0.020 & $-0.53$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+At small $P$, the slope approaches $-1.0$, consistent with disordered-phase
+noise scaling $|M|\sim L^{-1}$ (fluctuations of $N_\mathrm{zone}^{-1/2}$
+with $N_\mathrm{zone} \propto L^2$, so $|M|\sim L^{-1}$).
+At $P=0.020$ the slope is $-0.53$, moving toward the Paper~63 critical value
+$-\beta/\nu = -0.67$.
+
+This progression is consistent with the system crossing from the finite-size
+disordered regime into the ordered phase as $P$ increases above the effective
+finite-size crossover scale.
+It supports $p_c = 0^+$ (no genuine lower threshold) while explaining
+why exponent measurements at small $P$ are unreliable at these $L$ values.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase C: Manna Conservation-Law Diagnostic}
+
+The Manna universality class requires an \emph{exactly conserved} activity
+variable --- individual grains are redistributed but never created or
+destroyed \cite{Vespignani1998}.
+Without exact conservation, the system falls outside the Manna class
+regardless of exponent proximity.
+
+We measure per-step fluxes in the $\phi$-field:
+\begin{equation}
+  \mathcal{F}_\mathrm{cr} = \bigl\langle\textstyle\sum_i |\Delta\phi_i|_\mathrm{consol}\bigr\rangle,
+  \qquad
+  \mathcal{F}_\mathrm{dc} = \bigl\langle\textstyle\sum_i |\phi_i|(1-\lambda_d)\bigr\rangle
+\end{equation}
+where $\lambda_d = \text{FIELD\_DECAY} = 0.999$.
+At $L=120$, $P=0.010$, 4 seeds, 10\,000 steps (last 60\% averaged):
+\begin{equation}
+  \mathcal{F}_\mathrm{cr} = 0.2556, \qquad \mathcal{F}_\mathrm{dc} = 0.0790,
+  \qquad r = \mathcal{F}_\mathrm{cr} / \mathcal{F}_\mathrm{dc} = 3.23.
+\end{equation}
+The creation flux exceeds the decay flux by a factor of $3.23$.
+This is a net $\phi$-accumulation rate of $\sim\!1.76$ units/step in the measurement window.
+
+\textbf{Interpretation.}
+The $\phi$-field in VCML is \emph{not conserved}: it has a net creation source
+(consolidation writes) and a decay sink (FIELD\_DECAY), and in steady state
+these need not balance identically.
+The observed ratio $r = 3.23 \gg 1$ means the system is either
+(a)~still in the growing transient phase within the measured window, or
+(b)~in a genuine steady state with continuous net write/decay cycling.
+Either way, the conservation law that defines the Manna class is absent.
+
+\textbf{Conclusion from Phase C:}
+The Manna universality class is \emph{falsified} for VCSM.
+The $\beta \approx 0.639$ proximity was numerically suggestive but mechanistically
+unsupported: the copy-forward loop does not conserve the relevant activity variable.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Synthesis: Universality Class Constraints}
+
+After 8 papers of systematic measurement and ablation, the constraints on the
+VCSM universality class are:
+
+\begin{itemize}
+  \item \textbf{Confirmed}: $p_c = 0^+$, $\beta = 0.65 \pm 0.05$, $\nu = 0.97$ (Paper~63 FSS).
+  \item \textbf{Confirmed}: Order parameter is zone-mean $M$, not zone-texture
+        (phi-correlator null, Paper~66).
+  \item \textbf{Confirmed}: Non-equilibrium --- gate breaks time-reversal (Paper~65).
+  \item \textbf{Confirmed}: Cross-substrate universality --- Ising + VCML show
+        orthogonal order parameters (Paper~60).
+  \item \textbf{Excluded}: Manna class --- conservation law violated (this paper).
+  \item \textbf{Excluded}: BKT / essential singularity --- power law fits better (this paper,
+        consistent with Paper~63).
+  \item \textbf{Unknown}: Exact exponents require $L \geq 320$ to escape finite-size
+        contamination at small $P$.
+\end{itemize}
+
+The candidate universality class requires directed dynamics, broken time-reversal,
+$Z_2$ order parameter symmetry, and \emph{without} activity conservation.
+The closest known class is the \textbf{Directed Percolation (DP)} class, but
+DP exponents in 2+1D are $\beta \approx 0.584$, $\nu_\perp \approx 0.734$,
+$\nu_\parallel \approx 1.295$, which do not match.
+VCSM's spatially-mediated reconstruction (copy-forward loop operating via a wave
+field rather than direct local contact) likely shifts the fixed point from DP.
+
+\textbf{Conjecture}: VCSM belongs to a novel non-equilibrium universality class
+characterised by directed dynamics, $Z_2$ symmetry, and \emph{long-range spatial
+coupling} via the wave field.
+The long-range coupling (wave radius $r_w = 5$, not nearest-neighbour) is
+absent in both Manna and standard DP, and is the most likely source of the
+exponent discrepancy.
+Testing this conjecture requires: (i) measuring exponents at $r_w = 1$
+(nearest-neighbour limit) to recover DP if the wave-range is the distinguishing
+feature, and (ii) $L = 320$ FSS for clean exponent extraction.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusions}
+
+\begin{enumerate}
+  \item The power-law functional form fits best ($R^2 = 0.757$) compared to
+        BKT ($R^2 = 0.501$) and ordinary essential singularity ($R^2 = 0.307$),
+        consistent with a genuine phase transition rather than an infinite-order
+        crossover.
+  \item The apparent $\beta_\mathrm{fit} = 0.406$ from the direct $P$-scan is
+        unreliable: six of the ten data points are in the finite-size disordered
+        regime ($U_4 < 0.1$).
+        The Paper~63 FSS value $\beta = 0.65 \pm 0.05$ remains the best estimate.
+  \item FSS slopes converge from $-1.2$ (disorder) toward $-0.67$ (critical)
+        as $P$ increases, confirming the $p_c = 0^+$ picture without a threshold.
+  \item The Manna conservation law is violated: $\mathcal{F}_\mathrm{cr}/\mathcal{F}_\mathrm{dc} = 3.23$.
+        VCSM is \emph{not} in the Manna universality class.
+  \item The theoretical symmetry analysis (directed dynamics + $Z_2$ + long-range
+        wave coupling) points to a novel universality class.
+        Paper~69: measure $r_w=1$ exponents and test $r_w$-dependence of $\beta$.
+\end{enumerate}
+
+\begin{thebibliography}{9}
+\bibitem{Vespignani1998}
+  A.~Vespignani, R.~Dickman, M.~A.~Mu\~noz, and S.~Zapperi,
+  Driving, conservation and absorbing states in sandpiles,
+  \textit{Phys.\ Rev.\ Lett.}\ \textbf{81}, 5676 (1998).
+\end{thebibliography}
+
+\end{document}

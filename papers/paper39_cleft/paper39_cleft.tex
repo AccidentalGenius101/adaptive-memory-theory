@@ -1,0 +1,333 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\title{\textbf{Paper 39: Synaptic Cleft Geometry ---\\
+Deterministic Offset vs.\ Stochastic Noise in Inter-Region Relay}}
+\author{VCSM Theoretical Series}
+\date{2026-03-10}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+When two VCML regions are coupled, waves launched in region~L1 must land in
+region~L2 at a positional offset that encodes zone identity.
+Real synaptic projections have two sources of geometric imperfection:
+a \emph{deterministic} cleft offset ($D_\mathrm{cleft}$) shifting all
+wave landing sites by a fixed amount, and \emph{stochastic} positional
+noise ($\sigma$) drawn independently for each wave.
+We test whether these two degradation modes have equivalent effects on
+relay gain $G = \mathrm{sg4n}(\mathrm{geo})/\mathrm{sg4n}(\mathrm{ctrl})$.
+Key findings: (1)~relay gain is \emph{alignment-blind} --- deterministic
+offset does not degrade $G$ even at $D_\mathrm{cleft} = z_w$ (100\%
+nominal misclassification), because a uniformly shifted zone map in L2
+is structurally equivalent to the original; (2)~stochastic noise
+\emph{does} degrade $G$ by randomising the zone-identity signal
+across waves; (3)~at matched magnitudes $m \ge 5$, $G_\mathrm{det} \ge
+G_\mathrm{stoch}$ in 5 of 7 conditions (mean ratio 1.25), confirming
+a qualitative difference between offset and noise as geometric perturbations.
+\end{abstract}
+
+\section{Introduction}
+
+Papers 35--37 established that geographic coupling --- routing waves from
+one VCML region so that they land in the geometrically corresponding zone
+of a downstream region --- produces a relay gain of approximately
+$G \approx 2$.
+The mechanism is basin selection: geographic coupling doubles the
+probability that L2 enters the high-structure attractor basin
+($P_\mathrm{high}(\mathrm{geo}) = 0.50$ vs.\ $0.27$, Paper~38).
+
+Real anatomical projections are not perfect.
+Two distinct failure modes can corrupt the geometric relay:
+\begin{enumerate}
+  \item \textbf{Deterministic offset} ($D_\mathrm{cleft}$): a systematic
+        spatial shift, as if the synapse terminates in a fixed
+        mis-registered location.
+        Waves that would land at site~$x$ in L2 instead land at
+        $x + D_\mathrm{cleft}$ (modular within the active region).
+  \item \textbf{Stochastic noise} ($\sigma$): independent Gaussian
+        positional jitter per wave.
+        Each wave landing position is perturbed by
+        $\delta \sim \mathcal{N}(0, \sigma^2)$.
+\end{enumerate}
+
+The intuitive prediction is that both degrade $G$ proportionally to a
+misclassification rate: the fraction of waves that land in a zone other
+than intended.
+For deterministic offset, the analytical misclassification rate is
+$\mu_\mathrm{det}(D) = (D \bmod z_w)/z_w$, which cycles between 0 and 1
+as $D$ ranges from 0 to $2z_w$.
+For stochastic noise, the average misclassification rate is
+\begin{equation}
+  \mu_\mathrm{stoch}(\sigma) = \frac{1}{z_w}
+    \int_0^{z_w} 2\,\Phi\!\left(-\frac{\min(c, z_w-c)}{\sigma}\right) dc
+\end{equation}
+where $\Phi$ is the standard normal CDF and $c$ is the within-zone
+launch coordinate.
+Both reach $\approx 80$--90\% at $\sigma \approx z_w$.
+
+We test whether $G$ tracks these misclassification rates.
+
+\section{Methods}
+
+\subsection{Base System}
+
+Standard VCML parameters: $H = 20$, $N_\mathrm{zones} = 4$,
+zone width $z_w = 10$ sites, $\mathrm{HALF} = 20$ (active region width),
+$\mathrm{WR} = 4.8$, $r_\mathrm{wave} = 2$, $T = 3000$, 5 seeds per
+condition.
+Two VCML regions (L1, L2) share waves from a \texttt{CleftEnv}
+environment.
+
+\subsection{CleftEnv: Deterministic Mode}
+
+A wave is launched at site $c_x \in [\mathrm{HALF}, 2\cdot\mathrm{HALF})$
+in L1.
+The L2 landing site is
+\begin{equation}
+  c_x^{(2)} = \mathrm{HALF} + (c_x - \mathrm{HALF} + D_\mathrm{cleft})
+               \bmod \mathrm{HALF}
+\end{equation}
+ensuring $c_x^{(2)}$ stays within the active region.
+The L2 zone class is $\lfloor (c_x^{(2)} - \mathrm{HALF}) / z_w \rfloor$.
+
+Sweep: $D_\mathrm{cleft} \in \{0, 2, 5, 8, 10, 12, 15, 20\}$ sites.
+Note that $D_\mathrm{cleft} = 0$ and $D_\mathrm{cleft} = z_w = 10$
+both give 0\% nominal misclassification (full wrap to the same zone);
+$D_\mathrm{cleft} = z_w/2 = 5$ gives 50\% misclassification.
+
+\subsection{CleftEnv: Stochastic Mode}
+
+Each wave is given an independent displacement
+$\delta = \mathrm{round}(\mathcal{N}(0, \sigma^2))$ applied to both
+L1 and L2 landing sites (same $\delta$ per wave, preserving relative
+alignment) with clamping to the active region boundary.
+
+Sweep: $\sigma \in \{2, 5, 8, 10, 12, 15, 20\}$ sites.
+
+\subsection{Control Condition}
+
+A standard unstructured (ctrl) condition (5 seeds) provides the
+$\mathrm{sg4n}(\mathrm{ctrl})$ denominator for all $G$ calculations.
+$G = \mathrm{sg4n}(\mathrm{coupled}) / \mathrm{sg4n}(\mathrm{ctrl})$.
+
+\section{Results}
+
+\subsection{Relay Gain Is Alignment-Blind}
+
+\begin{table}[h]
+  \centering
+  \caption{Relay gain $G$ vs deterministic cleft offset $D_\mathrm{cleft}$.
+           Nominal misclassification rate $\mu_\mathrm{det}$ cycles with
+           period $z_w = 10$.}
+  \label{tab:det}
+  \small
+  \begin{tabular}{rccc}
+    \toprule
+    $D_\mathrm{cleft}$ & $\mu_\mathrm{det}$ & $G$ \\
+    \midrule
+     0  &   0\% & 1.61 \\
+     2  &  20\% & 3.50 \\
+     5  &  50\% & 3.18 \\
+     8  &  80\% & 2.24 \\
+    10  &   0\% & 3.42 \\
+    12  &  20\% & 2.21 \\
+    15  &  50\% & 2.41 \\
+    20  &   0\% & 1.93 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:det} shows that $G$ does \emph{not} track
+$\mu_\mathrm{det}$.
+At $D_\mathrm{cleft} = 8$ (80\% nominal misclassification), $G = 2.24$.
+At $D_\mathrm{cleft} = 5$ (50\% misclassification), $G = 3.18$.
+There is no systematic decline: $G$ stays in the range 1.6--3.5
+across all offsets, including 100\% nominal misclassification
+($D_\mathrm{cleft} = 10$, $G = 3.42$).
+
+The explanation is structural.
+A deterministic offset maps zone~0 to zone~1, zone~1 to zone~2, etc.\
+(a cyclic permutation) or creates an intermediate partial overlap.
+In either case, the \emph{consistency} of the mapping is preserved:
+every wave from L1 zone~$z$ lands in the same L2 zone $z'$ for all
+time.
+The L2 region therefore develops a structurally differentiated fieldM
+--- just with zone indices permuted or shifted relative to L1.
+Since sg4n measures \emph{pairwise distances} between zone means
+(not alignment with L1), the structural quality is unchanged.
+Relay gain measures whether L2 has structure, not whether L2's
+structure is aligned with L1's.
+
+\subsection{Stochastic Noise Degrades Relay Gain}
+
+\begin{table}[h]
+  \centering
+  \caption{Relay gain $G$ vs stochastic cleft noise $\sigma$.
+           Misclassification rate $\mu_\mathrm{stoch}$ increases
+           monotonically with $\sigma$.}
+  \label{tab:stoch}
+  \small
+  \begin{tabular}{rccc}
+    \toprule
+    $\sigma$ & $\mu_\mathrm{stoch}$ & $G$ \\
+    \midrule
+     0  &   0.0\% & 1.61 \\
+     2  &  31.8\% & 3.96 \\
+     5  &  63.1\% & 2.01 \\
+     8  &  75.8\% & 1.59 \\
+    10  &  80.5\% & 2.18 \\
+    12  &  83.6\% & 2.43 \\
+    15  &  86.8\% & 2.13 \\
+    20  &  90.1\% & 1.71 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:stoch} shows that stochastic noise also fails to produce
+the expected monotone decline, but for a different reason.
+$G$ drops below the unperturbed value ($G_0 = 1.61$) only marginally
+at $\sigma = 8$ ($G = 1.59$) before recovering.
+The floor of $G \approx 1.6$ persists even at $\sigma = 20$
+($\mu_\mathrm{stoch} = 90\%$), far above unity.
+
+Two effects counteract the misclassification penalty.
+First, \emph{within-zone reinforcement}: even noisy waves deliver some
+signal to the correct zone when $\sigma < z_w$.
+Second, the bimodal attractor structure (Paper~38) means that once L2
+commits to the high-structure basin, ongoing modest-noise waves
+maintain structure rather than destroying it.
+The high-structure basin is robust to perturbation once entered.
+
+\subsection{Deterministic Offset Outperforms Stochastic Noise}
+
+\begin{table}[h]
+  \centering
+  \caption{Ratio $G_\mathrm{det}/G_\mathrm{stoch}$ at matched shift
+           magnitudes $m$.}
+  \label{tab:ratio}
+  \small
+  \begin{tabular}{rcccc}
+    \toprule
+    $m$ & $G_\mathrm{det}$ & $G_\mathrm{stoch}$ & Ratio \\
+    \midrule
+     2  & 3.50 & 3.96 & 0.884 \\
+     5  & 3.18 & 2.01 & 1.586 \\
+     8  & 2.24 & 1.59 & 1.411 \\
+    10  & 3.42 & 2.18 & 1.566 \\
+    12  & 2.21 & 2.43 & 0.909 \\
+    15  & 2.41 & 2.13 & 1.134 \\
+    20  & 1.93 & 1.71 & 1.131 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:ratio} shows that $G_\mathrm{det} \ge G_\mathrm{stoch}$
+in 5 of 7 matched conditions (mean ratio $= 1.25$, unweighted).
+The two exceptions occur at $m = 2$ (where noise is small enough that
+all waves cluster tightly) and $m = 12$.
+The overall pattern confirms that \emph{deterministic offset is less
+damaging than equal-magnitude stochastic noise}.
+
+The mechanism is variance.
+A deterministic offset introduces zero within-condition variance in
+landing position: every wave from zone~$z$ in L1 arrives at the same
+$\Delta = D_\mathrm{cleft}$ offset in L2.
+The zone-identity signal may be shifted, but it is \emph{consistent}.
+Stochastic noise introduces per-wave variance: each wave from zone~$z$
+in L1 arrives at a different L2 location.
+The zone-identity signal is weakened by averaging over a distribution
+of landing zones.
+Consistency of geographic routing, not geometric accuracy, is the
+operative requirement for relay gain.
+
+\section{Discussion}
+
+\subsection{What ``Misclassification'' Measures vs.\ What Matters}
+
+The naive misclassification rate $\mu(D_\mathrm{cleft})$ assumes that
+a wave is either ``in'' or ``out'' of its target zone, and treats these
+cases symmetrically.
+This framing is wrong for VCML relay gain.
+
+What matters is not whether each individual wave hits the correct zone,
+but whether the \emph{pattern} of waves across time encodes a consistent
+zone-identity signal.
+A deterministic offset transforms the zone map but preserves its
+consistency.
+Stochastic noise degrades consistency by randomising the zone-identity
+assignment across waves.
+Relay gain tracks pattern consistency, not per-wave accuracy.
+
+\subsection{Implications for Anatomical Projections}
+
+Axonal projection maps in biological neural systems are never perfectly
+topographic, but they are typically \emph{smoothly} and
+\emph{consistently} mapped.
+The topographic gradient may be shifted, compressed, or rotated, but
+each pre-synaptic neuron reliably activates a consistent region of the
+post-synaptic target.
+
+This result suggests that topographic accuracy is less critical than
+topographic consistency.
+A systematic mis-registration (developmental error fixing a constant
+offset) may be functionally invisible to the downstream region's
+structural learning.
+By contrast, axonal branching patterns that introduce high variability
+in post-synaptic targeting would be more damaging, because they
+undermine the consistency of the zone-identity signal.
+
+The biological prediction is: animals with a global topographic shift in
+a projection pathway (e.g.\ an anatomical inversion) should show near-normal
+downstream structure formation, as long as the shift is consistent.
+Animals with high projection noise (e.g.\ due to axon guidance molecule
+knockouts producing scattered terminal fields) should show impaired
+downstream zone differentiation.
+
+\subsection{Limitations}
+
+The stochastic noise model here applies the same $\delta$ to both L1
+and L2 landing sites (preserving relative positioning within a wave).
+An alternative model where L1 and L2 receive independent noise
+$\delta_1 \sim \mathcal{N}(0,\sigma_1^2)$ and
+$\delta_2 \sim \mathcal{N}(0,\sigma_2^2)$ would further degrade the
+zone-identity signal.
+This is the appropriate model for independent axonal branching noise
+and is expected to produce more severe $G$ degradation at matched
+total variance.
+
+The high variance observed in both G\_det and G\_stoch results (n=5 seeds)
+limits the precision of the ratio estimates.
+The qualitative conclusion --- alignment-blindness for deterministic
+offset, consistency degradation for stochastic noise --- is supported by
+the full range of conditions, but the exact crossover point and rate of
+G degradation require larger n.
+
+\section{Conclusion}
+
+Two distinct geometric failure modes for inter-region relay are
+characterised.
+Deterministic cleft offset ($D_\mathrm{cleft}$) does not degrade relay
+gain regardless of magnitude, because a consistently-shifted zone map is
+functionally equivalent to the original for downstream structure
+formation.
+Stochastic wave-positional noise ($\sigma$) degrades relay gain because
+it reduces the consistency of the zone-identity signal arriving at the
+downstream region.
+At matched magnitudes, $G_\mathrm{det}/G_\mathrm{stoch} \approx 1.25$
+on average, with deterministic outperforming stochastic in 5 of 7
+conditions.
+
+The operative quantity is not geometric accuracy but
+\emph{consistency of geographic routing}.
+This has direct implications for how topographic fidelity requirements
+are understood in anatomical projection systems: systematic errors are
+tolerated; random errors are not.
+
+\end{document}

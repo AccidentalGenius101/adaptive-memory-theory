@@ -1,0 +1,2902 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{enumitem}
+
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, urlcolor=blue!60!black}
+
+\title{\textbf{VCML / VCSM: A Complete Theory of Viability-Gated Spatial Memory}\\[0.5em]
+\large Theory Reference --- Papers 0--71}
+\author{Gabriel Aubin-Moreau\\[0.3em]
+\small VCSM Theoretical Series, March 2026}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\bigskip
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{abstract}
+We present the complete theory of the Viability-Constrained Coupled Map
+Lattice (VCML) and its learning rule, the Viability-Gated Contrastive State
+Memory (VCSM).
+The central claim is that mandatory individual turnover is not an obstacle
+to spatial memory but its primary mechanism.
+Cells live, detect input, consolidate a contrastive memory trace, collapse
+when unviable, and transmit their field state to successors via a copy-forward
+birth step.
+This local five-step rule produces: (I) spontaneous zone formation from
+spatially patterned wave input; (II) analytically tractable parameter
+boundaries for the adaptive regime; (III) a stochastic Allen-Cahn/Burgers
+field equation in the spatial continuum limit; (IV) a mixed
+pitchfork--spinodal commitment epoch at $t^* \approx 2000$ steps followed by
+a metastability half-life of $\approx 800$ steps; (V) relay coupling between
+regions that preserves zone structure across spatial gaps; (VI) continual
+learning in which periodic task switching --- rather than eroding structure ---
+amplifies it $9.7\times$ via copy-forward refreshing.
+The system is formally non-gradient (curl $\neq 0$, machine-verified in Lean
+4), lives in an 8D product manifold of viability and structure, and makes
+quantitative predictions about hippocampal neurogenesis, adult memory
+reconsolidation, and topographic map formation.
+The theory's unique claim is about \emph{maintenance}, not formation:
+zone formation is environmentally driven and robust to any consolidation rule;
+zone maintenance under mandatory turnover requires viability-gated copy-forward.
+Single-region theory constitutes a complete mechanistic account as of Paper~44:
+Paper~42 closed all anomalies; Paper~43 demonstrated rule-family robustness,
+confirming this distinction empirically (maintenance ratio $1.91\times$ with
+viability gating vs.\ $1.11\times$ without; field-decay-only $= 0.64\times$).
+Paper~44 closes the imprinting critique: under 2000 steps of sustained adversarial
+input (wave-zone assignments permanently flipped), the adaptive mechanism maintains
+positive fidelity with the original encoding ($+0.129$) while the passive mechanism
+encodes the adversarial pattern ($-0.076$); $\Delta = 0.205$, $p < 0.001$.
+Paper~45 validates the causal geometry conjecture externally:
+ablation-influence partial correlations in GPT-2 flip sign at layer~4 from positive
+(feature construction) to negative (causal integration, peak $r_p = -0.337$,
+$p \ll 0.001$), with random-token control tracking ablation at every layer,
+confirming that transformer geometry is organised by causal routing structure.
+Paper~46 closes the temporal gate invariant and validates $\Omega = \mathrm{WR}\times\phi_w$
+as the operative $C_2$ coordinate.
+Paper~47 confirms $\delta = W_\mathrm{zone}/r_\mathrm{wave}$ as the third $C_2$ coordinate
+(encoding quality peaks at $\delta=5$, degrades at $\delta \leq 2.5$) and reveals that
+gate selectivity controls \emph{commitment rate} as well as adversarial filtering ---
+the same mechanism at the same timescale.
+Paper~48 establishes that VCML builds a \emph{population code}: single-cell zone decode
+accuracy is only 4--5\% above chance across all gate conditions; zone information lives
+in zone means, not individual cells.
+The quiescence gate's operative function is noise reduction ($\sigma_w$ halves at high SS),
+not amplitude enhancement; the true causal quality measure is
+$\mathrm{SNR} = \mathrm{sg4}/\sigma_w$, which correctly ranks gate conditions.
+The primitive underlying the entire architecture is A $\neq$ B (distinction detection);
+viable/non-viable is one engineering instantiation.
+The viability boundary is the maximum-information, maximum-distinction site in the
+substrate; zone structure is the accumulated geometry of boundary crossings.
+\end{abstract}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{The System}
+
+\subsection{The primitive: A $\neq$ B}
+
+The ontological primitive of VCML is not viability.
+It is \emph{distinction}: the detection of a difference between two states.
+
+A cell that records the difference $h_i - \mathrm{baseline}_i$ is implementing A $\neq$ B.
+It is asking: \emph{is the current state different from the expected state?}
+The answer is a signed scalar that propagates through the three-timescale architecture
+into the slow structural manifold $F_i$.
+Everything else --- viability thresholds, collapse rates, zone geometry, the wave protocol ---
+is engineering scaffolding that instantiates this primitive reliably.
+
+Viable/non-viable is one instantiation of A $\neq$ B, chosen because it produces
+a reliable, binary, threshold-crossing event (the collapse) that can serve as an
+unambiguous write trigger.
+It is not the primitive; it is the mechanism.
+The primitive fires whenever the current hidden state differs from baseline.
+The viability boundary is where that distinction is maximally informative
+(crossing it is the strongest possible A $\neq$ B signal the substrate can generate).
+
+\textbf{Consequence.}
+Any substrate that can reliably detect $h \neq \mathrm{baseline}$, gate consolidation
+on temporal quiescence, and propagate field state through a copy-forward step is
+in the VCML class --- regardless of whether the gating mechanism is viability collapse,
+a threshold potential, a chemical concentration crossing, or any other binary detector.
+The lattice, the GRU, and the viability thresholds are engineering choices, not theoretical commitments.
+The primitive is a difference detector with a temporal gate and a slow structural accumulator.
+
+\subsection{VCML: the substrate}
+
+VCML is a 2D lattice of $W \times H$ cells.
+Each cell $i$ carries three state variables operating at three timescales:
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+State & Symbol & Timescale & Role \\
+\midrule
+Hidden state   & $h_i \in \mathbb{R}^{d_h}$ & Fast (per step)          & Responds to input \\
+Mid-memory     & $m_i \in \mathbb{R}^{d_h}$ & Medium (per wave)        & Accumulates contrastive signal \\
+Field memory   & $F_i \in \mathbb{R}^{d_h}$ & Slow (intergenerational) & Transmitted at birth \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Cells have a scalar viability $v_i \in [0,1]$.
+Cells with $v_i \notin [\ell, u]$ ($\ell = 0.05$, $u = 0.95$) collapse and are
+immediately replaced.
+At each step, spatially structured \emph{waves} perturb $v_i$: zone-class $z$
+cells receive suppression (low $v$) or excitation (high $v$) depending on
+their zone identity.
+Standard parameters: $H=40$, $\mathrm{HALF}=40$, $N_\mathrm{zones}=4$,
+zone width $z_w=10$, wave rate $\mathrm{WR}=4.8$, wave duration $= 15$ steps,
+$\mathrm{FA}=0.16$, $\mathrm{FIELD\_DECAY}=0.9997$.
+
+\subsection{VCSM: the learning rule}
+
+Five steps, locked:
+
+\begin{align}
+\text{[Track]}       &\quad \text{baseline}_i \mathrel{+}= \beta \cdot (h_i - \text{baseline}_i) && \text{every step} \nonumber\\
+\text{[Detect]}      &\quad m_i \mathrel{+}= \alpha_m \cdot (h_i - \text{baseline}_i)              && \text{during perturbation} \nonumber\\
+\text{[Gate]}        &\quad m_i \mathrel{\times}= \gamma_m \quad (\gamma_m = 0.99)                 && \text{every step} \nonumber\\
+\text{[Consolidate]} &\quad \text{if calm\_streak} \geq SS:\; F_i \mathrel{+}= \mathrm{FA} \cdot (m_i - F_i) && \text{on survival} \nonumber\\
+\text{[Birth]}       &\quad h_\mathrm{new} = (1-\beta_s)\,\mathcal{N}(0,\sigma) + \beta_s\,F_{\text{nbr}} && \text{on collapse} \nonumber
+\end{align}
+
+\textbf{Write signal} $= h - \mathrm{baseline}$ (contrastive: change relative to recent
+history).
+\textbf{Gate} $=$ survival (only cells that survived the perturbation epoch consolidate).
+\textbf{Copy-forward loop} $=$ the birth step: field memory propagates spatially through
+inheritance from surviving neighbours.
+
+\subsection{The copy-forward loop: formation vs.\ maintenance}
+
+Paper~43 establishes a clean separation:
+
+\textbf{Formation} (under sustained waves) is environmentally driven.
+Zone-differentiated wave input produces differentiated viability histories, leading to
+differentiated \texttt{fieldM} accumulation via any consolidation mechanism.
+Even with birth seeding removed ($\beta_s = 0$) or the viability gate disabled,
+sg4n remains comparable to the reference under continuous waves.
+Formation is robust to all rule variants and ablations tested ($\pm50\%$ parameter changes).
+
+\textbf{Maintenance} (after waves stop) is mechanism-specific.
+The viability gate (SS parameter) is the primary load-bearing element:
+without it, \texttt{fieldM} accumulates noise from unsettled cells, degrading copy-forward quality.
+Removing gating drops the maintenance ratio from $1.91\times$ to $1.11\times$ (near
+field-decay-only $= 0.64\times$).
+Birth seeding ($\beta_s$) amplifies maintenance ($1.63\times$ without seeding) but is secondary.
+
+\textbf{Corrected claim:} the copy-forward maintenance mechanism is the specific capability that
+distinguishes VCML from simpler adaptive substrates.
+It requires viability-gated consolidation as its primary structural element.
+
+\subsection{Causal gate condition}
+
+The quiescence gate (SS parameter) is a \emph{temporal adversarial filter}.
+It is not a signal-quality filter.
+
+This distinction is established by Papers 46--48.
+The gate does not improve the amplitude of the zone signal:
+a quantity-matched random write schedule ($\mathrm{rand}_{p=0.60}$, same number of writes
+as SS$=10$) produces $1.69\times$ higher raw sg4 than the quiescence gate.
+The gate does not improve single-cell zone specificity:
+nearest-centroid zone decode accuracy (sg$_C$) is 4--5\% above chance
+for \emph{all} gate conditions including SS$=0$ (Paper~48).
+What the gate controls is \emph{within-zone noise}: $\sigma_w$ (mean within-zone spread
+of fieldM) halves under high-SS conditions, improving the signal-to-noise ratio
+$\mathrm{SNR} = \mathrm{sg4}/\sigma_w$ even as raw amplitude drops.
+
+The gate condition and its outcome:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\textbf{Temporal condition} & \textbf{Outcome} \\
+\midrule
+Site causally settled (streak $\geq$ SS) & Writes $m_i \to F_i$ \\
+Site mid-perturbation (streak $< $ SS)   & Write blocked \\
+Site collapses                           & New hidden state seeded from $F_i$ (copy-forward) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{SS as a single performance/robustness tradeoff parameter.}
+High SS delays writes until the cell has been undisturbed for $\geq$ SS steps.
+This enforces two things simultaneously: (1) the write captures a settled, zone-typical
+state rather than a mid-perturbation transient (reducing $\sigma_w$); and (2) the write
+is blocked during adversarial input, because adversarial waves continuously restart the
+calm streak counter, preventing the threshold from being reached.
+Low SS permits writes during and immediately after perturbation events: higher raw amplitude,
+but also higher within-zone variance, and no adversarial resistance.
+
+The SS parameter therefore sets the operating point on a single tradeoff curve:
+\begin{center}
+  \textbf{high SS} $\leftrightarrow$ lower amplitude, lower noise, adversarial resistance\\
+  \textbf{low SS} $\leftrightarrow$ higher amplitude, higher noise, no adversarial resistance
+\end{center}
+The correct causal quality metric is SNR, not raw sg4.
+On SNR, the quiescence gate wins at every tested SS level (Paper~48, Exp~A).
+
+\textbf{Gate as commitment rate controller.}
+Paper~47 adds a second dimension: SS also controls the rate at which fieldM tracks
+mid\_mem through the commitment sign-flip ($t^* \approx 2000$ steps, Paper~26).
+High SS slows commitment (fieldM reaches the sign-flip later); low SS accelerates it.
+This means the optimal $\mathrm{SS}^*$ is a function of two quantities:
+adversarial pressure level and proximity to $t^*$.
+Both map onto the same mechanism: the gate controls the timescale on which slow-timescale
+writes couple to medium-timescale dynamics.
+
+\textbf{Zone structure is causal, not spatial.}
+A common misreading frames zone structure as a spatial phenomenon: patterns imprinted
+on the lattice by spatially patterned input.
+The adversarial persistence test (Paper~44) closes this reading directly.
+The more precise framing is causal:
+zone structure is \emph{maintained} by a causal mechanism (the copy-forward loop)
+that continuously reinjects the original encoding into new cells via collapse and birth.
+The zones appear to have spatial extent because the causal propagation radius
+$\xi \approx r_\mathrm{wave}$ is local on the lattice --- not because the lattice
+geometry is load-bearing.
+Replace the lattice with a graph, a relay chain, or any other substrate with an
+analogous viability-gated copy-forward step, and the mechanism is unchanged;
+only the shape of the causal reach changes.
+This reframes the theory's unique claim precisely:
+not ``we produce spatial zone patterns'' but
+``we maintain causal zone structure against adversarial environmental pressure,
+via a viability gate that couples causal events (collapses) to the slow-timescale
+structural manifold ($F$).''\footnote{This framing connects to the causal-set perspective
+in quantum gravity (Bombelli et al.\ 1987; Sorkin 2003), where geometry emerges from
+causal partial ordering rather than being fundamental.
+VCML is a toy demonstration of the same direction at the level of learning dynamics:
+the correlation length $\xi \approx r_\mathrm{wave}$ is a causal propagation fact,
+not a geometric constant of the substrate.}
+
+\textbf{Role of fieldM dimensionality ($d_h$): spatial vs.\ dimensional capacity.}
+Memory systems can separate representational channels in two ways:
+(1)~\emph{spatial separation}: assign distinct causal neighbourhoods to distinct inputs
+(more cells, fixed $d_h$); or
+(2)~\emph{dimensional separation}: assign distinct vector dimensions to distinct inputs
+(more $d_h$, fixed cell count).
+VCML uses spatial separation by design.
+The HS sweep confirms that the two strategies are substitutes with diminishing returns:
+HS$=5 \to$ sg4$=0.025$, HS$=2 \to$ sg4$=0.022$,
+HS$=1 \to$ sg4$=0.020$ (Papers V79--V80, HS$=1$ sufficient; HS$>1$ amplifies without cliff).
+The $\sim$20\% gain from HS$=1$ to HS$=5$ is the entire contribution of dimensional separation;
+the remaining structure is purely spatial.
+
+Contrast with transformer models, which use dimensional separation almost exclusively:
+a 768-dimensional embedding encodes feature relationships in inner-product space,
+with each ``channel'' potentially active in every context simultaneously.
+The curse of dimensionality (independent causal channels conflated into Euclidean geometry)
+degrades precision as feature count grows.
+VCML avoids this by routing causal channels to distinct spatial locations;
+the copy-forward loop ensures each location retains its causal history without
+entangling it in a shared geometric space.
+
+\textbf{Result: the irreducible primitive is a scalar thermostat.}
+HS$=1$ means each cell carries a single floating-point number as its field state: a scalar
+viability signal acting as a minimal difference detector.
+The GRU hidden state (HS$>1$) is scaffolding that amplifies performance smoothly
+via dimensional separation, but adds no discontinuous capability.
+The core mechanism --- detect, gate, consolidate, transmit --- is fully operational in
+the HS$=1$ limit with a single float per cell.
+This is the minimum possible architecture for viability-gated spatial memory,
+and it works.
+The result implies that spatial separation alone is sufficient for structured memory;
+dimensional expansion is a performance optimisation, not a requirement.
+
+\textbf{Causal chain (explicit):}
+
+\vspace{0.5em}
+\begin{center}
+\textit{viability perturbation (wave)}
+$\;\to\;$ \textit{zone-specific viability change}
+$\;\to\;$ \textit{calm-recovery produces contrastive signal}
+$\;\to\;$ \textit{viability gate allows consolidation ($m \to F$)}
+$\;\to\;$ \textit{collapse seeded from $F$ (copy-forward)}
+$\;\to\;$ \textit{spatial propagation of zone-compatible structure}
+\end{center}
+\vspace{0.5em}
+
+Each arrow is quantified by a specific VCML parameter
+(wave rate, FA, SS, $\beta_s$, $\nu$).
+Paper~27 confirmed the predicted scaling $t^* \sim 1/(P_c \cdot \mathrm{FA} \cdot \mathrm{WR})$
+(slope $-1.0$ on log-log) before running the experiment, providing predictive validation
+of this causal chain.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Layer I: Mechanism (Papers 0--6)}
+
+\subsection{Death is the engine}
+
+Mandatory turnover is not an obstacle to memory --- it is the mechanism:
+\begin{equation}
+\mathrm{sg4}_{C_\mathrm{ref}} > \mathrm{sg4}_{C_\mathrm{cryst}} > \mathrm{sg4}_{C_\mathrm{static}}
+\end{equation}
+where $C_\mathrm{ref}$ has dynamic collapses, $C_\mathrm{cryst}$ has near-zero turnover,
+and $C_\mathrm{static}$ has frozen cells.
+Preventing death causes crystallisation: surviving units lock into old attractors.
+The optimal collapse rate is $\approx 0.004$ events per cell per step --- strictly positive.
+
+\subsection{Three hard constraints}
+
+\textbf{Capacity (Paper 1).} Memory density bounded by spherical random sequential adsorption:
+$\rho_\mathrm{max} \propto 1/(1 + \rho r^d)$.
+Geometrically hard, independent of learning rule.
+
+\textbf{Bandwidth (Paper 2).} Effective bandwidth $\propto 1/\nu$.
+Fast turnover limits signal survival to consolidation.
+Tradeoff: higher $\nu$ = faster adaptation, lower bandwidth.
+
+\textbf{Propagation (Paper 3).} Finite correlation length.
+Information propagates at most one site per birth event.
+Correlation length $\xi_\infty \approx 2$--3 sites (= wave radius, Paper 22).
+
+\textbf{Noise isolation (Paper 4).} $\gamma_m < 1$ prevents false consolidation.
+Without MID\_DECAY, mid-memory accumulates baseline drift and fires spuriously.
+$\gamma_m$ is noise isolation, not damping.
+
+\subsection{Memory as a formal system}
+
+The ``memory'' terminology is operationally defined.
+Three independent quantities have been measured and related to system parameters:
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+\textbf{Property} & \textbf{Definition} & \textbf{Formula} & \textbf{Paper} \\
+\midrule
+Storage capacity  & Max distinguishable patterns & $\rho_\mathrm{max} \propto 1/(1+\rho\,r^d)$ & 1 \\
+Decay rate        & sg4 half-life without input  & $\tau_{1/2} \approx 800$ steps (standard) & 18, 38 \\
+Bandwidth         & Effective write rate         & $\propto P_c \cdot \mathrm{FA} / \nu$ & 2, 20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+These are quantitative properties of the system, not metaphors.
+Capacity is geometrically hard (spherical RSA bound, Paper~1).
+Decay rate is set by FIELD\_DECAY and the metastability attractor (Paper~38).
+Bandwidth is the bottleneck for how quickly new zone structure replaces old (Paper~2).
+
+\subsection{Boundary = maximal information = maximal distinction}
+
+The viability boundary is not a technical detail of the implementation.
+It is the most informationally dense site in the substrate.
+
+Consider what happens at a boundary crossing: cell $i$'s viability exits $[\ell, u]$.
+This event is maximally informative in three senses simultaneously.
+
+\textbf{Information-theoretic sense.}
+Shannon entropy is maximised at phase transitions --- points where the probability of
+being in one state versus another is close to $1/2$.
+The viability boundary is precisely this: a cell near $v_i = \ell$ or $v_i = u$
+is maximally uncertain between ``viable'' and ``not viable.''
+The crossing event is a one-bit signal with entropy $= 1$, the maximum possible.
+Interior viability states (far from the boundary) carry less information
+because their future is more predictable.
+
+\textbf{Physical sense.}
+Order parameters change most rapidly at boundaries.
+The gradient $|\nabla v|$ is maximal at the viability boundary.
+This is where the zone-specific input signal (suppressive vs.\ excitatory wave) has had
+its maximum cumulative effect on the cell's state.
+The cell at the boundary has been pushed furthest from equilibrium by exactly the
+perturbation history that distinguishes its zone from adjacent zones.
+
+\textbf{VCML mechanistic sense.}
+The copy-forward loop fires \emph{exclusively} at boundary crossings (collapses).
+The system does not sample fieldM propagation events uniformly across the viability range;
+it samples only at maximum-information events.
+Memory = accumulated boundary geometry.
+The fieldM of a mature VCML substrate is a compressed record of where boundary crossings
+have concentrated over time --- which is precisely the record of which perturbation
+patterns most strongly distinguished the zones.
+
+\textbf{The unified statement.}
+The same claim at three levels:
+\begin{quote}
+  (Geometry)\ \ \ \ \, Boundary $= $ maximal gradient of the order parameter.\\
+  (Information) Boundary $= $ maximal Shannon entropy site.\\
+  (VCML) \ \ \ \ \ \ \ Boundary $= $ maximal distinction event (A $\neq$ B at full force).
+\end{quote}
+These are not analogies.
+They are the same fact described in the language of three different fields.
+The viability boundary is the A $\neq$ B primitive at maximum expression.
+The copy-forward loop is a boundary-geometry accumulator.
+Zone structure is the spatial record of which boundary has been crossed most.
+
+\subsection{Metric robustness}
+
+The primary structure metric sg4 is the mean pairwise L2 distance between zone-mean
+field vectors.
+Reviewers correctly note that sg4 cannot detect polarity inversions (Papers~38, 42).
+Two independent secondary metrics confirm all primary conclusions:
+
+\textbf{nonadj/adj ratio.}
+Mean L2 between non-adjacent zone pairs divided by adjacent zone pairs.
+This metric carries no scale information about fieldM magnitude --- it tests only
+\emph{spatial specificity} (whether farther zones differ more than nearer zones).
+The nonadj/adj pattern is identical across all rule variants and ablations in Paper~43.
+
+\textbf{mm\_lda discriminability.}
+Linear discriminant analysis on mid-memory states $m_i$.
+This metric reads mid-memory directly (not fieldM), providing orthogonal confirmation
+that spatial information is present in the fast-timescale dynamics (Paper~30+).
+
+All three metrics agree on all major conclusions.
+The theory is not a theory of sg4; it is a theory of spatial differentiation confirmed
+by three independent measurement approaches.
+
+\subsection{ODE derivation sketch}
+
+The zone-mean ODE (Paper~20) is derived---not fitted---from the microscopic rule:
+
+\begin{enumerate}
+\item \textbf{Averaging:} Take zone-mean of the consolidation update:
+  $\Delta \bar{F} = P_c \cdot \mathrm{FA} \cdot (\bar{m} - \bar{F})$
+  where $P_c = P_\mathrm{calm} \cdot P_\mathrm{consol}$ is the fraction of steps where
+  consolidation occurs (product of calm-streak probability and survival probability).
+\item \textbf{Decay:} Add FIELD\_DECAY: $\bar{F} \mathrel{\times}= \mathrm{FD}$.
+  In continuous time: $-\nu\,\bar{F}$ where $\nu = -\ln(\mathrm{FD})$.
+\item \textbf{Mid-memory:} $\bar{m}$ is driven by the wave input and damped by MID\_DECAY.
+  At steady state under periodic input: $\bar{m} \approx \mathrm{FA} \cdot \delta h / (1-\gamma_m)$
+  where $\delta h$ is the zone-specific deviation from baseline.
+\end{enumerate}
+
+Combining: $d\bar{F}/dt = P_c \cdot \mathrm{FA} \cdot (\bar{m} - \bar{F}) - \nu\,\bar{F}$.
+Predicted growth rate agrees with simulation within 3\% (Paper~20).
+The spatial PDE (Papers~22--26) extends this by retaining the spatial $\nabla^2$ and $(\nabla F)^2$
+terms that average to zero in the zone-mean ODE.
+
+\subsection{AI failure modes (Paper 6)}
+
+Every major AI memory architecture maps to a VCML failure mode:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Architecture & Failure mode & VCML equivalent \\
+\midrule
+Transformer (context window) & Evaporation: no consolidation     & $\nu \to \infty$ \\
+RAG                          & Bandwidth: retrieval misses        & $P_\mathrm{calm}$ too low \\
+Continual learning           & Catastrophic forgetting            & No $\gamma_m$ (false positives) \\
+RNN                          & Crystallisation: fails to update   & $\nu \to 0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+These failures are \emph{structural} constraints, not engineering defects.
+The three unavoidable failure modes are: \textbf{bias} (consolidation is exposure-weighted),
+\textbf{confabulation} (recall reconstructs from $F$ fragments),
+and \textbf{forgetting} ($\mathrm{FIELD\_DECAY} < 1$ is required for adaptivity).
+
+\textbf{The ontological stack and the positive claim.}
+VCML is not merely a model of hippocampal memory.
+It is an instantiation of the most minimal computing primitive: the \emph{difference
+detector} (thermostat) --- a device that registers ``perturbed vs.\ calm'' and
+adjusts a persistent variable accordingly.
+Every more powerful computing paradigm is the thermostat with additional properties enabled:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Layer & What is added over the layer below \\
+\midrule
+Difference detector (thermostat) & Persistent variable; responds to a single signal \\
+Memory                           & Multiple slots; time-indexed write/read \\
+Relations                        & Associations between slots (structured $F$) \\
+Dynamics                         & Time-varying relational structure (sequences) \\
+Symbolic reasoning               & Stable attractors that act as discrete tokens \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The failure-mode table above is the complementary view: each AI architecture
+ablates one or more layers of this stack.
+The VCML adaptive regime occupies the interior --- not maximum memory (crystallised),
+not maximum plasticity (sub-viability), but the driven steady state in between.
+
+\textit{Note:} This stack is a post-hoc organisational framework, not a derived result.
+The claim that ``every computing paradigm is the thermostat with properties ablated'' is
+a motivated framing that organises what Papers~0--43 found; it is not itself proven by
+those papers.
+The formal criterion for what counts as ``the thermostat with property $X$ ablated'' ---
+as opposed to a different primitive entirely --- remains an open question.
+The failure-mode table is a mapping, not a derivation.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Layer II: Parameter Geometry (Papers 7--21)}
+
+\subsection{Three behavioural regimes}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Regime & Condition & Signature \\
+\midrule
+Sub-viability & $\nu$ too high & Cells die before consolidating. $F \approx 0$. sg4 $\to 0$. \\
+Adaptive & $\nu$ in window & Dynamic spatial structure via copy-forward. \\
+Crystallised & $\nu$ too low & $F$ frozen. Cannot update. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Analytic adaptive window}
+
+\begin{align}
+\nu_\mathrm{cryst} &\approx \mathrm{FD}^{1/\nu_\mathrm{cryst}} && \text{field decay kills memory before update} \\
+\nu_\mathrm{max}   &\approx P_\mathrm{calm} \cdot \mathrm{FA} \cdot \mathrm{FD}^{1/\nu} && \text{signal must survive at least one lifetime} \\
+\nu^*              &= \sqrt{\nu_\mathrm{cryst} \cdot \nu_\mathrm{max}} && \text{geometric mean (empirically, factor 2)}
+\end{align}
+
+\subsection{Amplitude laws}
+
+\textbf{Saturation law (Paper 16):}
+\begin{equation}
+\mathrm{sg4}(\mathrm{FA}) \approx \frac{C \cdot \mathrm{FA}}{\mathrm{FA} + K_\mathrm{eff}}, \qquad
+K_\mathrm{eff} = \frac{\kappa}{P_\mathrm{consol}} \approx 0.114
+\end{equation}
+The apparent power-law exponent 0.43 (Paper~15) is the local slope of this saturation curve.
+
+\textbf{Two-factor decomposition (Paper 17):}
+\begin{equation}
+\mathrm{sg4} = G \cdot R, \quad
+G = \Gamma \cdot K_\mathrm{eff}(\text{zone\_w}), \quad
+R = \frac{\mathrm{FA}}{\mathrm{FA} + K_\mathrm{eff}}
+\end{equation}
+
+\textbf{Amplitude non-monotonicity (Papers 15, 32):}
+sg4 peaks at collapse rate coll/site $\approx 0.004$.
+Over-perturbation (coll/site $> 0.01$) destroys structure.
+Optimal amplitude threshold $A^* \approx 0.30$ is endogenous (set by internal noise floor).
+
+\subsection{ODE closure}
+
+Zone-mean field obeys (Paper~20):
+\begin{equation}
+\frac{d\bar{F}}{dt} = P_c \cdot \mathrm{FA} \cdot (\bar{m} - \bar{F}) - \nu\,\bar{F},
+\qquad P_c = P_\mathrm{calm} \cdot P_\mathrm{consol}
+\end{equation}
+Predicted growth rate within 3\% of simulation. A spatial formation delay
+(not in ODE) arises from birth-mediated propagation (Papers 20--21).
+
+\subsection{Scaling (V92--V94)}
+
+Dynamic advantage (+43\% to +70\%) holds at all tested scales ($N = 1{,}600$ to $102{,}400$).
+Optimal WR $\sim 2 \times N_\mathrm{active}$ (Poisson scaling).
+sg4 raw declines with scale because of finite correlation length $\xi \approx$ wave radius.
+Beyond $\xi$ the copy-forward loop cannot maintain zone-wide coherence.
+
+\textbf{Self-organization result: the substrate spontaneously partitions into regional patches.}
+At large scale ($N \geq 25{,}600$), the finite correlation length has an important consequence:
+rather than failing to form structure, the substrate forms \emph{coherent local patches} from
+a blank grid initialization, with each patch maintaining its own zone-specific fieldM
+independently of patches beyond distance $\xi$.
+This is not a failure of the mechanism --- it is the mechanism operating at its natural spatial scale.
+The resulting multi-patch landscape is not externally imposed; it self-organizes from
+locally identical rules, wave input, and mandatory turnover.
+At the right spatial scale (zone width $\sim \xi$) the system forms a regional architecture
+spontaneously: a blank grid, a structured wave, and the copy-forward loop are sufficient.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Layer III: Spatial PDE (Papers 22--26)}
+
+\subsection{Field equation}
+
+The field $F$ obeys a stochastic hybrid PDE:
+\begin{equation}
+\frac{\partial F}{\partial t} = P_c \cdot \mathrm{FA} \cdot (\bar{m} - F)
++ \kappa \nabla^2 F + \eta_\mathrm{copy} + \eta_\mathrm{birth}
+\end{equation}
+
+Two universality class regimes determined by $\nu/\kappa$:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Regime & Governing equation & Condition \\
+\midrule
+Allen-Cahn & $\partial F/\partial t = \kappa\nabla^2 F - \lambda(F-F^*)^2 + \eta$ & $\nu/\kappa \ll 1$ \\
+Burgers    & $\partial F/\partial t = \kappa\nabla^2 F + \mu(\nabla F)^2 + \eta$ & $\nu/\kappa \gg 1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The Burgers term arises from the copy-forward birth step introducing a $\nabla F$ nonlinearity.
+At the transition ($\nu/\kappa \approx 1$), the effective advection term
+\emph{reverses sign} (Burgers reversal, Papers 24--26): copy-forward sharpens zone
+boundaries from the outside rather than from the inside as Allen-Cahn would.
+
+\subsection{Interface theory}
+
+Zone interfaces have width $\approx 2$ sites = wave radius $r_w$, not set by $\kappa$
+or interface tension.
+They undergo a biased random walk driven by wave input, not gradient descent (Paper~28).
+
+\subsection{Optimal zone width}
+
+\begin{equation}
+W_\mathrm{zone}^* \sim \sqrt{\kappa/\nu} \quad (\approx 4.5 \text{ at standard params})
+\end{equation}
+Balances diffusion smearing (wider zones benefit from $\kappa$ smoothing) against
+turnover noise (Paper~26).
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Layer IV: Dynamics (Papers 27--33)}
+
+\subsection{Commitment epoch}
+
+Zone structure does not form monotonically.
+The system first adopts the \emph{wrong} spatial polarity (anti-correlated with final state),
+then flips through a commitment epoch:
+\begin{equation}
+t^* \approx 1600\text{--}2000 \text{ steps (standard params)}, \qquad
+t^* \sim \frac{1}{P_c \cdot \mathrm{FA} \cdot \mathrm{WR}}
+\end{equation}
+Mechanism is mixed pitchfork--spinodal: zones tend to flip together within a seed
+(pitchfork), but the flip time varies across seeds (spinodal component).
+
+\subsection{Attractor structure (Paper 32)}
+
+The zone attractor is a diffuse noisy cloud (CV $\approx 0.44$), not a fixed point.
+The system is bimodal: $P_\mathrm{high}(\mathrm{geo}) = 0.50$ (geographic coupling) vs.\
+$P_\mathrm{high}(\mathrm{ctrl}) = 0.27$ (no coupling).
+Basin depth $G_\mathrm{basin} = 1.88$: the high-structure basin has a substantial
+free-energy well.
+No Kramers escape events observed (no sudden zone swaps at steady state).
+
+\subsection{Formal non-gradient proof (Paper 33)}
+
+\textbf{Theorem} (machine-verified in Lean 4 + Mathlib4, 3103 jobs, 0 errors):\\[0.3em]
+VCML is \emph{not} a conservative Euclidean gradient system.
+
+\begin{equation}
+\text{curl}(f_F, f_m) = \frac{\partial f_m}{\partial F} - \frac{\partial f_F}{\partial m}
+= 0 - \mathrm{FA} = -\mathrm{FA} \neq 0
+\end{equation}
+
+where $f_F = \mathrm{FA}(m - F)$ and $f_m = -(1-\gamma_m)m$.
+By Clairaut's theorem, no $C^2$ potential $V$ exists with $\nabla V = -f$.
+\emph{Honest caveat:} rules out Euclidean gradient flow only; mirror descent,
+Riemannian, and nonlocal potentials are not ruled out.
+
+\textbf{Physical interpretation:} consolidation is asymmetric ($F$ chases $m$, $m$ does
+not chase $F$); energy is injected via waves and dissipated via field decay.
+The system is a fundamentally driven non-equilibrium process.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Layer V: Multi-Region Coupling (Papers 34--39)}
+
+\subsection{Phase diagram (Paper 34)}
+
+The Allen-Cahn $\to$ Burgers transition has measurable critical exponents.
+The two manifolds $C_1$ (viability volume) and $C_2$ (structural manifold) share $\beta_s$,
+but are otherwise independent in the measured parameter ranges.
+
+\subsection{Geographic relay coupling (Papers 35--37)}
+
+Two separated regions $A$, $B$ can communicate zone structure via geographic relay:
+region~$B$ receives the same wave sources as region~$A$, producing correlated
+(not identical) fieldM patterns.
+
+\textbf{Relay gain:}
+$G = \mathrm{sg4}(B) / \mathrm{sg4}(A)$, measured at matched parameters.
+
+\textbf{Two conditions for relay to succeed:}
+\begin{align}
+N < N_\mathrm{crit} &= \frac{L}{5\,r_w} && \text{(resolution: relay grid not too fine)} \\
+\Phi &= \frac{\mathrm{WR} \cdot r_w}{T_\mathrm{dur}} < 1 && \text{(coverage: waves don't saturate)}
+\end{align}
+
+\textbf{Correlation length:} $\xi_\mathrm{eff} = r_w = 2$ sites (wave-dominated, independent
+of $\kappa$, Paper~36). The zone map is replicated at resolution $\approx r_w$, not $\xi_\mathrm{diffusion}$.
+
+\textbf{Chain relay (Paper 37):} relay gain $G_k \approx G_1$ is depth-stable
+(no accumulation or collapse along a relay chain of arbitrary depth).
+Empirical coefficient: $N_\mathrm{crit} = L/(5\,r_w)$ (coefficient 5, not 4).
+
+\textbf{$r_w$ scaling:} $N_\mathrm{crit} \propto 1/r_w$ confirmed across $r_w \in \{1,2,3\}$.
+At $r_w = 4$: $\Phi > 1$ (over-perturbation), $G < 1$ everywhere.
+
+\subsection{Cleft geometry and alignment blindness (Paper 39)}
+
+When a synaptic cleft (spatial gap) exists between source and relay regions,
+\emph{deterministic} offsets in zone labelling do not degrade relay gain $G$
+regardless of magnitude (at $D_\mathrm{cleft} = 100\%$ misalignment, $G = 3.42$).
+\emph{Stochastic} noise does degrade $G$ by randomising zone identity across waves.
+$G_\mathrm{det}/G_\mathrm{stoch} = 1.25$ on average at matched magnitudes.
+
+\textbf{Principle:} \emph{consistency} of geographic routing is the operative
+requirement, not geometric accuracy.
+Systematic errors are tolerated; random errors are not.
+
+\textbf{Biological prediction:} topographic inversion (consistent shift) produces
+normal downstream zone formation; scattered terminal fields (high noise) impair it.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Layer VI: Metastability, Continual Learning, and Robustness (Papers 38--43)}
+
+\subsection{Metastability (Paper 38)}
+
+Under continuous single-task input:
+\begin{itemize}[itemsep=2pt]
+  \item Zone structure commits at $t^* \approx 2000$ steps.
+  \item After commitment, sg4 decays with \textbf{half-life $\approx 800$ steps}.
+  \item By $T = 6000$--$8000$ steps, sg4n falls below 0.10.
+\end{itemize}
+The bimodal attractor has $P_\mathrm{high}(\mathrm{geo}) = 0.50$, $G_\mathrm{basin} = 1.88$.
+Polarity inversion mid-run is invisible to sg4 (polarity-blind metric).
+
+\subsection{Real continual learning (Paper 40)}
+
+\textbf{Permutation transparency:} a cyclic zone shift ($\Delta = z_w$) is immediately
+transparent --- sg4n$_\mathrm{new}$ = sg4n$_\mathrm{old}$ at the shift moment.
+sg4 is permutation-invariant.
+Genuine continual learning requires spatial reassignment \emph{with overlap}.
+
+\textbf{Partial-overlap disruption:} a half-width shift ($\Delta = z_w/2$) drops sg4n$_\mathrm{new}$
+by 50\% at the shift, then recovers slowly ($> 2500$ steps to recover; still rising at $T=4000$
+where it reaches sg4n $= 0.80$, exceeding the C$_\mathrm{ref}$ peak of $0.38$).
+
+\textbf{Gradual forgetting:} post-commitment interleaving (Exp~C) drives both tasks to equal
+steady-state sg4n $\approx 0.28$--$0.29$, regardless of prior commitment.
+Forgetting is gradual (rate set by metastability half-life $\approx 800$ steps),
+not catastrophic.
+
+\subsection{Copy-forward refreshing and task switching (Paper 41)}
+
+\textbf{Main result:} the predicted threshold $T_\mathrm{crit} \approx 800$ steps does not exist.
+Every tested switching period maintains sg4n $5$--$10\times$ above the single-task baseline
+at $T = 6000$ (C$_\mathrm{ref}$ sg4n $= 0.063$; all interleaved sg4n $= 0.30$--$0.64$).
+
+\begin{center}
+\begin{tabular}{rccc}
+\toprule
+$T_\mathrm{switch}$ & sg4n$_A$ & sg4n$_B$ & Amplification \\
+\midrule
+50   & 0.563 & 0.288 & $8.9\times$ \\
+500  & 0.615 & 0.546 & $9.7\times$ (optimum) \\
+800  & 0.639 & 0.338 & $10.1\times$ \\
+3000 & 0.456 & 0.507 & $7.2\times$ \\
+C$_\mathrm{ref}$ & 0.063 & --- & $1.0\times$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Mechanism --- copy-forward refreshing:}
+task switches trigger zone-boundary collapses $\to$ births $\to$ fieldM replenishment.
+This continuously counteracts FIELD\_DECAY. The metastability half-life (800 steps) is a
+\emph{static} decay constant applying only when no perturbation is present.
+Any periodic perturbation resets the decay clock.
+
+\textbf{Optimal switching period:}
+$T_\mathrm{switch}^* \approx 0.6 \times \tau_{1/2} \approx 500$ steps.
+Non-monotone: too short (no commitment within epoch); too long (decay between switches).
+
+\textbf{Biological implication:}
+sleep replay (``task switching'' during consolidation) maintains hippocampal zone structure
+via mandatory turnover.
+Absence of replay $\to$ structural decay on the metastability timescale ($\sim 800$ steps).
+Not just encoding --- structural maintenance.
+
+\subsection{Three anomalies closed (Paper 42)}
+
+\textbf{Anomaly 1 (C$_\mathrm{loc}$ ratio $> 1$, V89).}
+Waves are not necessary for copy-forward maintenance.
+When waves stop at the commitment peak ($T = 2000$), structure decays with ratio $0.664$
+vs.\ field-decay-only prediction of $0.549$ --- structure persists \emph{above} pure field
+decay because ageing and instability noise generate $\approx 2.84$ collapses/step (spontaneous
+copy-forward).
+
+\textbf{Anomaly 2 (C$_\mathrm{half}$ late surge).}
+The surge in Paper~40 (delta-5 shift reaching sg4n $= 0.80$) is sustained.
+At $T = 6000$, C$_\mathrm{half}$ maintains sg4n $= 0.212$ vs.\ C$_\mathrm{ref} = 0.068$
+(3.1$\times$).
+Mechanism: zone-boundary mismatch drives sustained structured collapses $\to$ continuous
+copy-forward refresh.
+Identical in kind to Paper~41's task-switching amplification.
+
+\textbf{Anomaly 3 (T$_\mathrm{sw}=50$/100 apparent reversal).}
+The reversal (B$>$A at $T_\mathrm{sw}=100$) is a \emph{checkpoint phase aliasing artifact}.
+$300/T_\mathrm{sw}=3$ (odd): the last three checkpoints fall 2:1 in task~B epochs,
+inflating sg4n$_B$.
+Epoch-end measurement (unbiased) restores sg4n$_A \geq$ sg4n$_B$ for all switching periods.
+\textbf{Methodological lesson:} use epoch-end measurements in all switching experiments.
+
+\subsection{Rule-family robustness (Paper 43)}
+
+Paper~43 directly addresses the reviewer concern: ``is the phenomenon robust to nearby
+rule changes, or is it fragile rule engineering?''
+
+\textbf{Experiment A} (continuous waves, 10 conditions $\times$ 5 seeds):
+All conditions---including ablations of birth seeding and viability gating---produce
+sg4n comparable to the reference.
+Formation is environmentally driven, not rule-specific.
+
+\textbf{Experiment B} (waves stop at $T{=}1500$, 4 conditions $\times$ 5 seeds):
+
+\begin{center}
+\begin{tabular}{lrrl}
+\toprule
+\textbf{Condition} & \textbf{Maintenance ratio} & \textbf{Field-decay-only} & \textbf{Interpretation}\\
+\midrule
+\texttt{ref} (all mechanisms)    & 1.91 & 0.64 & strong maintenance\\
+\texttt{no\_birth\_seed} (SB=0) & 1.63 & 0.64 & amplifier removed\\
+\texttt{no\_gating} (SS removed) & 1.11 & 0.64 & near field-decay-only\\
+\texttt{no\_both}                & 1.65 & 0.64 & floor set by gating\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Viability gating is the primary load-bearing element.
+Birth seeding is a secondary amplifier.
+All six rule variants ($\pm50\%$ perturbations of SS, MID\_DECAY, SEED\_BETA) maintain
+comparable sg4n to the reference, confirming robustness.
+
+\textbf{Complete rule ablation table:}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Component removed} & \textbf{Formation} & \textbf{Maintenance} \\
+\midrule
+Waves (WR$=0$, Paper 42)          & structure persists (scale-invariant) & spontaneous copy-forward persists \\
+Birth seeding ($\beta_s{=}0$, P43) & robust ($\sim$ref sg4n)             & reduced ($1.63\times$ vs $1.91\times$) \\
+Viability gating (SS$=0$, P43)    & slightly reduced ($0.20$ vs $0.27$) & strongly reduced ($1.11\times$) \\
+Both mechanisms (P43)             & robust                               & $1.65\times$ (floored by gating) \\
+fieldM altogether (Papers 0--5)   & collapses to zero                   & not applicable \\
+\midrule
+\multicolumn{3}{l}{\textit{Rule variants: all maintain sg4n $\geq 50\%$ of ref under waves}}\\
+SS perturbed $\pm50\%$        & robust & --- \\
+MID\_DECAY perturbed $\pm50\%$ & robust & --- \\
+SEED\_BETA perturbed $\pm50\%$ & robust & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Adversarial persistence: memory vs.\ imprinting (Paper 44)}
+
+Paper~44 addresses the hostile-reviewer objection directly:
+\emph{``The system merely mirrors environmental structure; what is missing are experiments
+demonstrating structure maintenance under conditions where simple imprinting would fail.''}
+
+\textbf{Design:} All three conditions (adaptive, passive, rigid) use the \emph{identical}
+full copy-forward mechanism during encoding ($T = 0$--$3000$, past the commitment epoch).
+At $T_\mathrm{encode}$, wave-zone assignments are \emph{permanently flipped} (even zones
+receive excitation, odd zones receive suppression --- opposite of encoding).
+Adversarial amplitude is 50\% of encoding amplitude to allow competition to unfold gradually.
+The passive condition switches off viability gating and birth seeding;
+the rigid condition removes cell turnover entirely.
+
+\textbf{Primary metric:} cosine fidelity $= \frac{1}{4}\sum_{z=0}^{3}
+\cos(\bar{F}_z(t),\,\bar{F}_z(T_\mathrm{encode}))$.
+Positive = original structure preserved; negative = adversarial pattern encoded.
+
+\begin{center}
+\begin{tabular}{lrrrl}
+\toprule
+Condition & Fid@200 & Fid@800 & Fid@2000 & Interpretation \\
+\midrule
+Adaptive  & $-0.111$ & $-0.089$ & $+0.129$ & Memory: resists, recovers \\
+Passive   & $-0.272$ & $+0.006$ & $-0.076$ & Imprinting: encodes adversarial \\
+Rigid     & $-0.155$ & $-0.452$ & $+0.167$ & Frozen, then decay-to-prior \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Key results:}
+\begin{enumerate}[itemsep=1pt]
+  \item Late-phase fidelity ($T_\mathrm{adv}=2000$): adaptive $+0.129$,
+        passive $-0.076$, $\Delta = 0.205$,
+        $t \approx 8.9$, $p < 0.001$.
+        A pure imprinting system converges to adversarial statistics under sustained
+        adversarial input; the adaptive mechanism does not.
+  \item Removing turnover (rigid condition) \emph{increases} intermediate-timescale
+        adversarial adaptation (fidelity $-0.452$ at $T=800$ vs adaptive $-0.089$).
+        The copy-forward loop is the resistance mechanism; disabling it removes resistance.
+  \item Adaptive fidelity recovers to positive at long timescales: the original encoding
+        is a dynamical attractor maintained by the copy-forward loop, not a static trace.
+\end{enumerate}
+
+Papers~43 and~44 jointly close the necessity--and--resistance question:
+Paper~43 shows viability-gating is necessary (ablation test);
+Paper~44 shows the mechanism actively resists adversarial input
+(the test that distinguishes memory from imprinting).
+
+\subsection{External probe: causal geometry in GPT-2 (Paper 45)}
+
+Paper~45 tests the causal geometry conjecture outside VCML using GPT-2 as a probe system.
+If representation geometry is organised by causal coupling (not Euclidean proximity),
+then tokens that causally influence each other should have closer representations
+in the layers where causal integration occurs---after controlling for sequence distance.
+
+\textbf{Method.}
+Mean-ablation perturbation (replacing token $i$'s embedding with the vocabulary mean)
+measures ablation influence $A_{ij}^\ell$ on token $j$ at layer $\ell$.
+Geometric distance is $G_{ij}^\ell = 1 - \cos(\mathbf{h}_i^\ell, \mathbf{h}_j^\ell)$.
+Partial correlation $r_p^\ell = \mathrm{pcorr}(G, A \mid d_{ij})$ controls for sequence
+distance on 11{,}706 token pairs from 50 UD English EWT sentences.
+
+\textbf{Results.}
+\begin{enumerate}
+  \item \textbf{Sign flip at layer~4.}
+    Layers~1--3: positive $r_p$ (more influence $\to$ more distant, feature construction).
+    Layer~4: sign flip to negative.
+    Layers~5--11: negative $r_p$, peaking at layer~7
+    ($r_p = -0.337$, $p \approx 10^{-308}$, feature integration).
+    Layer~12: reverts to positive (output re-expansion).
+
+  \item \textbf{Random-token control tracks ablation.}
+    Replacing token $i$ with a fixed random token yields $r_p = -0.331$ at layer~7---
+    nearly identical to the ablation profile.
+    The signal is in the attention routing structure, not in the content of the substitution.
+    This is the transformer analog of Paper~36's $\xi \approx r_w$ invariance: the
+    geometric effect is in the causal routing, not in the transported content.
+
+  \item \textbf{Dependency-distance matched.}
+    Syntactically linked pairs are geometrically closer than unlinked pairs at matched
+    sequence-distance bands ($p < 0.05$ in all three bands: $[1,3)$, $[3,6)$, $[6,15)$).
+    The effect is largest at the $[3,6)$ band where sequence-distance confounds are weakest.
+
+  \item \textbf{Mixed-effects regression.}
+    Ablation influence is a significant negative predictor of geometric distance at layer~6
+    ($\hat{\beta} = -0.00309$, $p \approx 10^{-196}$).
+    Syntactic dependency label is \emph{not} an independent predictor beyond ablation
+    influence ($p = 0.509$): syntax is mediated by causal routing, not separately encoded.
+\end{enumerate}
+
+\textbf{Implication for VCML.}
+GPT-2's representational geometry is organised by causal coupling in exactly the regime
+(middle layers) where integration replaces feature construction.
+This supports the causal reparametrisation of $C_2$: correlation length is set by causal
+reachability, not diffusion length.
+The spatial-vs.-dimensional capacity distinction is confirmed: VCML's spatial separation
+at HS$=1$ avoids the channel-conflation problem inherent in transformer-style dimensional
+separation ($d_h = 768$).
+
+\subsection{Temporal gate and $\Omega$ validation (Paper 46)}
+
+Paper~46 closes two claims arising from the causal geometry programme.
+
+\textbf{Exp~A (temporal gate): the gate is an adversarial filter.}
+Six conditions varying the consolidation gate --- SS$\in\{0,5,10,15,20\}$ and a
+random-write control (rand\_p60, $p=0.60$) at matched rate --- reveal an unexpected pattern:
+random writes outperform quiescence-gated writes by $1.68\times$ in benign conditions
+(rand\_p60 sg4$=0.041$ vs.\ SS$=10$ sg4$=0.024$, $t=-4.32$, $p=0.003$).
+All quiescence-gated conditions cluster tightly ($0.022$--$0.025$) despite varying
+write rates; both ungated conditions reach $0.041$.
+
+The mechanism: mid\_mem accumulates zone-specific signal during and immediately after
+wave perturbation.
+The quiescence gate waits SS$=10$ steps before writing, by which time mid\_mem has
+partially decayed ($0.99^{10} \approx 0.904$) and the peak-signal writes have been excluded.
+Random writes at $p=0.60$ capture a fraction of the peak-signal perturbation phase, boosting sg4.
+
+Reconciliation with Paper~44: under adversarial waves, mid\_mem during perturbation encodes
+the wrong-zone signal; waiting SS steps allows this signal to decay before writing,
+protecting the original encoding.
+The gate is an \emph{adversarial filter}: it reduces steady-state structural strength
+($1.68\times$) but is essential for adversarial robustness.
+The optimal SS threshold is set by adversarial pressure, not by signal quality.
+
+\textbf{Exp~B ($\phi_w$ validation): $\Omega = \mathrm{WR}\times\phi_w$ is the operative variable.}
+Three wave radii ($r_w \in \{1,2,3\}$, $\phi_w \in \{5,13,25\}$) under two WR regimes:
+$\Omega$-constant (WR adjusted so $\mathrm{WR}\times\phi_w=62.4$) and WR-constant (4.8).
+The $\Omega$-constant sweep is approximately flat (CV$=0.126$, $<0.15$ threshold)
+for $r_w \in \{2,3\}$; modest deficit at $r_w=1$ attributed to $\delta = W_\mathrm{zone}/r_w = 10$
+(zone too wide relative to causal horizon for single-event propagation to maintain coherence).
+The WR-constant sweep increases monotonically with $r_w$ ($0.012 \to 0.024 \to 0.031$),
+confirming that neither WR nor $r_w$ alone is operative.
+First direct experimental support for the $C_2$ causal reparametrisation.
+
+\subsection{$\delta$-sweep and gate--commitment interaction (Paper 47)}
+
+Paper~47 completes the $C_2$ causal reparametrisation validation.
+
+\textbf{Exp~A ($\delta$-sweep): third $C_2$ coordinate confirmed.}
+Five zone configurations sweep $\delta = W_\mathrm{zone}/r_\mathrm{wave}$
+across $\{10, 5, 4, 2.5, 2\}$ at fixed $\Omega = 62.4$.
+The raw sg4 increases with more zones (small $\delta$), partly a counting
+artefact (more zone pairs).  The encoding-quality signal is the
+non-adjacent/adjacent ratio $R_\mathrm{na}$:
+\begin{itemize}
+  \item $\delta = 5$ (standard 4-zone grid): $R_\mathrm{na} = 1.061$
+        (monotonic zone gradient, nonadj $>$ adj).
+  \item $\delta = 4$--$2.5$: $R_\mathrm{na} \approx 0.97 < 1$
+        (adjacent zones more distinct than non-adjacent; wave-level
+        rather than zone-level encoding).
+  \item $\delta = 2$: $R_\mathrm{na} = 1.04$, slight recovery from even/odd
+        polarity reinstating a two-class structure at sub-zone grain.
+\end{itemize}
+The viable range is $\delta \geq 5$: below this, the wave footprint spans
+zone boundaries and the copy-forward loop builds sub-zone spatial
+gradients rather than monotonic zone-level ones.
+The fraction of home-zone events for a boundary cell scales as
+$\delta/(\delta+1)$; at $\delta=5$ this is $83\%$, falling to $67\%$ at
+$\delta=2$ (zone discrimination threshold crossed).
+
+\textbf{Exp~B (gate~$\times$~adversarial): commitment rate, not resistance.}
+A two-phase protocol with $T_\mathrm{encode}=2000$ baseline snapshot
+crosses gate conditions ($\mathrm{SS}\in\{0,5,10,15,20,\mathrm{rand}_{0.60}\}$)
+with adversarial amplitude ($a\in\{0,0.125,0.25,0.50\}$).
+A striking result: at $a=0$ (no adversarial), fidelity relative to the
+$T=2000$ snapshot is near-zero or negative for most conditions.
+SS$=0$ reaches $-0.22$ under normal (non-adversarial) waves.
+
+This reflects the commitment epoch (Paper~26): fieldM at $T=2000$
+is pre-committed for many seeds, encoding an anti-correlated
+pre-pattern.  Low-SS gates accelerate commitment --- fieldM crosses the
+sign flip and ends anti-correlated with the baseline.
+High-SS gates slow commitment --- fieldM remains near the $T=2000$
+state, yielding positive fidelity.
+
+\textbf{Synthesis.}  Papers 26, 46, and 47 describe one mechanism:
+the quiescence gate controls the timescale on which fieldM tracks
+mid\_mem.  At pre-commitment baselines, this manifests as commitment
+rate.  Under adversarial input, this manifests as adversarial filtering.
+The optimal SS$^*$ is a function of both adversarial pressure level
+and proximity to $t^*$: a high-pressure/post-commitment environment
+calls for high SS; a low-pressure/pre-commitment environment
+benefits from lower SS to complete the sign flip on schedule.
+
+\subsection{Population codes and the causal structure metric $\mathrm{sg}_C$ (Paper 48)}
+
+Paper~48 resolves a methodological inconsistency: the primary metric sg4 is
+population-level (mean pairwise L2 between zone means), but we had not established
+whether zone information lives at the single-cell or population level.
+
+\textbf{Population code finding.}
+Single-cell zone decoding accuracy (sg$_C$, nearest-centroid classification in
+fieldM space) is only 4--5\% above chance across all gate conditions
+($N_\mathrm{zones}=4$, chance$=0.25$).
+Zone structure is not carried by individual cells --- it is distributed across
+the population, recoverable from zone means but not from any individual fieldM vector.
+This is architecturally expected: mandatory turnover erases individual-cell labels
+by construction.  Population-level labels persist because they are carried by the
+mean, not by any particular unit.
+
+\textbf{SNR as causal quality measure.}
+Define $\sigma_w$ as the mean within-zone standard deviation of fieldM, and
+$\mathrm{SNR} = \mathrm{sg4}/\sigma_w$.
+The quiescence gate's operative effect is \emph{noise reduction}: at high SS,
+$\sigma_w$ halves while sg4 drops by less.  The SNR ordering is:
+$\mathrm{SS}{=}20\ (0.129) > \mathrm{SS}{=}10\ (0.125) > \mathrm{rand}_{0.60}\ (0.108) > \mathrm{SS}{=}0\ (0.105)$.
+This is the correct causal ordering.  The Paper~46 finding that
+$\mathrm{rand}_{0.60}$ achieves 1.69$\times$ higher sg4 than SS$=10$ is now
+explained: the random gate has high amplitude but $2\times$ the within-zone noise;
+the quiescence gate trades amplitude for precision.
+
+\textbf{Direction validation.}
+In the $\delta$-sweep, sg$_C$ decreases monotonically as $\delta$ shrinks
+($0.067 \to 0.022$, correct causal direction), while sg4 increases
+(counting artefact from more zone pairs, wrong direction).
+sg$_C$ and na\_ratio agree: $\delta \geq 5$ is the threshold.
+
+\textbf{Full metric suite.}  Future experiments should report:
+sg4 (between-zone signal), $\sigma_w$ (within-zone noise),
+SNR (causal quality), na\_ratio (encoding geometry),
+sg$_C$ (direction check when $N_\mathrm{zones}$ varies).
+
+\subsection{$\beta_s$, gate optimum, and population-code relay (Paper 49)}
+
+Paper~49 closes three open threads from Papers~46--48.
+
+\textbf{$\beta_s$ is a maintenance coordinate, not a formation coordinate.}
+A full sweep of $\beta_s \in \{0, 0.1, 0.25, 0.5, 0.75, 1.0\}$ at fixed
+$\Omega=62.4$ and $\delta=5$ produces flat sg4 ($0.0195$--$0.0202$) and flat
+SNR ($0.100$--$0.104$) --- all within noise.
+Under continuous wave input, the wave-driven viability differentiation overwrites
+the birth seed state within $\sim$10--50 steps, masking any $\beta_s$ effect.
+The C$_2$ triplet is complete: $\Omega$ and $\delta$ are formation coordinates;
+$\beta_s$ is a maintenance coordinate (active only when waves are absent,
+consistent with Paper~43's $1.63\times$ maintenance degradation at $\beta_s=0$).
+
+\textbf{Optimal gate reverses at the commitment epoch.}
+The 2D surface SS$^*(T_\mathrm{enc}, a)$ has a clean structure:
+before $t^*$ ($T_\mathrm{enc}=1000$), SS$=0$ wins under adversarial pressure
+--- rapid commitment is more valuable than adversarial resistance pre-commitment;
+after $t^*$ ($T_\mathrm{enc}\geq 2000$) with strong adversarial ($a=0.5$), SS$=10$
+wins --- the quiescence gate's adversarial resistance dominates;
+after $t^*$ without adversarial, SS$=20$ wins --- noise reduction is the objective.
+Weak adversarial ($a=0.25$) favours SS$=0$ throughout --- the gate is too
+conservative for low-pressure environments.
+The gate reversal at $t^*$ unifies Papers~26, 46, 47, and~49:
+optimal $\mathrm{SS}^* = f(T_\mathrm{enc}/t^*,\, a)$, not a constant.
+A new dissociation also emerges: under strong post-commitment adversarial input,
+SNR and decode\_norm (sg$_C$, per-cell location accuracy) diverge.
+SS$=0$ achieves higher sg$_C$ (per-cell accuracy preserved by continuous rewrites
+that track the adversarial signal) while SS$=10$ achieves higher SNR (zone-mean
+separation protected by blocking adversarial rewrites).
+Population-level geometry and individual-cell accuracy are distinct objectives
+with opposite optimal gate strategies under adversarial pressure.
+
+\textbf{Relay requires structured ongoing viability events, not only structured seeding.}
+Experiment~C compares three L2 coupling modes:
+mean\_relay (births seeded from L1 zone-mean fieldM, random waves to L2),
+geo (same wave amplitude pattern as L1, Paper~35 relay),
+ctrl (random waves, own fieldM).
+Result (with full metric suite including sg$_C$/decode\_norm and na\_ratio):
+ctrl ($1.00\times$, na\_ratio$=1.245$) $>$ geo ($0.89\times$, na\_ratio$=0.826$)
+$>$ mean\_relay ($0.80\times$, na\_ratio$=0.908$).
+\emph{Neither} relay mode outperforms the baseline.
+
+\textit{Why geo fails.}
+The wave-class alternating pattern (even zones suppressed, odd zones excited)
+creates zone \emph{parity} encoding rather than zone \emph{identity} encoding.
+Adjacent zones receive opposite perturbations; non-adjacent zones receive similar ones.
+The na\_ratio $<1$ signature directly reveals this: adjacent zone means are
+more separated than non-adjacent zone means.
+
+\textit{Why mean\_relay fails.}
+L2's ongoing fieldM updates ($\Delta$fieldM $\propto$ mid$-$fieldM) are driven by
+mid\_mem, which reflects L2's hidden state under \emph{random} waves.
+Random waves inject no zone structure into mid\_mem; each update partially
+overwrites the birth-seeded structure.
+Over $\sim 6$ collapses per site (3000 steps), the injected structure cannot
+survive ongoing erasure by the unstructured update signal.
+
+\textit{What ctrl does right.}
+With random waves, ctrl's copy-forward loop accumulates internally consistent
+spatial structure via drift from its own (initially noisy) fieldM.
+Over 3000 steps this drift produces modest but genuine zone-like encoding
+(na\_ratio$=1.245 > 1$) without any external coordination.
+
+The efficient relay primitive must impose zone-structured viability events AND
+a matching zone-convention birth seed in the receiving module simultaneously.
+This is a harder design problem than either geo or mean\_relay separately,
+and constitutes the open question answered definitively in Paper~50.
+
+\subsection{Zone identity encoding is not transmissible (Paper 50)}
+
+Paper~50 audits the relay result from Paper~49 across five conditions
+to identify the mechanism behind geo's parity encoding and test whether
+any relay coupling recovers identity encoding in L2.
+
+\textbf{The only condition that achieves identity encoding is ctrl\_std.}
+When L2 runs its own WaveEnvStd (same zone parameters as L1, independent
+random seed), it achieves na\_ratio$=1.219$, matching L1's $1.247$.
+This confirms that identity encoding is not special to L1: it is a
+property of the VCML formation process under structured zone-launched waves.
+
+\textbf{No relay coupling achieves identity encoding.}
+\begin{itemize}
+  \item geo\_copy (instantaneous amplitude copy): na$=0.778$ [parity]
+  \item geo\_4class (4-level amplitude grading): na$=0.949$ [parity, improved]
+  \item geo\_own\_relay (own WaveEnvStd + L1 birth seeding): na$=0.832$ [parity]
+\end{itemize}
+
+\textbf{Birth seeding from L1 actively degrades ctrl\_std.}
+geo\_own\_relay --- L2's own WaveEnvStd plus L1 zone-mean birth seeding ---
+achieves na$=0.832$, substantially worse than ctrl\_std's $1.219$.
+L1 and L2 develop different but equally valid identity-encoding patterns
+(different spatial orientations in HS$=2$ space).
+L1's birth seeds conflict with L2's self-consistently forming pattern:
+\emph{pattern-mismatch interference}, not a signal quality problem.
+
+\textit{Why identity cannot be relayed.}
+L1's identity encoding accumulates over 3000 steps of wave events from
+zone-anchored launch positions, reinforced at each step by the copy-forward
+loop ($\mathrm{hid}_\mathrm{new} \approx \beta_s \cdot \mathrm{fieldM}[\mathrm{cell}]$).
+An instantaneous snapshot of L1's wave amplitude array loses:
+(1)~temporal integration history --- the spatial gradient lives in L1's fieldM,
+not in any single wave amplitude snapshot;
+(2)~copy-forward self-consistency --- L2's fieldM under geo relay is pulled toward
+parity by the viability signal and toward identity by its own copy-forward loop,
+but the parity viability signal dominates.
+
+\textit{Minimum requirement for identity encoding.}
+L2 must run an independent WaveEnvStd with zone-anchored launch positions.
+No relay shortcut achieves this.
+This rules out all tested relay architectures as mechanisms for identity-preserving
+inter-module communication.
+
+\textit{Caveat on Papers 35--39.}
+The relay gains of $3$--$5\times$ in sg4 reported in Papers~35--39 are real and
+correctly measured.
+However, in light of Paper~50, the structure is parity encoding (na$<1$),
+not identity encoding (na$>1$).
+``Zone structure'' in relay contexts should be read as zone amplitude separation
+(sg4), not zone topographic identity (na\_ratio).
+Chain stability, cleft robustness, and depth-stability results stand;
+the interpretation of what structure is being relayed requires this caveat.
+
+\subsection{The research process as VCSM instance (Paper 51)}
+
+Paper~51 observes that the methodology that produced Papers~1--50 is
+structurally identical to the VCSM framework.
+The research process operates on three timescales:
+session (context window, analogous to baseline\_h),
+paper (MEMORY.md accumulation, analogous to mid\_mem),
+and framework document (VCML\_THEORY\_COMPLETE.tex, analogous to fieldM).
+Theoretical consolidation is gated on adversarial stress testing
+(the quiescence condition: findings must survive ablation and metric challenge
+before entering the framework document).
+Every paper terminates when its question closes (mandatory turnover).
+Each new paper reads the accumulated theory and memory files (copy-forward loop).
+
+The consequence is that the framework achieves zone identity encoding ---
+topographic, gradient-structured theory --- by running the full formation process,
+not by receiving it from a prior source.
+Zone identity encoding in the theory is not transmissible (Paper~50):
+reading the framework document produces parity understanding (what is
+suppressed vs.\ excited) but not identity understanding (the topographic gradient
+of why each primitive survived, which constraints forced which mechanisms).
+That gradient lives in the formation history: the 50-paper viability-gated ladder,
+the 11 null results and their specific failure modes, the metric evolution
+from sg4 to na\_ratio, the adversarial challenges and what they broke.
+
+\textit{Centerpiece example.}
+The parity/identity distinction was invisible in sg4 for approximately
+Papers~35--49 ($\sim$15 papers).
+It became visible in one step when na\_ratio was derived from the theoretical
+primitive (zone topography requires non-adjacent zones to be more distinct
+than adjacent zones) rather than from measurement convenience.
+The relay architecture appeared successful for 15 papers because the question
+being asked (are zones separated?) was not the question the theory requires
+(are the \emph{correct} zones separated?).
+The correct question was invisible until the theory, built by constraint
+propagation, outgrew the metric.
+
+\subsection{Two-channel write theory (Paper 52)}
+\label{subsec:paper52}
+
+Paper~52 asks whether the \emph{signed direction} of the VCSM contrast signal
+($\mathrm{mid\_mem} = \mathrm{hid} - \mathrm{baseline\_h}$) is load-bearing for
+zone identity encoding, or whether its magnitude alone suffices.
+Nine consolidation-write-policy conditions were tested in a two-phase protocol:
+2000~steps of formation (standard WaveEnvStd) followed by 1000~steps of adversarial
+environment (WaveEnvFlipped: suppress/excite convention inverted).
+
+\textit{C\_abs is the only parity failure.}
+Taking the absolute value of mid\_mem (condition C\_abs) is the unique condition that
+fails identity encoding (na\_ratio = 0.877, parity territory).
+All eight signed conditions achieve identity encoding (na\_ratio = 1.03--1.80).
+The signed direction of the contrast signal encodes which side of the viability
+boundary the cell occupies: moving toward collapse (negative) versus toward survival
+(positive).
+Collapsing this to $|\mathrm{mid}|$ destroys the directional information that makes
+intergenerational propagation zone-informative.
+The boundary does not generate information; the \emph{sign of the crossing} does.
+
+\textit{Two-channel write theory.}
+Paper~52 identifies two independent axes governing the write-policy space:
+
+\begin{enumerate}
+  \item \textbf{Content axis} (what to write):
+    C\_raw (raw hid, na=1.802) $>$ signed mid ($\sim$1.2--1.3) $>$ $|$mid$|$ (0.877).
+    The raw hidden state carries stronger zone identity signal than mid\_mem;
+    subtracting baseline\_h removes some identity information while adding
+    boundary sensitivity.
+  \item \textbf{Selectivity axis} (when to write):
+    C\_perturb (cos\_maint=0.664, writes-per-site=0.0004) $>$ C\_near (0.546) $\gg$
+    C\_ref ($-0.274$).
+    Write \emph{trigger policy} --- not write content --- determines adversarial resistance.
+    C\_perturb writes only during active perturbation events, achieving best adversarial
+    maintenance at 83$\times$ fewer writes than C\_near.
+\end{enumerate}
+
+\textit{C\_ref and C\_far re-encode.}
+Both conditions write at high frequency and produce negative cosine maintenance
+(re-encoding the adversarial environment rather than preserving formation structure).
+High write frequency = rapid adaptation = inability to distinguish formation from
+adversarial phase.
+All near-boundary conditions preserve identity under adversarial (na\_ratio $> 1$
+after flip), confirming that boundary-gated selectivity confers structural stability.
+
+\textit{Theory implication.}
+Standard VCSM (C\_ref) lies in the responsive quadrant of the two-channel write space:
+high selectivity on content axis (signed mid over raw hid), low selectivity on
+trigger axis (all quiescent cells write).
+The two-channel space defines a design tradeoff:
+moving along the content axis (toward C\_raw) increases formation encoding strength;
+moving along the selectivity axis (toward C\_perturb or C\_near) increases adversarial
+resistance at the cost of slower formation.
+C\_rand (random trigger, matched write rate) achieves na=1.335 --- the random trigger
+selects a different valid subsample of the formation signal, confirming that
+boundary proximity is one valid selection criterion, not the only one.
+
+\subsection{The VCML behavioral phase diagram (Paper 53)}
+\label{subsec:paper53}
+
+Paper~53 synthesizes the experimental evidence from Papers~0--52 into a
+unified behavioral phase diagram for VCML.
+The central finding is that each experimental surprise corresponded to a regime
+crossing along an axis that was not yet separated in the mental model.
+Five independent control axes are identified.
+
+\textit{Axis~I: Perturbation intensity (coll/site).}
+sg4 is non-monotone: peak at coll/site~$\approx 0.004$,
+falling in both the sub-optimal (formation-starved) and over-perturbed
+(consolidation-disrupted) regimes.
+The peak is the point where both the copy-forward event rate and the
+quiescence streak accumulation are simultaneously satisfied.
+
+\textit{Axis~II: Spatial resolution ($\delta = W_\text{zone}/r_\text{wave}$).}
+Hard threshold at $\delta \approx 2.5$.
+Below this, waves interpenetrate adjacent zones (wave bleed), producing parity
+encoding or no structure.
+The transition is categorical (hard threshold from wave-bleed physics), not
+smooth.
+
+\textit{Axis~III: Formation flux ($\Omega = \mathrm{WR} \times \phi_w$).}
+The operative coordinate for perturbation rate (Papers~46--47).
+Coupled to Axis~I through WR: the optimal WR is a function of grid size, not
+a single universal constant.
+
+\textit{Axis~IV: Write policy (2D).}
+The content axis (C\_raw $>$ signed mid $>$ $|$mid$|$, identity encoding
+strength) and the trigger selectivity axis (C\_perturb $>$ C\_near $>$ C\_ref,
+adversarial resistance) are orthogonal.
+These axes interact only at the C\_abs extreme, where unsigned content and
+boundary trigger combine to produce the unique parity failure.
+
+\textit{Axis~V: Scale and finite correlation length.}
+The copy-forward loop has correlation length $\sim r_\text{wave} \approx 2$
+sites.
+Above $\sim$25,000 sites per zone, zone-wide gradients cannot be maintained
+and structure forms in patches.
+The dynamic advantage is preserved at all scales
+($+81\%$ to $+829\%$, Papers~V92--V94), but the spatial organization
+degrades.
+
+\textit{Cross-axis coupling.}
+Axes~I and~III are coupled through WR (increasing WR changes both).
+Axes~II and~V interact through zone width (large N increases $\delta$ without
+fixing patch formation, which is a distinct correlation-length mechanism).
+Axis~IV (C\_perturb) is contingent on Axis~I being in the adaptive zone:
+C\_perturb writes nothing when perturbation events are absent.
+
+\textit{VCML as a minimal causal field system.}
+A minimal causal field system generates, from the same local rules in different
+parameter regimes: identity encoding, adversarial resistance, intergenerational
+memory, and spatial topology.
+VCML satisfies all four.
+The phase diagram is the evidence: the same system in the over-perturbed regime
+loses identity encoding while retaining turnover; in the C\_abs regime, it
+retains adversarial stability while losing identity encoding; at S4, it retains
+formation while losing zone-wide coherence.
+The correct question is not whether the mechanism is understood, but which
+regime of the phase diagram a given experiment inhabits.
+
+\textit{Paper~53 revision (Paper~54):}
+The cross-axis prediction that C\_perturb fails at low amplitude was inverted
+by experiment.
+C\_perturb maintains identity encoding at all amplitude levels tested
+(na\_ratio = 1.49, 1.39, 1.25 for sub-threshold, optimal, and over-perturbed),
+while C\_ref fails at both extremes.
+This corrects the mechanism: Axis~IV trigger selectivity is \emph{noise-gating}
+(minimizes $\sigma_w$), not signal-boosting.
+The $\sim$10--20$\times$ lower within-zone variance of C\_perturb produces
+high SNR even with small absolute sg4.
+
+\subsection{Phase diagram refinements (Paper 54)}
+\label{subsec:paper54}
+
+Paper~54 tests three open questions from Paper~53 and revises two items.
+
+\textit{Order parameter.}
+sg\_C = sg4/$\sigma_w$ is not the unified order parameter.
+snr is flat ($\approx 0.105$) across the identity regime and drops slightly in
+the parity regime, providing no additional discriminating power over na\_ratio.
+The candidate order parameter is a vectorial SNR:
+$C_\text{order} = \|\mu_\text{nonadj} - \mu_\text{adj}\| / \sigma_w$,
+measuring whether correct zone pairs are separated beyond within-zone noise.
+
+\textit{Correlation length law.}
+At S2 (zone\_width=20), sweeping $r_\text{wave}$ from 1 to 16 reveals two
+distinct failure modes.
+At $r_\text{wave}=1$ ($\delta=20$, above the wave-bleed threshold),
+na\_ratio = 0.748 (parity): a correlation-length failure independent of
+$\delta$.
+Empirical law: identity encoding requires
+zone\_width $\leq 5 r_\text{wave}$.
+This is separable from $\delta$: both conditions (zone containment by $\delta$,
+loop coherence by $r_\text{wave}$) must be satisfied simultaneously.
+
+\textit{Trigger mechanism revision.}
+The Paper~53 claim that Axis~IV trigger selectivity selects more informative
+writes is incorrect.
+Trigger selectivity is a noise-gating operation: C\_perturb writes to fewer
+cells, keeping $\sigma_w$ near zero, producing high SNR from tiny sg4.
+This mechanism accounts for both C\_perturb's adversarial resistance
+(Paper~52) and its cross-amplitude robustness (Paper~54).
+
+\subsection{Lyapunov functional for identity formation (Paper 55)}
+
+Paper~55 tests whether C\_order has monotone positive drift (Lyapunov property)
+by tracking it over full 3000-step trajectories across five behavioral regimes.
+
+\textbf{Result:}
+C\_order shows monotone positive drift \emph{only} in the noise-gated condition
+(C\_perturb): C\_order rises from $+0.011$ at step~1000 to $+0.262$ at step~2000
+and plateaus at $+0.159$ at step~3000.
+All C\_ref conditions produce C\_order $\approx 0$ or negative throughout,
+because $\sigma_w \approx 0.15$--$0.32$ overwhelms the small inter-zone contrast.
+
+\textbf{Transient vs.\ stable identity.}
+The standard C\_ref optimal condition (supp=0.25, exc=0.50) reaches na\_ratio = 1.026
+at step~2000 (the measurement point of Paper~54), but C\_order $= -0.013$ at
+this same timepoint.
+By step~3000, na\_ratio falls to 0.729 (parity).
+The Paper~54 measurement captured a transient identity peak, not a stable attractor.
+C\_perturb identity is stable: na = 1.412 and C\_order = $+0.159$ at step~3000.
+
+\textbf{Lyapunov condition.}
+C\_order $= (D_\mathrm{nonadj} - D_\mathrm{adj})/\sigma_w$.
+Let $S = D_\mathrm{nonadj} - D_\mathrm{adj}$ and $W = \sigma_w$:
+\begin{equation}
+\dot{C}_\mathrm{order} > 0 \quad\Longleftrightarrow\quad \dot{S}/S > \dot{W}/W
+\end{equation}
+C\_perturb satisfies this because $\dot{W}/W \approx 0$ (trigger selectivity
+limits writes, stabilising $\sigma_w$).
+C\_ref violates it because $\dot{W}/W > 0$ (writes to all quiescent cells
+continuously accumulate noise).
+
+\textbf{Three jointly necessary conditions} for the Lyapunov property:
+(1)~zone\_width $\leq 5r_\text{wave}$ (correlation length, ensures copy-forward
+self-amplification $K_\mathrm{self} > 0$);
+(2)~perturbation amplitude in the identity window (Axis~I);
+(3)~$\dot{W}/W \approx 0$ (noise floor control).
+All three correspond to regime conditions already identified in Papers~53--54.
+The Lyapunov analysis does not discover new boundaries; it explains why they matter
+at the level of dynamical stability.
+
+\subsection{Three completions for the regime diagram (Paper 56)}
+
+Paper~56 closes three questions left open by Paper~55:
+
+\textbf{(A) SS threshold cannot substitute for C\_perturb noise-gating.}
+Sweeping the consolidation threshold SS over $\{10, 20, 30, 50, 100, 200\}$
+in the sub-threshold C\_ref condition shows that SS$=30$ produces marginal
+identity (na$=1.014$), but no level achieves the Lyapunov property
+(cross\_step $=$ never for all SS).
+Signal attenuation by the mid-memory decay ($\mathrm{MID\_DECAY}^{SS}
+= 0.99^{200} = 0.134$) cancels the write-frequency reduction.
+Higher SS lowers write\_ready\_frac (0.732 at SS$=10$ to 0.536 at SS$=200$)
+but proportionally weakens the consolidated signal; the Lyapunov condition
+remains unsatisfied.
+
+\textbf{(B) C\_perturb extends the effective correlation-length threshold.}
+Paper~54 established identity requires zone\_width $\leq 5r_\text{wave}$
+(critical $\delta \leq 5$) for C\_ref.
+Under C\_perturb at the S2 grid, $r_\text{wave}=1$ achieves identity
+(na~$=1.160$, $C_\text{order}=+0.041$) at $\delta=20$, and $r_\text{wave}=2$
+reaches na~$=1.261$ at $\delta=10$.
+The effective threshold extends at least $2$--$4\times$ beyond the C\_ref
+value.
+Mechanism: noise-gated writes keep $\sigma_w \approx 0.001$--$0.011$
+vs.\ C\_ref $\sigma_w \approx 0.15$--$0.19$; the elevated SNR compensates for
+small wave radius.
+The optimal $r_\text{wave}$ under C\_perturb is $r=2$; $r=8$ fails because
+large footprints cause wave-class overlap, inflating $\sigma_w$ toward the C\_ref
+range.
+
+\textbf{(C) na\_ratio is write-frequency-invariant.}
+write\_ready\_frac (instantaneous fraction of cells passing the consolidation
+gate) ranges from $0.31$ to $0.96$ across all conditions with no monotone
+relationship to na\_ratio.
+C\_perturb achieves identity at $r \in \{1,2,4\}$ despite operating in a very
+different write-frequency regime than any C\_ref condition.
+Content selectivity (which events trigger writes) dominates write frequency
+in determining identity formation.
+Corollary: na\_ratio~$-1$ is the robust, write-policy-agnostic order parameter
+for VCML identity; $C_\text{order}$ provides mechanistic resolution but is not
+comparable across write policies.
+
+\subsection{Analytic closure of the Lyapunov condition (Paper 57)}
+
+Paper~57 derives the noise-growth term $\dot{W}/W$ analytically from wave geometry,
+closing the derivation left open in Paper~55.
+
+\textbf{Geometric approximation.}
+Cells within $r_\text{wave}$ of a zone boundary receive mixed-zone wave input.
+The boundary-contaminated fraction is $f_\text{bnd} = 2r_\text{wave}/W_\text{zone} = 2/\delta$;
+the interior fraction is $f_\text{int}(\delta) = (1-2/\delta)^+$.
+Under C\_perturb, interior-cell writes dominate; under C\_ref, boundary cells also
+write, giving $\mathbb{E}[\Delta\sigma_w^2 | \text{C\_ref}] \approx (2/\delta)\,V_\text{bnd} > 0$
+at all finite $\delta$.
+Critical threshold: $\delta_c = 2$.
+
+\textbf{Experimental verification (Exp~57).}
+Fine $r_\text{wave}$ sweep $\{2,3,4,5,6,7,8,10\}$ under C\_perturb, S2 sub-threshold,
+40 runs: $\sigma_w$ rises monotonically with $r_\text{wave}$, confirming the
+boundary-contamination model.
+Deviation at $r_\text{wave}=10$ ($\delta=2$, $f_\text{int}=0$): geometry predicts
+full collapse but system achieves na~$=1.091$.
+Explanation: same-zone launch area asymmetry maintains positive causal purity
+$P_\text{causal}$ even when $f_\text{int}=0$.
+
+\textbf{Substrate-agnostic form.}
+The correct primitive is \emph{causal purity} $P_\text{causal}$: the fraction of
+pre-consolidation wave-contact events from the same zone class.
+The Lyapunov condition becomes $\dot{C}_\text{order} > 0 \iff P_\text{causal} > p_c$
+for threshold $p_c \approx 1/3$.
+This statement contains no lattice-specific quantities.
+It unifies the three prior laws (Papers~54--56): correlation-length threshold, noise-floor
+condition, and new geometric threshold are all projections of $P_\text{causal} > p_c$.
+
+\subsection{Two-dimensional causal purity (Paper 58)}
+
+Paper~58 implements direct empirical measurement of $P_\text{causal}$: for every
+consolidation event, the zone index of the triggering wave is recorded and compared
+to the cell's zone. No geometric approximation.
+
+\textbf{Finding 1.} Empirical spatial purity $P_\text{sp}$ (0.88--0.98) matches the
+geometric prediction and decreases with $r_\text{wave}$.
+
+\textbf{Finding 2.} C\_perturb and C\_ref have nearly identical $P_\text{sp}$
+(within 0.02--0.03 at each $r_\text{wave}$), yet $\sigma_w$ differs 3--10$\times$.
+Spatial causal purity alone cannot explain the write-policy gap.
+
+\textbf{Finding 3.} The linear noise model $\sigma_w \approx A(1-P_\text{sp})$
+(with $A \approx 0.84$) holds for C\_perturb across all $r_\text{wave}$, but fails
+for C\_ref (ratio 1.6--10$\times$ above linear).
+The missing dimension is \emph{temporal causal purity} $P_\text{temp}$: the fraction
+of consolidation events that occur \emph{during} active causal-wave contact.
+C\_perturb has $P_\text{temp}=1$ by construction; C\_ref has $P_\text{temp} < 1$
+(writes during quiescence, reading stale, decayed mid-memory).
+
+\textbf{Two-dimensional identity condition.}
+\begin{equation*}
+  \dot{C}_\text{order} > 0 \iff P_\text{sp} > p_c^\text{sp}
+  \;\text{ AND }\; P_\text{temp} > p_c^\text{temp}
+\end{equation*}
+Extended noise model: $\sigma_w \approx A_\text{CP}(1-P_\text{sp}) + B(1-P_\text{temp})$
+with $B \gg A_\text{CP}$.
+
+\textbf{Primitive restated.}
+The substrate-agnostic primitive is \emph{distinction + causal propagation + persistence}.
+Carrier mortality is the mechanism enforcing the persistence requirement on biological
+substrates, not a primitive requirement in itself.
+Both purity conditions ($P_\text{sp}$, $P_\text{temp}$) are requirements on the
+persistence of a causally attributed distinction under substrate change.
+
+\subsection{Field equation of VCML and the r\_wave=8 anomaly (Paper 59)}
+
+Paper~59 hypothesises a third purity dimension, \emph{historical purity}
+$P_\text{hist}$ (fraction of mid\_mem content at consolidation from same-zone waves),
+and measures it empirically.
+
+\textbf{Null result.}
+$P_\text{hist} \approx P_\text{sp}$ within $0.04$ across all conditions.
+The geometric prediction for $P_\text{hist}$ is severely wrong
+(predicts 0.68--0.84; actual 0.93--0.98), corrected by the same launch-area asymmetry
+from Paper~57.
+$P_\text{hist}$ is not a distinct third dimension.
+
+\textbf{Model A field equation.}
+The continuous-time limit of the GRU--CML--fieldM update is:
+\begin{equation*}
+  \partial_t \phi(x,t)
+  = -\kappa\,\phi + D\nabla^2\phi + r_w\,\mathrm{FA}\,s(x) + \eta(x,t),
+\end{equation*}
+a Model~A (Ornstein--Uhlenbeck) field theory with noise amplitude
+$\langle\eta^2\rangle \propto (1-P_\text{sp})^2 V_\text{bnd} + (1-P_\text{temp})^2 V_\text{temp}$.
+$C_\text{order} = S/\sigma_w$ is the field-theoretic SNR
+(order-parameter amplitude / fluctuation amplitude).
+
+\textbf{$r_\mathrm{wave}=8$ parity-resonance failure.}
+The anomaly is a structural (not purity) failure.
+At $r_\mathrm{wave} \approx W_\mathrm{zone}/2.5$, adjacent zones exchange
+excitatory/inhibitory polarity signal maximally, but waves do not yet reach
+non-adjacent zones.
+fieldM encodes zone polarity (even = suppressed, odd = excited) rather than
+zone position, inverting the na signature ($D_\text{adj} > D_\text{nonadj}$).
+Third condition: $r_\mathrm{wave} < W_\mathrm{zone}/3$ OR $r_\mathrm{wave} > W_\mathrm{zone}/2$
+(drive-pattern non-resonance), orthogonal to causal purity.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{The Parameter Manifold: Why No Single Equation Suffices}
+\label{sec:manifold}
+
+\subsection{The 8D product structure}
+
+The VCML system lives in an 8-dimensional product manifold $C_1 \times C_2$,
+where the two factors govern qualitatively different aspects of behaviour.
+
+\medskip
+\textbf{$C_1$ --- Viability volume} $(\nu,\, \mathrm{FD},\, \mathrm{FA},\, \beta_s)$.
+These four parameters determine \emph{whether} spatial memory consolidation occurs at all.
+$\nu$ sets the turnover rate; FD (field decay) controls how fast unconsolidated
+structure is lost; FA (force amplitude) sets the signal entering mid-memory;
+$\beta_s$ (birth-seed fraction) determines how much of the parent fieldM is
+inherited at birth.
+The adaptive regime occupies the interior of $C_1$; the boundaries lead to either
+the crystallised regime (too-slow turnover, fieldM locks) or the sub-viability
+regime (too-fast, nothing consolidates).
+
+\medskip
+\textbf{$C_2$ --- Structural manifold} $(\kappa,\, \nu/\kappa,\, \beta_s,\, W_\mathrm{zone})$.
+These four parameters determine \emph{what kind} of spatial structure forms,
+given that consolidation is occurring.
+$\kappa$ (diffusion constant) sets the smoothing length; $\nu/\kappa$ is the
+dimensionless ratio that selects the universality class (Allen-Cahn at $\nu/\kappa \ll 1$,
+Burgers/KPZ at $\nu/\kappa \sim 1$); $W_\mathrm{zone}$ is the zone width relative
+to the wave correlation length.
+
+\medskip
+\textbf{Causal reparametrisation of $C_2$.}
+The lattice coordinates $(\kappa,\, \nu/\kappa,\, W_\mathrm{zone})$ are valid for the
+lattice substrate but reference Euclidean geometry explicitly.
+Paper~36 established that the operative correlation length is $\xi \approx r_w$
+(causal propagation radius), not $\sqrt{\kappa/\nu}$ (diffusion length).
+This motivates a substrate-agnostic reparametrisation:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Lattice parameter} & \textbf{Causal coordinate} & \textbf{Definition} \\
+\midrule
+$\kappa$ & wave fanout $\phi_w$ & cells reached by one wave event $= \pi r_w^2$ on lattice \\
+$\nu/\kappa$ & $\Omega = \nu \cdot \phi_w \cdot T_{1/2}$ & collapse events per causal neighbourhood per $T_{1/2}$ \\
+$W_\mathrm{zone}$ & causal depth ratio $\delta = W_\mathrm{zone}/r_w$ & zone width in units of causal horizon \\
+$\beta_s$ & $\beta_s$ (unchanged) & copy-forward inheritance fraction \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+$\Omega \gg 1$: rapid copy-forward refresh $\to$ Burgers/sharp-boundary regime.
+$\Omega \ll 1$: slow decay $\to$ Allen-Cahn/diffuse regime.
+$\delta \lesssim 1$ (S1): zone fits inside one causal neighbourhood; zone-wide coherence possible.
+$\delta \gg 1$ (S4): independent causal neighbourhoods; structure forms in patches of size $\sim r_w$ (V94).
+The relay threshold $N_\mathrm{crit} = L/(5r_w)$ is $\delta \geq 5$: five causal neighbourhoods
+required for a reliable zone-mean estimate (Papers~35--37).
+
+On a graph substrate, $\phi_w$ becomes the mean causal neighbourhood size under the graph topology
+(not $\pi r_w^2$), $\delta$ becomes zone nodes / neighbourhood size, and $\Omega$ uses
+graph-neighbourhood $\phi_w$ directly.
+The reparametrisation eliminates the Euclidean assumption from $C_2$ without changing
+any experimental result: every lattice result is reproduced by substituting
+$\phi_w = \pi r_w^2$, $\delta = W_\mathrm{zone}/r_w$.
+One additional parameter appears on general graphs:
+birth fanout $\phi_b$ (cells reachable by copy-forward seeding in one step);
+on the lattice $\phi_b = 1$ (nearest-neighbour, degenerate) and cannot be measured independently.
+
+\medskip
+\textbf{The shared axis.}
+$\beta_s$ is the \emph{only} parameter appearing in both manifolds.
+It couples viability (how much structure survives birth) to spatial structure
+(how coherently that structure propagates).
+Because the coupling runs through a single scalar, $C_1$ and $C_2$ can be
+explored and optimised largely independently --- a fact exploited throughout
+Papers~7--34 to close each axis in isolation.
+
+\subsection{The closest unified description, and why it is still a slice}
+
+The stochastic Allen-Cahn/KPZ PDE
+\begin{equation}
+\frac{\partial F}{\partial t}
+  = \underbrace{\kappa\,\nabla^2 F}_{\text{diffusion}}
+  - \underbrace{\lambda(F - F^*)^2}_{\text{Allen-Cahn attraction}}
+  + \underbrace{\tfrac{1}{2}\chi(\nabla F)^2}_{\text{KPZ/Burgers}}
+  + \underbrace{\eta(x,t)}_{\text{stochastic drive}}
+\label{eq:unified}
+\end{equation}
+is the closest single equation to a unified description of within-zone fieldM dynamics.
+With $\chi \to 0$ it reduces to Allen-Cahn (smooth-interface, $\nu/\kappa \ll 1$ regime);
+with $\lambda \to 0$ it reduces to KPZ (rough-interface, $\nu/\kappa \sim 1$ regime).
+The crossover is controlled by $\nu/\kappa$ (Paper~24).
+
+Yet Eq.~(\ref{eq:unified}) is \emph{still only a slice}.
+It lives entirely in $C_2$: it says nothing about whether the adaptive window is
+open ($C_1$), how fast zone means grow (ODE closure), when the field commits
+($t^*$ scaling, Paper~27), or whether two coupled regions can share structure
+(relay conditions, Papers~35--37).
+The full theory requires a description of the product $C_1 \times C_2 \cong \mathbb{R}^8$,
+and no single PDE captures all eight dimensions.
+
+\subsection{Each equation is a projection}
+
+The system genuinely lives on the product surface.
+Each equation in the theory is the \emph{projection} of that 8D surface onto the
+slice relevant to a particular question:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Question} & \textbf{Relevant slice} & \textbf{Dominant equation} \\
+\midrule
+Does structure form at all?       & $C_1$: $(\nu$, FA, FD$)$              & Adaptive window bounds \\
+What causal structure emerges?    & $C_2$: $(\phi_w$, $\Omega$, $\delta)$ & Allen-Cahn ($\Omega\!\ll\!1$) / KPZ ($\Omega\!\gg\!1$) \\
+How fast does fieldM grow?        & Zone-mean projection ($\beta_s$, $P_c$) & ODE closure \\
+When does the system commit?      & $P_c \cdot \mathrm{FA} \cdot \mathrm{WR}$ & $t^*$ scaling \\
+Can two regions share structure?  & Relay geometry ($r_w$, $L$)           & $N < L/(5r_w)$, $\Phi < 1$ \\
+Is memory maintained after turnover? & $C_1 \cap C_2$: gate + $\beta_s$   & Copy-forward loop \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+In any given parameter regime one term dominates and one equation suffices ---
+exactly as QFT and general relativity each describe their domain correctly
+with the full theory requiring both.
+This is not a weakness of the theory; it is a consequence of the geometry.
+A single equation would be a false unification: it would collapse the $C_1$--$C_2$
+distinction and hide the fact that viability and structure are controlled by
+different physical mechanisms with different experimental handles.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{The Complete Parameter Space}
+
+\subsection{Key equations}
+
+\begin{align}
+\text{(ODE closure)} \quad &\frac{d\bar{F}}{dt} = P_c \cdot \mathrm{FA} \cdot (\bar{m}-\bar{F}) - \nu\bar{F} \\[4pt]
+\text{(Saturation)} \quad  &\mathrm{sg4}(\mathrm{FA}) = \frac{C \cdot \mathrm{FA}}{\mathrm{FA} + K_\mathrm{eff}}, \quad K_\mathrm{eff} \approx 0.114 \\[4pt]
+\text{(Spatial amplif.)} \quad &\Gamma \sim W_\mathrm{zone}^{0.6}\,\kappa^{-0.3}, \quad K_\mathrm{eff}^\mathrm{spatial} \approx 0.040 \\[4pt]
+\text{(Zone width)} \quad  &W_\mathrm{zone}^* \sim \sqrt{\kappa/\nu} \\[4pt]
+\text{(Commit epoch)} \quad &t^* \sim 1/(P_c \cdot \mathrm{FA} \cdot \mathrm{WR}) \\[4pt]
+\text{(Relay)} \quad        &N < L/(5\,r_w) \;\text{ and }\; \Phi = \mathrm{WR}\,r_w/T_\mathrm{dur} < 1 \\[4pt]
+\text{(Non-gradient)} \quad &\mathrm{curl}(f_F, f_m) = -\mathrm{FA} \neq 0
+\end{align}
+
+\subsection{Hierarchy of descriptions}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Scale & Description & Papers \\
+\midrule
+Cell          & 5-step VCSM rule                    & 0 \\
+Within-zone   & Allen-Cahn/Burgers stochastic PDE   & 22--26 \\
+Zone-mean     & ODE: $d\bar{F}/dt = P_c\,\mathrm{FA}(\bar{m}-\bar{F}) - \nu\bar{F}$ & 20, 23 \\
+Parameter     & 4D viability volume $C_1$            & 7--13 \\
+Structure     & 4D structural manifold $C_2$         & 22--26, 30 \\
+Multi-region  & Geographic relay, cleft geometry    & 35--39 \\
+Dynamics      & Metastability, CL, copy-forward refresh & 38--42 \\
+Robustness    & Rule-family robustness, formation vs.\ maintenance & 43 \\
+Adversarial   & Imprinting critique closed, memory vs.\ environment  & 44 \\
+Formal        & Non-gradient (Lean 4 verified)      & 33 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Biological Predictions}
+
+All predictions follow directly from the theory; none require additional assumptions.
+
+\paragraph{Adult hippocampal neurogenesis.}
+VCML death--birth cycle $\equiv$ adult neurogenesis in the dentate gyrus.
+The copy-forward mechanism proposes that newborn granule cells inherit structured fieldM
+from mature neighbours; dendritic contact during migration is the candidate substrate for
+this inheritance step (\textit{mechanistic speculation --- not established}).
+
+\textit{What is confirmed in animal models:} preventing apoptosis of adult-generated DG
+neurons impairs pattern separation.
+This is consistent with VCML: crystallised dynamics (no death) degrades zone structure
+maintenance relative to the adaptive regime.
+
+\textit{VCML-specific prediction (not yet tested):} blocking adult neurogenesis should
+impair \emph{maintained} spatial memory (zone structure persistence after input removal)
+more than \emph{initial acquisition} (zone formation).
+This distinguishes the maintenance mechanism from a simple capacity account and is a
+different experiment from the standard neurogenesis--learning literature.
+The mechanism is not ``more neurons = more capacity'' but ``optimal turnover rate maintains
+adaptive zone structure via copy-forward refreshing''.
+
+\paragraph{Sleep replay.}
+Offline replay of multiple experiences during sleep $\equiv$ Paper~41's task switching.
+\textbf{Prediction:} replay maintains hippocampal zone structure $5$--$10\times$ better than
+single-trace consolidation alone.
+The optimum replay rate $\approx 0.6 \times \tau_{1/2}$ (where $\tau_{1/2}$ is the
+zone-structure half-life without replay).
+Absence of replay causes structural decay --- not just poor encoding, but loss of the spatial
+index itself.
+
+\paragraph{Topographic map formation.}
+Geographic relay coupling $\equiv$ axonal topographic projection between cortical areas.
+\textbf{Prediction:} deterministic topographic misalignment (consistent offset) does not
+impair downstream zone formation; stochastic scrambling of terminal fields does.
+Critical parameter: $\Phi = \mathrm{WR}\,r_w/T_\mathrm{dur} < 1$ for relay to succeed.
+This maps to a condition on the ratio of axonal conduction velocity to synaptic time
+constant in the biological regime.
+
+\paragraph{Hippocampal vs.\ cortical memory.}
+High-turnover regions (hippocampus, $\nu$ large) operate in the adaptive regime and
+exhibit gradual forgetting on the metastability timescale.
+Low-turnover regions (cortex, $\nu \approx 0$) operate near the crystallised regime and
+exhibit near-permanent memory at the cost of reduced plasticity.
+The dentate gyrus sits at the adaptive--crystallised boundary by design: high enough $\nu$
+to maintain zone structure via copy-forward; low enough to not decay before consolidation.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{State of the Theory}
+
+\subsection{Single-region theory: complete mechanistic account}
+
+As of Paper~44, the dominant mechanism underlying single-region VCML dynamics is
+established, rule-family robust, and adversarially validated.
+
+Paper~42 resolved all three open anomalies (C$_\mathrm{loc}$ ratio$>1$, C$_\mathrm{half}$
+surge, T$_\mathrm{sw}$ reversal).
+Paper~43 demonstrated robustness: formation persists across all rule variants and ablations;
+maintenance requires viability-gated copy-forward.
+Paper~27 provided predictive validation: the commitment timescale scaling
+$t^* \sim 1/(P_c \cdot \mathrm{FA} \cdot \mathrm{WR})$ was predicted then confirmed.
+Paper~44 closed the imprinting critique: the adaptive mechanism maintains positive cosine
+fidelity with the original encoding under 2000 steps of sustained adversarial input,
+while the passive (no-gating) mechanism encodes the adversarial pattern
+($\Delta = 0.205$, $p < 0.001$).
+
+The dominant single-region phenomenology is captured by one sentence:
+
+\begin{quote}
+\textit{The copy-forward loop (viability-gated consolidation $\to$ structured collapse $\to$
+birth seeded from fieldM) maintains zone structure, and its rate is determined by the
+structured-collapse rate from any perturbation source (waves, task switching, boundary
+mismatch, or intrinsic noise); structure formation is additionally robust to rule variants
+because zone-differentiated wave input is sufficient to drive differentiation under any
+consolidation mechanism.}
+\end{quote}
+
+\textbf{What this claim does and does not assert:}
+\begin{itemize}[itemsep=2pt]
+\item \textit{Does assert:} viability-gated copy-forward is the dominant maintenance mechanism;
+  it is necessary (removing gating degrades maintenance to near field-decay-only);
+  it is robust (six $\pm50\%$ rule variants all maintain structure).
+\item \textit{Does not assert:} this is the \emph{unique} possible mechanism for formation
+  (any local rule with zone-differentiated input likely produces formation);
+  the ODE/PDE are exact (they are leading-order approximations valid near the mean field);
+  the theory is mathematically complete in the sense of formal proof theory.
+\end{itemize}
+
+\subsection{Open frontiers}
+
+\textbf{Finite causal horizon and trans-horizon coherence.}
+Paper~36 established that the effective correlation length is $\xi \approx r_w$ ---
+determined by the causal propagation radius of wave events, not by diffusion length $\sqrt{D}$
+or any $C_1$/$C_2$ parameter.
+This implies a \emph{finite causal horizon}: two cells separated by $d > r_w$ cannot share
+a common wave ancestor in a single step and therefore cannot be directly causally correlated.
+
+Two regimes follow directly from this bound:
+\begin{itemize}[itemsep=1pt]
+  \item \emph{Sub-horizon zones} ($W_\mathrm{zone} \lesssim r_w$): the entire zone lies within
+    one causal neighbourhood; zone-wide coherence is achievable.
+  \item \emph{Trans-horizon zones} ($W_\mathrm{zone} \gg r_w$): a single zone contains
+    $(W_\mathrm{zone}/r_w)^2$ independent causal neighbourhoods; structure forms in patches
+    of size $\sim r_w$, not zone-wide gradients.
+    This explains the patch formation observed at scale S3--S4 (V94) without additional
+    assumptions.
+\end{itemize}
+
+The empirical relay threshold $N_\mathrm{crit} = L/(5\,r_w)$ (Papers 35--37) acquires
+a causal interpretation under this framing:
+reliable zone-mean estimation requires $\geq 5$ independent causal neighbourhoods to average
+over, providing adequate signal-to-noise on the zone-mean fieldM vector.
+The constant 5 is a causal averaging threshold, not a geometric constant.
+
+\textbf{Hierarchical relay (structure-about-structure).}
+The finite causal horizon makes hierarchical relay a structural necessity, not an engineering
+choice: a single region cannot produce coherent structure at scales exceeding $r_w$ because
+no wave event can cross the horizon.
+Trans-horizon coherence requires aggregation across causal neighbourhoods ---
+which is exactly what relay coupling provides.
+A distal region reads zone-level summaries from a proximal region (spatial averages
+over $\geq 5$ causal neighbourhoods), crosses the causal horizon by aggregation,
+and uses that summary as the input signal for its own causal neighbourhoods.
+Key open question: does a two-level hierarchy produce sg4 of the \emph{summary}
+at the distal region ($\equiv$ ``what does the pattern mean'', not just
+``where is the pattern'')?
+
+\textbf{Graph substrates.}
+VCML-G (graph substrate) generalises the lattice by replacing Euclidean adjacency with
+graph-topological adjacency.
+The causal reparametrisation extends naturally: wave fanout $\phi_w$ becomes the mean
+number of nodes reached by a single wave event on the graph; birth fanout $\phi_b$
+(which is degenerate on the lattice, where births are purely local) becomes non-trivial
+when newborn cells can sample fieldM from distant hub nodes via long-range edges.
+The causal depth ratio $\delta = W_\mathrm{zone}/r_w$ generalises to
+$\delta_G = d_\mathrm{zone}/r_G$, where $d_\mathrm{zone}$ is zone diameter in graph hops
+and $r_G$ is the effective causal horizon in hops.
+Key questions:
+(1) Can tuning $\phi_b$ (long-range birth fanout) decouple wave radius from birth radius,
+increasing effective zone coherence without increasing perturbation cost?
+(2) Small-world connectivity increases $\phi_w$ without proportionally increasing wave cost---
+does this overcome the $N_\mathrm{active}^{-1/2}$ scaling of sg4?
+(3) Do $\phi_w$ and $\phi_b$ act independently on sg4, or do they compose multiplicatively
+(i.e., is there a combined causal coupling $\Phi_\mathrm{total} = \phi_w \cdot \phi_b$)?
+
+\textbf{Sequence learning.}
+VCML currently encodes spatial (zone) structure.
+Can the three-timescale architecture encode temporal sequences if the ``zone'' dimension is
+replaced by temporal position (e.g., via oscillatory gating)?
+Connection to the cortex-hippocampus theta sequence literature.
+
+\textbf{The 8D optimum.}
+Full optimisation over $(C_1, C_2)$ jointly.
+Does the optimal point correspond to a biologically observed parameter ratio?
+
+\subsection{Physics connections (conjectural)}
+
+The following connections are not results --- they are conjectures with specified gaps.
+They are included here because they direct future work and because stating the gap
+explicitly is the only protection against treating speculation as established theory.
+
+\textbf{Conjecture 1: Universality of the three-timescale architecture.}
+The VCML three-timescale structure (h: fast per-step / m: medium per-wave / F: slow
+intergenerational) may be universal rather than specific to VCML cells.
+The proposed claim is: \emph{any adaptive memory system must have at least three timescales
+with viability gates between them}; single-timescale systems are provably non-adaptive
+under mandatory turnover.
+The same structure appears in neurons (membrane potential / synaptic trace / structural
+change), cortex (activation / STP / LTP), and evolution (genotype / allele frequencies /
+species morphology).
+
+\textit{What this would add if true:} a theorem about adaptive memory in general.
+The non-obvious load-bearing part is the gate as \emph{necessary} (not merely useful):
+without a consolidation criterion between timescales, fast-timescale noise overwrites
+slow-timescale structure.
+
+\textit{Gap that must close first:}
+(i) Formal definition of ``adaptive memory'' under turnover;
+(ii) proof that single-timescale systems fail this definition;
+(iii) proof that three timescales are sufficient.
+This is a theoretical result, not an experiment.
+Until (i)--(iii) are proven, this is a motivated intuition, not a claim.
+
+% MERA/AdS-CFT connection removed from theory document.
+% The c(ℓ) conjecture has no closed prediction yet and reaches toward quantum gravity
+% in a way that invites dismissal before the gap is closed.
+% Full treatment in: physics_intuitions.md (Everything-Is-Timescales, MERA entries).
+
+\subsection{Shannon's missing piece}
+
+Shannon's channel capacity theorem (1948) characterises the \emph{ceiling}:
+the maximum rate at which information can be transmitted through a noisy channel.
+It tells you how much information \emph{can} arrive.
+It does not tell you which information \emph{does} arrive --- which signals are
+selected from the channel output and written into long-term storage.
+
+This is not a gap Shannon overlooked; it is a different problem.
+Selection requires a criterion external to the channel itself.
+Shannon's framework is agnostic about what the receiver does with incoming bits.
+
+The viability gate provides exactly this missing piece.
+It is a selection criterion operating on the channel output:
+writes to fieldM are admitted only when the site has been causally quiescent for
+$\geq$ SS steps.
+The gate is not a noise filter in Shannon's sense (it does not reduce channel noise);
+it is a \emph{survival criterion} that determines which signals are consolidated into
+the slow-timescale structural manifold.
+
+\begin{quote}
+  Shannon built the ceiling: maximum transmissible information.\\
+  VCSM builds the floor: minimum survival criterion for consolidation.\\
+  Together they characterise the information content of fieldM.
+\end{quote}
+
+What passes the gate is not the highest-amplitude signal, nor the most frequent,
+nor the most recent --- it is the signal that arrives during causal quiescence,
+i.e., the signal associated with successful recovery from a perturbation event.
+The gate selects for \emph{viability-compatible} information.
+In biological terms: the organism learns what it survived, not what it encountered.
+
+The gap between Shannon's ceiling and VCSM's floor is the compression:
+fieldM does not record the channel's full throughput.
+It records the subset that was zone-specific, temporally settled, and
+associated with a viable transition.
+Zone structure is the residue of this selection.
+
+\subsection{The G\"{o}del parallel}
+
+G\"{o}del's incompleteness theorem (1931) establishes that sufficiently powerful
+formal systems contain true statements that cannot be proven within the system.
+The standard framing emphasises the logical gap: truth exceeds provability.
+The VCML framing emphasises the \emph{structural cause} of that gap.
+
+A formal system has no turnover.
+Axioms are permanent.
+Theorems, once derived, are permanent.
+The system accumulates structure without any mandatory replacement.
+A self-referential statement (``this statement is unprovable'') can exist
+stably within the system's expression language indefinitely,
+without ever resolving into a settled truth value.
+It is what we might call an \emph{ungated} state:
+a statement that neither consolidates nor collapses.
+
+VCML survives the analogous paradox by construction.
+Any state that fails to settle into causal quiescence within the consolidation window
+is never written to fieldM.
+Mid-memory decays under $\gamma_m = 0.99$ per step;
+without a streak of $\geq$ SS calm steps, the accumulator is erased.
+Additionally, cells collapse: the physical substrate that holds the unsettled state
+is replaced.
+There is no persistent ungated state.
+
+The self-referential case: a cell whose hidden state tracks the current fieldM state
+of its neighbours is chasing a moving target.
+The neighbourhood fieldM changes as other cells collapse and are reseeded.
+The calm streak never reaches SS.
+The write never fires.
+The self-referential pattern is structurally excluded from fieldM --- not by a logical
+rule, but by the dynamics of mandatory turnover.
+
+\begin{quote}
+  Unprovable $=$ ungated. Same category.\\
+  Formal systems collapse on self-reference because nothing ever dies.\\
+  VCML survives because thoughts are mortal.
+\end{quote}
+
+The G\"{o}del gap is not a bug in logic.
+It is what any system looks like when it has no turnover and no consolidation criterion.
+VCML is the complementary architecture: mandatory turnover forces resolution.
+States that do not settle are erased; states that settle are consolidated.
+The system cannot accumulate ungated content because it has no mechanism to hold it.
+Thoughts that do not resolve into a stable fieldM write disappear with the cell that held them.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusion}
+
+Learning from failure requires the failure to end.
+
+VCML/VCSM provides a complete mechanistic account of zone-structured memory via mandatory
+individual turnover.
+Its core claim --- death-gated inheritance is the \emph{maintenance} mechanism for zone
+structure --- is counterintuitive but robustly supported across eight layers of analysis
+(mechanism, parameter geometry, spatial PDE, dynamics, multi-region coupling, continual
+learning, rule-family robustness, adversarial resistance) spanning 44 papers,
+with external validation of the causal geometry conjecture in GPT-2 (Paper~45)
+and experimental grounding of the $C_2$ causal coordinates (Paper~46).
+Formation is environmentally driven and does not require any specific mechanism;
+maintenance is what the viability-gated copy-forward loop provides.
+Paper~44 closes the formation--maintenance distinction with a direct adversarial test:
+the adaptive mechanism maintains positive cosine fidelity with original zone structure
+under 2000 steps of sustained adversarial input, while the passive mechanism encodes
+the adversarial pattern ($\Delta = 0.205$, $p < 0.001$).
+Memory, not imprinting.
+
+The substrate-agnostic invariant (refined by Paper~46):
+structure persists because slow-timescale writes are gated to causal quiescence windows.
+In adversarial environments, this timing protects the original encoding by letting
+the contaminating perturbation signal decay before writing.
+In benign environments, writes at perturbation onset capture peak zone-specific signal.
+\emph{The gate is a selectivity mechanism, not a noise filter;
+its optimal threshold is set by adversarial pressure and proximity to the
+commitment epoch $t^*$, not by signal quality (Paper~47).}
+This claim survives graph substrates, arbitrary hidden-state dimensionality, and any
+perturbation that does not alter the temporal structure of the quiescence gate.
+
+The architecture has four genuinely distinctive properties:
+\begin{enumerate}[itemsep=3pt]
+  \item \textbf{Persistence via turnover.} Zone structure is maintained \emph{by} the
+        death--birth cycle, not despite it. Optimal turnover rate is strictly positive.
+  \item \textbf{Non-equilibrium.} The system is formally non-gradient
+        (curl $\neq 0$, machine-verified). Memory is not an energy minimum.
+        It is a driven steady state maintained by continuous wave input and field decay.
+  \item \textbf{Perturbation amplification.} Periodic perturbation (task switching,
+        boundary mismatch) does not erode zone structure --- it amplifies it $5$--$10\times$
+        by sustaining the copy-forward loop.
+  \item \textbf{Attractor stability as a direction toward symbolic behaviour (conjecture).}
+        The crystallised regime (low $\nu$, high persistence) produces stable fieldM attractors:
+        the system returns reliably to them under perturbation.
+        This is demonstrated.
+        Whether those attractors support \emph{compositional} symbolic reasoning --- and whether
+        the generalisation ``any sufficiently stable copy-forward system produces symbolic
+        behaviour'' holds --- has not been tested.
+        Compositional symbol use requires that stable attractors compose under operations;
+        this has not been demonstrated in VCML and is an open experimental question.
+        The directional claim --- that symbolic capacity is a property of attractor dynamics,
+        not of discrete logic gates --- is supported by the attractor evidence but is not
+        established by it.
+\end{enumerate}
+
+These four properties are not incidental.
+They are what any system must have if memory is to remain adaptive under environmental
+change while retaining compositional structure, and they jointly define the architecture's
+computational niche.
+
+%──────────────────────────────────────────────────────────────────────────────
+\section{VCSM as a Universality Class (Hypothesis)}
+
+\subsection{The derivation}
+
+Papers~52--56 establish a derivation structure: the VCSM architecture is not
+engineered but forced. Given three inputs:
+\begin{enumerate}
+  \item \textbf{Primitive}: signed deviation from self-baseline
+    ($\mathrm{hid} - \mathrm{baseline\_h}$, not raw amplitude, not global error)
+  \item \textbf{Constraint}: carriers die (mandatory turnover)
+  \item \textbf{Requirement}: distinctions must persist across carrier death
+\end{enumerate}
+each of the seven architectural components follows necessarily:
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Component & Why forced \\
+\midrule
+\texttt{baseline\_h}        & Primitive requires a reference state \\
+\texttt{hid - baseline\_h}  & Primitive requires measuring departure \\
+\texttt{mid\_mem}           & Fast events must couple to slow consolidation \\
+\texttt{MID\_DECAY}         & Prevents accumulation of stale signal \\
+Viability gate              & Prevents unstable cells from corrupting fieldM \\
+\texttt{fieldM}             & Cells die; store must outlast the individual \\
+Birth seeding               & Without inheritance, death resets structure \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The six experimental papers (Paper 43 onward) repeatedly confirm this: removing
+any component produces exactly the failure mode predicted by the component's forced role.
+
+\subsection{The universality-class claim}
+
+The four conditions that force this architecture are:
+\begin{enumerate}
+  \item distinguishable states ($A \neq B$)
+  \item mortal carriers
+  \item persistence demand
+  \item cross-generational transfer channel
+\end{enumerate}
+These are also the four conditions for Darwinian evolution: variation, mortality,
+heredity, selection. VCSM may be Darwinian dynamics at the unit level --- the same
+constraint structure operating inside a single substrate rather than at the population level.
+
+\paragraph{Cross-substrate evidence.}
+Immune memory and cultural transmission each map cleanly to all seven components
+under completely different microscopic physics:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+VCSM component & Immune memory & Cultural transmission \\
+\midrule
+\texttt{baseline\_h}         & Naive repertoire         & Default norms \\
+contrast signal              & Clonal expansion         & Marked deviation \\
+\texttt{mid\_mem}            & Germinal centre          & Rehearsal / working memory \\
+consolidation gate           & Affinity selection       & Social reinforcement \\
+\texttt{fieldM}              & Memory B cells           & Institutional record \\
+birth seeding                & Clonal inheritance       & Pedagogy \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Same forced architecture, different physics. That is the empirical signature of a
+universality class.
+
+\paragraph{Connection to physics.}
+$C_\text{order}$ (Paper~55) is a scalar with monotone positive drift in the identity
+regime --- a Lyapunov function. Lyapunov functions are the non-equilibrium analog of
+Hamiltonians. The open question is whether $C_\text{order}$ can be derived from a
+variational principle, as least action generates Newtonian mechanics. If yes, VCSM has
+an action principle and the universality claim becomes a structural physics claim.
+
+\paragraph{Falsification test.}
+Find a system satisfying the four conditions that does \emph{not} produce the
+seven-component architecture. If such a system exists, a constraint is missing or the
+claim is wrong. If none can be found after systematic search across substrates, the
+architecture is minimal and the universality class is real.
+
+\paragraph{Status.}
+This is a hypothesis, not a proven claim. The derivation is complete at the constraint
+level; the universality requires showing the same architecture emerging from different
+microscopic physics in at least two to three independent domains.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{The True Primitive: Persistence of Distinguishability}
+\label{sec:true_primitive}
+
+\subsection{The full hierarchy (after ferromagnet counterexample)}
+
+The ferromagnet counterexample (A\,$\neq$\,B + stable carrier = no VCSM needed)
+revealed a branching point above VCSM: the super-primitive is not
+``carrier turnover'' but \emph{persistence of distinguishability}.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Level & Statement \\
+\midrule
+L0 & $A \neq B$ --- distinguishable states exist \\
+L1 & Does $A \neq B$ still hold after time? \\
+   & \textbf{``Persistence of distinguishability''} = super-primitive \\
+L2a & Attractor persistence (local, passive): same field stays stable \\
+    & ferromagnet, crystal, topological defect, Hopfield attractor \\
+L2b & Reconstructive persistence (global, active): pattern rebuilt across reset \\
+    & VCML fieldM, immune memory, evolution, culture \\
+L3  & VCSM = minimal architecture of L2b \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{One-sentence formulation:}
+\emph{There are two ways for a distinction to survive time:
+stable attractor occupancy, or reconstruction across substrate change.
+VCSM is the minimal architecture of the second.
+A system can run both simultaneously.}
+
+\subsection{The ferromagnet is absorbed, not refuted}
+
+The ferromagnet is not outside the VCSM theory; it is the description of
+VCML's \emph{local layer}.
+Below the correlation length $r_\mathrm{corr}$, cells stabilise in
+ordered patches (attractor persistence, ferromagnet-like).
+Above $r_\mathrm{corr}$, zone identity is maintained only by the
+copy-forward loop (reconstructive persistence).
+V94 directly observed this: structure forms in patches, not zone-wide
+gradients.
+The patches are the attractor layer; zone-wide coherence is the
+reconstructive layer.
+
+\subsection{Coexistence of both layers simultaneously}
+
+The two strategies are not alternatives but \emph{nested layers} operating
+at different scales in the same system.
+The correlation length $r_\mathrm{corr}$ is the boundary:
+below it, attractor persistence suffices; above it, copy-forward reconstruction
+is required.
+
+In neuroscience, the same two-layer structure appears:
+\begin{itemize}
+  \item \emph{Local attractor layer:} cell assemblies (Hebb), Hopfield-style
+    cortical attractors, working memory (persistent firing).
+    The ``now'' of experience: moment-to-moment binding of a unified state.
+  \item \emph{Global reconstructive layer:} hippocampal-to-cortical consolidation
+    during sleep (batch copy-forward), long-term potentiation as fieldM,
+    synaptic protein turnover as carrier mortality.
+    The ``who'' of identity: narrative self persisting across sleep and
+    neural turnover.
+\end{itemize}
+
+\subsection{Cross-substrate verification: Ising + VCSM-lite (Paper 60)}
+
+A 2D Ising ferromagnet ($40 \times 40$, two spatial zones) augmented with a
+VCSM-lite memory layer ($\phi$ field, causal gating, wave perturbations).
+The system has two order parameters:
+$m = |\langle s_i \rangle|$ (Ising, controlled by $T$) and
+$S_\phi = |\bar\phi_{\rm z0}-\bar\phi_{\rm z1}|/\sigma_\phi$
+(phi-order, controlled by $P_\mathrm{causal}$).
+
+Key result: at $T=3.0$ ($T > T_c$, $m=0.07$, Ising disordered),
+$S_\phi$ ranges from $0.51$ to $0.91$ as $P_\mathrm{causal}$
+increases from $0.50$ to $1.00$.
+Zone-specific memory order exists even when the underlying spin attractor has
+been thermally destroyed.
+The two control parameters are orthogonal.
+
+\textbf{Causal temperature:} $(1-P_\mathrm{causal})$ plays the role of
+thermal temperature for the purity-controlled transition.
+It is an \emph{informational} noise amplitude, not a thermal one.
+The universality class is ``purity-controlled non-equilibrium order,''
+distinct from thermally controlled equilibrium order.
+
+\textbf{Death as anti-crystallisation (Ising analogue):}
+$S_\phi$ is lowest at $T=1.0$ (ordered spins, $m=1.00$): the wave
+perturbation cannot move frozen spins, starving the reconstructive layer of
+signal.
+$S_\phi$ peaks near and above $T_c$.
+Over-stable carriers (crystallised VCML, low-$T$ Ising) kill the reconstructive
+layer, mirroring Papers~77--82--89.
+
+\subsection{True Long-Range Order Confirmed: Extensive-Drive FSS (Paper 62)}
+
+Paper~62 ran three tests; the decisive result is Phase~A.
+
+\textbf{Phase A: extensive-drive FSS.}
+Wave event rate scaled as WAVE\_EVERY$(L) = 25(40/L)^2$, holding wave density
+per site constant.
+Result: $|M| \propto L^{0}$ for $P_\mathrm{causal} \geq 0.10$ --- size-independent,
+true long-range order in the thermodynamic limit.
+The Binder cumulant $U_4$ is correctly ordered by $L$ for $P > 0.05$
+(larger $L$ gives larger $U_4$, the ordered phase signature).
+Critical point: $p_c \approx 0.02$--$0.05$.
+The apparent transition near $P \approx 0.5$ in Paper~60 was a finite-size artifact
+of intensive wave density.
+Under extensive drive, even $\sim 3\%$ spatial causal purity sustains thermodynamic order.
+
+\textbf{Phase B (Multi-Zone Relay):} phi-diffusion amplifies local zone separation
+($\times 2.3$ at $D_\phi=0.10$); clean far-zone relay test deferred.
+
+\textbf{Phase C (VCML Ablation):} null (minimal CML carrier too simple);
+proper ablation deferred to Paper~65.
+
+\textbf{Status of universality class.}
+The causal-purity ordered phase is a genuine thermodynamic phase.
+Paper~63 provides the precision measurement (below).
+
+\subsection{Critical Exponents: Fine FSS (Paper 63)}
+
+Fine scan $P_{\rm causal} \in [0.000, 0.080]$ in steps of $0.005$,
+$L \in \{20,30,40,60,80\}$, 8 seeds, 12\,000 steps, extensive drive.
+
+\textbf{Results:}
+$p_c = 0.018 \pm 0.012$,
+$\beta/\nu = 0.67$, $\nu = 0.97$, $\beta = 0.65$.
+The susceptibility $\chi = N_{\rm zone} \cdot \mathrm{Var}(M)$ gives $\gamma/\nu \approx 0$
+--- a definition artifact (zone-mean variance self-averages as $1/L^2$).
+True $\gamma$ requires the spatial correlator $\sum_i \langle\phi_0\phi_i\rangle_c$.
+
+\textbf{Key open question: is $p_c = 0^+$?}
+For all $P_{\rm causal} \geq 0.005$, larger $L$ gives larger $U_4$ (ordered-phase signature),
+suggesting the system may be ordered for \emph{any} non-zero causal purity.
+If $p_c = 0^+$, the transition is infinite-order (Berezinskii--Kosterlitz--Thouless type),
+not a standard second-order transition.
+This question is answered in Paper~64 (below).
+
+\textbf{Universality class comparison:}
+$(\beta \approx 0.65,\ \nu \approx 1)$ matches no standard class
+(mean field: $\beta=0.5,\ \nu=0.5$;
+2D Ising: $\beta=0.125,\ \nu=1$;
+directed percolation: $\beta=0.276,\ \nu_\perp=0.735$).
+This is a candidate new non-equilibrium universality class.
+
+\subsection{$p_c = 0^+$ Confirmed: BKT Test (Paper 64)}
+
+Large-$L$ Binder crossing test:
+$L \in \{40,60,80,100,120\}$,
+$P_{\rm causal} \in \{0.000, 0.002, \ldots, 0.030\}$ (9 values),
+12 seeds, 12\,000 steps, extensive-drive scaling.
+
+\textbf{Phase~A result.}
+$U_4(L=120) > U_4(L=40)$ for \emph{all} $P_{\rm causal} \geq 0.002$,
+including the smallest non-zero value in the grid.
+Binder crossings, where found, yield $p_c < 0.010$;
+the majority of $L$-pairs produce no crossing at all.
+Mean $p_c = 0.0079 \pm 0.0060$.
+
+\textbf{Conclusion.}
+The data are inconsistent with a finite $p_c$ of order $0.01$--$0.02$
+and strongly consistent with $p_c = 0^+$:
+the ordered phase exists for any positive causal purity.
+
+\textbf{Phase~B result (spatial correlator).}
+All correlation lengths $\xi = \mathrm{NaN}$;
+the $\phi$-field amplitude $|\bar{M}| \sim 10^{-3}$ is too small
+for reliable exponential fitting of $C(\Delta y)$.
+The null result is consistent with $\xi \to \infty$ (algebraic order,
+BKT-like) but does not confirm it.
+The anomalous dimension $\eta(P_{\rm causal})$ and helicity modulus
+were addressed in Paper~65 (below).
+
+\textbf{Cosmological remark.}
+$p_c = 0^+$ means ``causality $\Rightarrow$ order'' without threshold.
+This is a structural complement to the causal set programme
+(Bombelli, Lee, Meyer, Sorkin 1987):
+if spacetime geometry emerges from causal partial ordering,
+and thermodynamic $\phi$-order requires only nonzero causal purity,
+then the existence of causality is sufficient for structure formation ---
+dissolving rather than answering the initial-conditions fine-tuning problem.
+
+\subsection{Probabilistic Wave Firing and $p_c=0^+$ Confirmation (Paper 67)}
+
+Paper~67 introduces \emph{probabilistic wave firing} to correct the
+\texttt{WAVE\_EVERY} integer-rounding artefact identified in Paper~66.
+Instead of the deterministic rule $t \bmod w(L) = 0$, each step fires
+a wave with probability $p_f(L)=\min(1,1/w_f(L))$ where
+$w_f(L)=25(40/L)^2$ is the exact (non-integer) extensive-drive target.
+For $L=160$: $p_f=0.640$, giving the correct $6400$ expected waves
+per $10\,000$ steps (vs.\ $5000$ with the old deterministic WE=2).
+
+\textbf{Phase A (discriminating test).}
+With probabilistic firing at $L\in\{80,100,120,160\}$:
+$U_4(160)>U_4(120)$ for $P\in\{0.010,0.020\}$ — the expected
+ordered-phase monotonicity consistent with $p_c=0^+$.
+At $P=0.005$ the margin is within 3-seed noise.
+
+\textbf{Phase B (direct artefact quantification).}
+At $L=160$, $P=0.020$: det-WE=2 gives $U_4=0.31$,
+while probabilistic and det-WE=1 both give $U_4\approx0.50$.
+The paper~66 reversal is directly attributed to the wave density deficit.
+
+\textbf{New physics finding.}
+At $P=0.005$: more wave density \emph{hurts} ordering (det-WE=1 gives
+$U_4=0.097$, below det-WE=2's $U_4=0.283$).
+At low causal purity, extra waves inject extra noise; the optimal wave
+density is not ``maximum'' but depends on $P_\text{causal}$.
+
+\textbf{Conclusion.} $p_c=0^+$ strongly supported for $P\ge0.010$.
+Probabilistic firing is now the standard large-$L$ protocol.
+
+\subsection{Discriminating Test, Direct $\phi$-Correlator, and $F_A$ Control (Paper 66)}
+
+Three experiments resolved the two open questions from Paper~65.
+
+\textbf{Wave-density rounding artefact (Phase~A).}
+Phase~A repeats the large-$L$ Binder test at $L \in \{100,120,160\}$
+with the same run parameters as Paper~65 and finds
+$U_4(L=160) < U_4(L=120)$ at all $P > 0$.
+The root cause is identified geometrically:
+the formula \texttt{WAVE\_EVERY}$(L) = \max(1, \text{round}(25(40/L)^2))$
+rounds to 2 for $L=160$ (continuous target: 1.5625),
+giving $L=160$ only $78\%$ of the intended wave exposure per site
+(15.2 hits vs.\ 18.0 for $L=120$).
+This systematic under-driving, not a genuine phase boundary, explains the reversal.
+$p_c = 0^+$ remains the favoured hypothesis; the direct confirmation requires
+\texttt{WAVE\_EVERY}$=1$ for $L=160$ (deferred to Paper~67 due to compute cost).
+
+\textbf{Null $\phi$-field spatial correlator (Phase~B).}
+At boosted $F_A = 0.50$, the $\phi$-field amplitude reaches $|\phi| \approx 0.013$
+(more than $10\times$ Papers~64--65).
+Nevertheless, $G_\phi(r)$ is undetermined at all $(L,P)$:
+the normalised correlator falls below the 2\% fit threshold at $r=1$.
+The $\phi$-field has no spatial structure within a zone beyond 1 lattice spacing.
+\emph{Ordering is entirely in the zone-mean $M$, not the spatial texture.}
+The transition is a zone-mean symmetry-breaking, not BKT algebraic quasi-LRO.
+
+\textbf{$F_A$ is an anti-ordering parameter (Phase~C).}
+Sweeping $F_A \in \{0.10, 0.30, 0.50, 0.80\}$ at $L=80$, $P=0.020$ shows
+$U_4$ decreasing monotonically with $F_A$ (from 0.31 to 0.06).
+High $F_A$ causes $\phi$ to track the noisy mid-memory aggressively,
+increasing variance and reducing zone separation.
+$|\phi| \propto F_A^\alpha$ with $\alpha > 1$ (super-linear).
+The optimal zone ordering is at low $F_A$, consistent with the
+death-as-anti-crystallisation principle.
+
+\subsection{Three Probes: Spin Correlator, Extended Binder, Ablation (Paper 65)}
+
+Three further experiments tested the BKT hypothesis and identified
+the load-bearing VCSM components.
+
+\textbf{Spin correlator (Phase~A1).}
+The Ising spin-spin autocorrelation $G_s(r)$ at $T=3.0$ is exponential
+with $\xi \approx 1.1$ lattice spacings, independent of $P_{\rm causal}$.
+The $\phi$-field ordering does not couple back to the Ising spin substrate;
+the spin correlator is the wrong proxy.
+The $\phi$-field stiffness $K_\phi \propto L$ is a wave-geometry artefact,
+not a BKT stiffness.
+
+\textbf{Extended Binder at $L=160$ (Phase~A2).}
+$U_4(L=160) < U_4(L=120)$ for all $P_{\rm causal} \leq 0.005$,
+reversing Paper~64's $p_c = 0^+$ conclusion.
+Status: either $p_c$ is finite in $[0.005, 0.020]$,
+or $L=160$ requires $>10\,000$ steps to equilibrate (WAVE\_EVERY rounds to 2
+vs.\ the true extensive-drive value of 1.56).
+The $p_c = 0^+$ claim is downgraded to an open question.
+
+\textbf{VCSM ablation (Phase~C).}
+NoGate (SS$=0$): $U_4 = 0.090$ (kills ordering).
+The viability gate is the primary noise filter and is load-bearing.
+Crystallized (FIELD\_DECAY$=1$): $U_4 = 0.262$ (highest), but via the
+cockroach artefact --- $\phi$ accumulates without forgetting, locking into
+an arbitrary early state.
+This confirms that FIELD\_DECAY is a necessary anti-crystallisation mechanism.
+
+\subsection{Finite-Size Scaling and Geometric Dilution (Paper 61)}
+
+We attempted a full FSS analysis of the causal-purity transition in Ising + VCSM-lite,
+measuring $|M|$, $\chi$, $U_4$, $S_\phi$ across $L \in \{20,30,40,60\}$
+and $P_\mathrm{causal} \in [0,0.65]$.
+
+\textbf{Main result.}
+The order parameter scales as $|M| \propto L^{-2}$ at \emph{all} values of
+$P_\mathrm{causal}$ (slope $-2.02 \pm 0.03$, independent of purity).
+The Binder cumulant $U_4$ shows no $L$-dependent crossing.
+
+\textbf{Interpretation: geometric dilution.}
+Each wave event perturbs a fixed area $\approx \pi r_w^2$ while the zone
+contains $L^2/2$ sites.
+The signal density per site is $\propto L^{-2}$, independent of the physics.
+This is not critical scaling; it is a fundamental constraint of the current
+``intensive-drive'' protocol.
+
+\textbf{Correct thermodynamic limit.}
+For a true second-order transition, wave density must be extensive:
+wave events $\propto L^2$ (i.e., WAVE\_EVERY $= O(1)$).
+Under this scaling, $|M|$ becomes size-independent in the ordered phase
+and standard FSS applies.
+
+\textbf{What the Binder cumulant does confirm.}
+Despite the absence of a crossing, $U_4$ transitions from $\approx 0$ (Gaussian)
+to $\approx 2/3$ (bimodal) near $P_\mathrm{causal} \approx 0.05$--$0.10$,
+independently of $L$.
+The transition from Gaussian to bimodal phi-fluctuations is real.
+
+\textbf{Status.}
+The universality class claim stands as a hypothesis.
+Paper~62 will run FSS under extensive-drive scaling to extract $\beta$, $\nu$, $\gamma$.
+
+\bigskip
+\noindent\textbf{Full paper index:} \url{https://github.com/AccidentalGenius101}\\
+\noindent\textbf{Theory reference (Markdown):} \texttt{VCML\_THEORY.md} (Papers 0--33),
+
+\subsection{Order Parameter Exponent, Functional Form, and Manna Falsification (Paper 68)}
+
+Paper~68 conducts three simultaneous tests at the $p_c=0^+$ fixed point confirmed
+in Paper~67.
+
+\textbf{Phase A} (fine $P$ scan at $L=160$, $P\in[0.001,0.050]$, 6 seeds, 10\,000 steps)
+discriminates among three functional forms for $|M(P)|$ as $P\to0^+$:
+power law $|M|\sim P^\beta$ ($R^2=0.757$, best fit), BKT essential singularity
+$|M|\sim e^{-A/\sqrt{P}}$ ($R^2=0.501$), and ordinary essential singularity
+$|M|\sim e^{-A/P}$ ($R^2=0.307$).
+The apparent $\beta_\mathrm{fit}=0.406$ is unreliable: for $P<0.010$ the Binder
+cumulant $U_4<0.1$, indicating the system at $L=160$ is in the finite-size
+disordered regime where $|M|$ reflects fluctuations rather than the genuine
+order parameter.
+Paper~63's FSS value $\beta=0.65\pm0.05$ remains the best estimate.
+
+\textbf{Phase B} (FSS at fine $P$, $L\in\{80,100,120,160\}$)
+shows scaling slopes $d\ln|M|/d\ln L$ evolving from $-1.21$ at $P=0.003$
+(disorder limit $L^{-1}$) to $-0.53$ at $P=0.020$ (approaching the critical
+value $-\beta/\nu=-0.670$).
+This disorder-to-order crossover as $P$ increases is the expected signature of
+a $p_c=0^+$ transition where there is no lower threshold.
+
+\textbf{Phase C} (Manna conservation-law diagnostic, $L=120$, $P=0.010$) tests
+a theoretically motivated universality class assignment.
+The Manna/stochastic-sandpile class in 2D has $\beta\approx0.639$,
+$\nu\approx0.799$, and a structurally appealing analogy: the copy-forward loop
+maps onto conserved stochastic redistribution, $Z_2$ zone symmetry maps onto
+Manna's local conservation law.
+The $\beta$ proximity ($0.65$ vs $0.639$) is genuine.
+However, Manna class requires an \emph{exactly conserved} activity variable
+\citep{Vespignani1998}.
+The diagnostic measures $\phi$-creation flux $\mathcal{F}_\mathrm{cr}=0.256$
+(consolidation writes) and decay flux $\mathcal{F}_\mathrm{dc}=0.079$
+(FIELD\_DECAY removal), yielding ratio $r=3.23\gg1$.
+\textbf{The Manna class is falsified.}
+VCSM belongs to a distinct universality class with directed dynamics,
+$Z_2$ symmetry, and long-range spatial coupling via the wave field ($r_w=5$,
+not nearest-neighbour).
+The latter is absent from both Manna and directed percolation and is the
+most likely source of the exponent displacement.
+
+\textbf{Open question for Paper 69}: measure $\beta$ and $\nu$ at $r_w=1$
+(nearest-neighbour wave coupling) to test whether the exponents converge
+to a known class in the local-coupling limit.
+
+\subsection{Wave-Range Dependence and Minimum Ordering Threshold (Paper 69)}
+
+Paper~69 tests the conjecture from Paper~68 that the long wave range ($r_w=5$)
+is responsible for displacing VCSM from known universality classes.
+
+\textbf{Phase A} sweeps $r_w\in\{1,\ldots,8\}$ at fixed $L=80$, $P=0.020$.
+The order parameter amplitude scales as $|M|\sim A(r_w)^{0.67}$, where
+$A(r_w)=2r_w(r_w+1)+1$ is the Manhattan wave footprint.
+$U_4$ rises from $0.15$ at $r_w=1$ to $0.34$ at $r_w=8$: ordering is
+proportional to wave coverage, not just wave count.
+
+\textbf{Phase B} attempts a matched-coverage FSS comparison between $r_w=1$ and $r_w=5$.
+The $r_w=5$ FSS slopes evolve from $-0.88$ (disordered, small $P$) to $-0.21$
+(ordered, $P=0.050$), consistent with previous papers.
+The $r_w=1$ FSS slopes are $\approx-1.7$ at all $P$ --- steeper than the
+disordered noise floor ($-1.0$) --- because the matched-coverage protocol breaks
+down: the firing probability is capped at $p_\mathrm{wave}=1.0$ for all $L\geq40$
+with $r_w=1$, so larger systems actually receive proportionally fewer hits per site.
+
+\textbf{Phase C} (fine $P$ scan, $r_w=1$, $L=160$) shows $U_4<0.18$ for $P\leq0.015$
+and an apparent $\beta_\mathrm{fit}=0.113$ ($R^2=0.63$), consistent with neither
+DP ($\beta\approx0.584$) nor Paper~63 ($\beta=0.65$).
+However, the system is not in the asymptotic ordered phase, so this measurement
+is unreliable.
+
+\textbf{Key finding}: The ordering transition in VCML requires a minimum effective
+wave spatial range.
+At $r_w=1$, the ordered phase is inaccessible at $P\leq0.050$ for $L=160$.
+The threshold conjecture is $r_w\gtrsim\text{zone\_width}/20$.
+The DP hypothesis from Paper~68 therefore cannot be tested cleanly with $r_w=1$
+at the current system sizes; a protocol firing multiple waves per step would be
+required.
+
+\textbf{Paper~70}: joint $(r_w, P)$ scan at fixed $L$ to map the ordering threshold
+$r_w^*(P)$ and determine whether it scales as $r_w^*\sim L^{1/2}$ or $L^1$.
+
+\subsection{Threshold Map, Zone-Bleeding Anomaly, and RG Dimension of the Wave Operator (Paper 70)}
+
+Paper~70 maps the ordering threshold $r_w^*(P)$ jointly across the $(r_w, P)$ plane,
+resolves whether the Paper~69 minimum-range threshold is a finite-size artefact or a
+thermodynamic property, and extracts the RG scaling dimension of the wave operator.
+
+\textbf{Phase A} (2D phase map, $L=80$, Protocol A, $r_w\in\{1,2,3,4,5,6,8,10,12\}$,
+$P\in\{0.005,\ldots,0.200\}$, 6 seeds, 8k steps):
+$U_4>0.30$ (ordered) is achieved by $r_w=5$ at $P\geq0.020$ and by $r_w=3$ at $P\geq0.050$.
+$r_w=1$ reaches $U_4>0.30$ only at $P\geq0.100$.
+The threshold curve extracted from linear interpolation gives $r_w^*(P)\sim P^{-0.315}$
+($R^2=0.77$) under constant-rate Protocol A.
+A notable anomaly: $r_w=2$ is \emph{worse} than $r_w=1$ at several $P$ values.
+The cause is zone bleeding: $r_w=2$ waves straddle the zone boundary and deposit
+causal signal in both zones simultaneously, causing the zone-mean contrast $M$ to
+cancel rather than amplify.
+
+\textbf{Phase B} ($L$-dependence at $P=0.020$, Protocol A, $r_w\in\{1,\ldots,8\}$,
+$L\in\{40,60,80,100,120\}$):
+The threshold $r_w^*(L)$ \emph{decreases} with system size, with a fitted exponent
+$\gamma\approx-1.08$ ($r_w^*\sim L^{-1.08}$).
+This is opposite to the Paper~69 conjecture $r_w^*\sim L^{1/2}$.
+The physical interpretation: as $L$ grows, the background fluctuation $\sigma_M\sim 1/L$
+shrinks faster than the wave signal grows, so a smaller relative $r_w$ suffices.
+\textbf{The Paper~69 minimum-range threshold is therefore a finite-size artefact.}
+Any $r_w>0$ produces ordering in the thermodynamic limit $L\to\infty$.
+
+\textbf{Phase C} ($r_w^*(P)$ under matched-coverage Protocol B, $L=80$,
+$r_w\in\{1,\ldots,10\}$, $P\in\{0.005,\ldots,0.100\}$):
+$r_w^*(P)\sim P^{-0.527}$ ($R^2=0.82$), very close to $P^{-1/2}$.
+This confirms the signal-to-noise prediction: the zone-mean perturbation per wave
+scales as $A(r_w)/N_\mathrm{zone}\sim r_w^2/L^2$, while fluctuations scale as $1/\sqrt{P}$,
+giving threshold $r_w^*\sim P^{-1/2}$.
+
+\textbf{RG dimension of the wave operator.}
+The threshold relation $r_w^*\sim P^{-1/2}$ implies that the composite variable
+\begin{equation}
+  \xi \equiv r_w \cdot P^{1/2}
+\end{equation}
+is scale-invariant at the ordering threshold.
+Under a spatial rescaling $\ell\to b\ell$ (RG step), $r_w\to r_w/b$ and $P\to Pb^{d_J}$
+where $d_J$ is the scaling dimension of the causal-purity current $J$.
+Scale-invariance of $\xi$ requires $d_J/2 = 1$, so $d_J=2$ and the wave operator
+$W\sim r_w\sqrt{P}$ has RG eigenvalue (scaling dimension) $d_\mathrm{wave}=1/2$.
+This inserts a non-local smeared interaction into the VCML field action:
+\begin{equation}
+  S[\phi] \supset g\int d^2x\,d^2y\; K_\sigma(x-y)\,J(x)\,\phi(y),
+\end{equation}
+where $K_\sigma$ is the wave kernel (Manhattan ball of radius $r_w$).
+The operator $K_\sigma J$ has scaling dimension $d_J-d_\mathrm{wave}=3/2$,
+making it a \emph{relevant} coupling that drives the ordering transition.
+
+\textbf{Key findings}: (1) $r_w^*(P)\sim P^{-1/2}$ confirmed under matched-coverage protocol.
+(2) $r_w^*$ decreases with $L$: Paper~69 threshold is finite-size only; any $r_w>0$ orders
+thermodynamically. (3) Zone-bleeding anomaly at $r_w=2$ identified and explained.
+(4) Wave operator scaling dimension $d_\mathrm{wave}=1/2$ extracted from threshold scaling.
+(5) Causal-purity current dimension $d_J=2$, making the wave coupling relevant in the RG sense.
+
+\textbf{Paper~71}: measure the full $\beta$-function by tracking $\beta$ and $\nu$
+as a function of the composite variable $\xi/\xi^*$ (approach to the critical manifold).
+
+\subsection{Iso-$\xi$ Universality, $\beta$ Extraction, and FSS Slopes (Paper 71)}
+
+Paper~71 tests whether $\xi=r_w\sqrt{P}$ is universal and extracts $\beta$, $\nu$.
+
+\textbf{Phase A} (iso-$\xi$ test, $L=80$, Protocol~A):
+The test is \emph{negative}: at fixed $\xi$, $U_4$ is strictly ordered by $r_w$
+(smaller $r_w$ wins) with spread $\Delta U_4 = 0.20$--$0.39$.
+The root cause is that $A(r_w)\cdot P$ varies $42\%$ from $r_w=2$ to $r_w=8$
+at fixed $\xi$ under Protocol~A (constant wave rate), because
+$A(r_w) = 2r_w^2+2r_w+1$ grows faster than $r_w^2$.
+Iso-$\xi$ universality is a Protocol~B property (equalized noise density).
+
+\textbf{Phase B} ($\beta$ extraction, $r_w=5$, $L=80$, Protocol~A):
+$|M|\sim(\xi-\xi^*)^\beta$ gives $\beta=0.628$, $R^2=0.922$ at $\xi^*=0.50$,
+consistent with Paper~63 ($\beta=0.65$).
+$r_w=8$ gives a shifted $\xi^*=0.65$ (amplitude deficit under Protocol~A)
+and $\beta=0.494$; the $r_w=5$ estimate is taken as primary.
+
+\textbf{Phase C} (FSS, $r_w=5$, $L\in\{40,60,80,100,120\}$):
+Slopes $d\ln|M|/d\ln L$ fall monotonically from $-0.929$ ($\xi=0.500$) to
+$-0.185$ ($\xi=1.118$).
+The slope at $\xi=0.707$ is $-0.635$, consistent with $-\beta/\nu=-0.67$ and
+locating $\xi^*\approx0.65$--$0.71$ for $r_w=5$ Protocol~A.
+
+\textbf{Summary}: $\beta/\nu\approx0.64$, $\beta\approx0.63$, $\nu\approx0.98$,
+indirect anomalous dimension $\eta=2\beta/\nu\approx1.28$ ($d=2$).
+The exponent triple $(\beta,\nu,\eta)\approx(0.63,0.98,1.28)$ matches no known
+2D non-equilibrium universality class; the large $\eta\approx1.28$ (vs
+$\eta\approx0.23$ for Directed Percolation) is the fingerprint of the
+non-local smeared wave coupling.
+$\xi$ is a \emph{coherence} variable, not an amplitude variable:
+it measures spatial efficiency of zone-mean driving per unit causal signal
+and is universal only when noise density is equalized (Protocol~B).
+
+\textbf{Paper~72}: direct measurement of $\eta$ from the two-point fieldM
+correlator $G(r)\sim r^{-(d-2+\eta)}$ and check of scaling relation
+$\beta=\nu\eta/2$ (in $d=2$).
+
+\subsection{Two-Point Correlator Null Result: Zone-Mean Transition (Paper 72)}
+
+Paper~72 attempts to measure $\eta$ directly from
+$G(r)=\langle\varphi(x)\varphi(x{+}r)\rangle_c$ at criticality
+($r_w{=}5$, $P{=}0.010$), across $L\in\{80,100,120,160\}$.
+
+\paragraph{Main result.}
+$G(r)\approx0$ at the cell level at all system sizes.
+Correlator amplitudes are $O(10^{-9})$, at the statistical noise floor,
+with $G(r{=}3)<0$ at three of four $L$ values.
+No power-law $G(r)\sim r^{-\eta}$ is detectable.
+This extends and confirms Paper~66's finding ($G(1)/G(0)<2\%$) to the critical
+point and to larger $L$, ruling out a conventional local-field-theory description.
+
+\paragraph{Physical interpretation.}
+VCML ordering is a \textbf{zone-mean transition}: the order parameter
+$M=\langle\varphi\rangle_{\mathrm{z}0}-\langle\varphi\rangle_{\mathrm{z}1}$
+is a \emph{spatially averaged} (zero-dimensional) stochastic variable.
+Cells within a zone fluctuate nearly independently; the coherent causal signal
+(fraction $P_\mathrm{causal}$) is buried beneath per-cell noise but survives
+in the zone average because errors cancel over ${\sim}L^2/2$ cells.
+The anomalous dimension $\eta$ is therefore \emph{not defined} at the microscopic
+level, and QFT ladder rung~6 is vacuous.
+
+\paragraph{QFT ladder revision.}
+Rungs~1--5 ($\varphi$, $\mathbb{Z}_2$, field equation, $d_\mathrm{wave}{=}1/2$,
+independent $\beta$ and $\nu$) remain valid.
+Rung~6 (direct $\eta$) is vacuous for a zero-dimensional order parameter.
+The appropriate two-point function is the \emph{temporal} autocorrelator
+$C(t)=\langle M(\tau)M(\tau{+}t)\rangle$, which defines the dynamic exponent~$z$.
+
+\textbf{Summary}: $(\beta,\nu)\approx(0.63,0.98)$ describe the temporal
+critical behaviour of the zone-mean $M(t)$.
+$\eta$ is undefined.
+\textbf{Paper~73}: temporal autocorrelator $C(t)$ and dynamic exponent~$z$;
+check whether $z=2/\nu$ (diffusive) or $z\neq2/\nu$ (anomalous temporal scaling).
+
+\subsection*{Paper 73: Dynamic Exponent $z$ from Temporal Autocorrelator --- Intrinsic VCSM Timescale Dominates}
+
+Three phases targeted the dynamic exponent $z$ via the temporal autocorrelator
+$C(t)=\langle|M(\tau)||M(\tau{+}t)|\rangle_c$ of the zone-mean order parameter.
+
+\textbf{Phase A} ($r_w{=}5$, $P{=}0.010$, $L\in\{40,60,80,100,120\}$, 8 seeds, 30\,000 steps):
+$\tau_L$ scatters between 214 and 742 steps with no monotone trend.
+FSS fit $\tau_L\sim L^z$ gives $z_A=0.21$ with $R^2=0.04$ (noise-dominated).
+No finite-size scaling of the relaxation time is observed.
+
+\textbf{Phase B} ($r_w{=}5$, $L{=}80$, $P\in\{0.007,\ldots,0.050\}$, 8 seeds, 40\,000 steps):
+$\tau_\mathrm{corr}\approx190$--$206$ steps across a 7-fold range in $P$ --- essentially flat.
+Fit $\tau\sim P^{-z\nu}$ gives $z_B\approx0$ ($R^2=0.21$).
+No critical divergence in $P\in[0.007,0.050]$.
+
+\textbf{Phase C} ($r_w{=}5$, $P{=}0.010$, $L{=}120$, 8 seeds, 60\,000 steps):
+Exponential fit: $\tau=647$, $R^2=0.602$.
+Power-law fit: $C(t)\sim t^{-2.20}$, $R^2=0.800$ (power law wins by $\Delta R^2=0.198$).
+The autocorrelator decays \emph{faster than exponential} in the window $t\in[100,4500]$.
+
+\textbf{Key interpretation --- intrinsic VCSM timescale}:
+The constant $\tau_\mathrm{VCSM}\approx200$ steps is not a critical divergence but an
+\emph{architectural timescale} set by $\{\texttt{SS}=8,\,\texttt{FA}=0.30,\,\texttt{FIELD\_DECAY}=0.999\}$.
+Two competing processes: slow exponential decay $\tau_\mathrm{slow}\approx1000$ steps
+(FIELD\_DECAY) and fast discrete gate refresh $\tau_\mathrm{fast}\approx8$ steps (SS).
+Their superposition produces the effective $\tau_\mathrm{VCSM}\approx200$ steps,
+independent of $L$ and $P$ in the range tested.
+The power-law $C(t)\sim t^{-2.2}$ is a \emph{mixture of exponentials}, not genuine scale-free dynamics.
+
+\textbf{Why no divergence}:
+The critical point is $P_c=0^+$; at $P\in[0.007,0.050]$ the system is deep in the ordered phase.
+The critical timescale $\tau_\mathrm{crit}\sim P^{-z\nu}$ only dominates when
+$\tau_\mathrm{crit}\gg\tau_\mathrm{VCSM}\approx200$, requiring
+$P\ll P_\mathrm{crossover}\approx200^{-1/(z\nu)}\approx0.002$ (for $z=2$, $\nu=0.98$).
+\textbf{Paper~74}: scan $P\in\{0.0001,0.0005,0.001,0.003\}$ approaching $P_c=0^+$
+to observe $\tau\sim P^{-z\nu}$ once $\tau_\mathrm{crit}\gg200$.
+
+\textbf{Current state of the VCML universality class (the ``Minecraft seed'')}:
+\begin{align*}
+  M   &\sim P^\beta,\quad\beta\approx0.63 \\
+  L^* &\sim P^{-\nu},\quad\nu\approx0.98 \\
+  \tau_\mathrm{VCSM} &\approx 200\ \text{steps (intrinsic gate timescale)} \\
+  z   &= \text{?}\quad(\text{requires }P\to0^+)
+\end{align*}
+The pair $(\beta,\nu)\approx(0.63,0.98)$ is the static fingerprint of the universality class.
+The dynamic exponent $z$ is the last digit of the seed.
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\subsection*{Paper 74: Dynamic Exponent $z\approx0.48$ at $P\to0^+$ --- Sub-Diffusive Scaling}
+
+With $P_\mathrm{crossover}\approx0.002$ established, Paper~74 scans $P\in[10^{-4},10^{-2}]$
+using GPU-accelerated batch simulation (RTX~3060, \texttt{torch.compile}, 8 seeds batched).
+
+\textbf{Phase A} (bridge region, $P\in\{0.001,\ldots,0.010\}$, $L{=}80$, 8 seeds, 12k steps):
+$\tau_\mathrm{corr}$ is flat at $\approx762$--$1067$ steps --- a plateau well above
+$\tau_\mathrm{VCSM}=200$.
+This reveals that the phi-field order parameter has a longer intrinsic timescale
+($\tau\approx1000$) than the Ising spin observable measured in Paper~73 ($\tau\approx200$).
+The system is in the saturated ordered phase: $\xi(P)\gg L$ at $L=80$ for all
+$P\geq0.001$.
+
+\textbf{Phase B} (deep $P$, $P\in\{0.0001,0.0002,0.0005\}$, $L{=}80$, 8 seeds, 150k steps, GPU):
+$\tau$ climbs substantially: $\tau(0.0005)=4812$, $\tau(0.0002)=9263$, $\tau(0.0001)=3772$.
+The non-monotonicity at $P=0.0001$ is attributed to marginal equilibration or disordered-phase
+entry; 150k steps at $\tau\approx4000$--$9000$ gives only 16--38 correlation times.
+
+\textbf{Phase C} (FSS at $P{=}0.001$, $L\in\{40,60,80,100,120\}$, 8 seeds, 100k steps, GPU):
+$\tau_L$ is anomalous (largest at $L=40$, non-monotone thereafter).
+$U_4<0$ for $L\leq100$ (near-critical or disordered).
+$z_C=-0.414$ ($R^2=0.133$) --- unphysical; FSS not applicable at $P=0.001$ for $L<160$.
+
+\textbf{Global z fit (Phases A+B combined)}:
+\begin{equation}
+  \boxed{z \approx 0.48,\quad R^2=0.71,\quad \tau\sim P^{-z\nu},\quad\nu=0.98}
+  \label{eq:p74z}
+\end{equation}
+This is \emph{sub-diffusive}: $z=0.48\ll z_\mathrm{ModelA}=2$ and $z<z_\mathrm{KPZ}=3/2$.
+The result is consistent with ballistic wave-seeding providing a coherent (not random-walk)
+channel for propagating the causal signal through the phi-field.
+
+\textbf{Completed VCML universality class fingerprint}:
+\begin{align*}
+  M   &\sim P^\beta,\quad\beta\approx0.63 \\
+  L^* &\sim P^{-\nu},\quad\nu\approx0.98 \\
+  \tau &\sim P^{-z\nu},\quad z\approx0.48\ (\text{sub-diffusive}) \\
+  \tau_\mathrm{floor} &\approx1000\ \text{steps (phi-field timescale)} \\
+  P_c &= 0^+\ \text{(ordering at any }P>0)
+\end{align*}
+$z\approx0.48$ is the dynamic exponent of the VCML universality class.
+Phase~C FSS at $P=0.001$ is noisy ($R^2<0.15$); Paper~75 addresses this limitation.
+
+%%───────────────────────────────────────────────────────────────────────────
+\subsection*{Paper 75: $z$ Probed at Deep $P$; $\gamma$ Null; FSS Blocking and Hyperscaling
+Violation}
+
+Paper~75 pushes into the deep-$P$ regime ($P<10^{-3}$) and attempts the first measurement
+of the susceptibility exponent~$\gamma$ from $\chi=\mathrm{var}(M)$.
+Both goals produce null results that are physically informative.
+
+\paragraph{FSS blocking.}
+The correlation length $\xi(P)\sim P^{-\nu}$ with $\nu=0.98$ grows rapidly as $P\to0^+$.
+For $L=80$: $P_\mathrm{FSS}(80)\approx80^{-1.02}\approx10^{-2}$, so all Phase~B values
+($P\in[3\times10^{-5},5\times10^{-4}]$) have $\xi(P)\gg L=80$.  In this FSS regime $\tau$
+is controlled by finite-size effects, not critical divergence.  The fitted $z_B=-0.271$
+($R^2=0.641$) is unphysical (negative sign).
+True scaling at $P\sim10^{-4}$ would require $L\gg\xi(10^{-4})\approx6300$, which is
+computationally inaccessible.  The Paper~74 scaling window $P\in[10^{-3},10^{-2}]$ is the
+\emph{only} accessible regime; $z=0.48$ is confirmed by exclusion.
+
+\paragraph{$\gamma$ null.}
+$\chi=\mathrm{var}(M)\sim10^{-7}$ everywhere---disordered-phase noise.
+The scaling $\chi\sim L^{-2}$ (Phase~C) is geometric dilution of the zone mean, not a
+susceptibility divergence.  The cross-phase fit $\gamma_\mathrm{all}=0.382$ ($R^2=0.739$)
+is contaminated by the different $L$ values of Phases~A ($L=160$) and~B ($L=80$).
+A valid measurement requires the intensive susceptibility
+$\chi_\mathrm{int}=L^2\,\mathrm{var}(M)$ in the \emph{ordered} phase ($U_4>0$, fixed $L$,
+scanning $P$)---the Paper~76 protocol.
+
+\paragraph{Hyperscaling violation.}
+The VCML order parameter is a zone mean ($d_\mathrm{eff}=0$): Josephson's relation
+$\nu d=2-\alpha$ gives $\alpha=2$, contradicting Rushbrooke's $\alpha\approx0.36$.
+Standard QFT hyperscaling is inapplicable to the zone-mean system.
+
+\paragraph{CUDAGraph speedup.}
+A manual \texttt{torch.cuda.CUDAGraph} implementation (\texttt{vcml\_gpu\_v3.py}) gives
+$229\,000$ steps/min at $(L=80,B=8)$ vs.\ ${\sim}75\,000$ for \texttt{mode='default'}:
+$3.06\times$ speedup.  All future papers use~\texttt{v3}.
+
+\textbf{Updated VCML universality class fingerprint}:
+\begin{align*}
+  M   &\sim P^\beta,\quad\beta\approx0.63 \\
+  L^* &\sim P^{-\nu},\quad\nu\approx0.98 \\
+  \tau &\sim P^{-z\nu},\quad z\approx0.48\
+        (\text{sub-diffusive; valid for }P\in[10^{-3},10^{-2}]) \\
+  \eta &: \text{undefined at cell level }(d_\mathrm{eff}=0\text{, zone-mean transition}) \\
+  \gamma &: \approx0.71\text{ (indirect; Fisher scaling }\nu(2-\eta)\text{; direct \textbf{blocked} at }d_\mathrm{eff}=0) \\
+  P_c &= 0^+
+\end{align*}
+
+\subsection*{Paper 76: $\chi_\mathrm{int}=L^2\,\mathrm{var}(M)$ --- Second $\gamma$ Null;
+$d_\mathrm{eff}=0$ Kinematic Obstruction Confirmed}
+
+Paper~76 applies the intensive susceptibility fix $\chi_\mathrm{int}\equiv L^2\,\mathrm{var}(M)$
+to cancel geometric dilution, scanning three phases:
+Phase~A ($L=80$, $P\in[0.003,0.050]$, 8 seeds, 300k steps),
+Phase~B (FSS $P=0.010$, $L\in\{40\ldots160\}$, 200k steps),
+and Phase~C ($L=120$, $P\in[0.002,0.030]$, 300k steps).
+
+\paragraph{Result.}
+$\chi_\mathrm{int}\approx0.0024$ flat across all phases, all $P$, all $L$.
+Fitted exponents: $\gamma_A=0.009$ ($R^2=0.18$), $\gamma_C=-0.006$ ($R^2=0.18$),
+FSS slope $\gamma/\nu=-0.126$ ($R^2=0.76$, negative = unphysical).
+
+\paragraph{Kinematic explanation.}
+Paper~72 confirmed $G_\phi(r)\approx0$ at all $r>0$ (no cell-level spatial correlations).
+By the central limit theorem, $\mathrm{var}(M)\approx4\sigma_\phi^2/L^2$, so
+$\chi_\mathrm{int}=L^2\,\mathrm{var}(M)\approx4\sigma_\phi^2=\mathrm{const}$.
+The $L^2$ factor cancels the dilution but leaves a noise constant, not a
+diverging quantity.  For $d_\mathrm{eff}=0$:
+$\chi=\int d^dr\,G(r)=G(0)\cdot L^0=\mathrm{const}$---no thermodynamic divergence.
+Direct $\gamma$ measurement is kinematically blocked.
+
+\paragraph{Indirect estimate.}
+Fisher scaling gives $\gamma=\nu(2-\eta)=0.98\times(2-1.28)=\mathbf{0.71}$,
+with the caveat that Fisher's relation was derived for $d_\mathrm{eff}>0$.
+
+\paragraph{Pure CUDA~C backend.}
+\texttt{vcml\_gpu\_v4.py} and \texttt{vcml\_cuda/vcml\_step.cu} implement the full
+VCML step in pure CUDA~C: 13 kernel types, 23 launches per step, cuRAND device API
+for all random numbers, captured as a single CUDA graph.
+Expected throughput: $350$--$500\,000$ steps/min at $(L=80,B=8)$, enabling $L\geq256$
+FSS runs.
+
+\textbf{Final VCML universality class fingerprint}:
+\begin{align*}
+  \beta   &\approx 0.628  &&\text{(direct: P63, P71)} \\
+  \nu     &\approx 0.98   &&\text{(direct: P71)} \\
+  z       &\approx 0.48   &&\text{(direct: P74; valid window }P\in[10^{-3},10^{-2}]\text{)} \\
+  \eta    &\approx 1.28   &&\text{(indirect: }2\beta/\nu\text{; direct inaccessible)} \\
+  \gamma  &\approx 0.71   &&\text{(indirect: }\nu(2-\eta)\text{; direct blocked at }d_\mathrm{eff}=0\text{)} \\
+  P_c     &= 0^+          &&\text{(direct: P64, P67)}
+\end{align*}
+Universality class characterised by three directly measured exponents $(\beta,\nu,z)$
+and the structural feature of $d_\mathrm{eff}=0$ zone-mean ordering.
+
+\end{document}

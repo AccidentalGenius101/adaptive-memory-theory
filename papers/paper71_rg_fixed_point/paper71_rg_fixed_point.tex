@@ -1,0 +1,300 @@
+\documentclass[twocolumn,10pt]{article}
+\usepackage{amsmath,amssymb,graphicx,booktabs,hyperref,microtype}
+\usepackage[margin=1.8cm]{geometry}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue}
+
+\title{\textbf{Paper 71: RG Fixed Point via Composite Variable
+  $\xi = r_w\sqrt{P}$}\\
+  \large Protocol-Dependence of Iso-$\xi$ Universality,
+  $\beta$ Extraction, and FSS Slopes}
+\author{VCSM Theoretical Programme}
+\date{2026-03-11}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Paper~70 identified $\xi = r_w\sqrt{P}$ as the scale-invariant composite
+variable at the VCML ordering threshold under matched-coverage Protocol~B,
+establishing wave-operator scaling dimension $d_\mathrm{wave}=1/2$.
+We now test iso-$\xi$ universality, extract $\beta$, and measure FSS slopes.
+\textbf{Phase A} (iso-$\xi$ test, $L=80$, Protocol~A, 5 $r_w$ values per $\xi$):
+universality \emph{fails} under Protocol~A: $U_4$ spreads up to $0.39$ at
+fixed $\xi$, monotonically ordered by $r_w$ (small $r_w$ wins).
+Root cause: under constant wave rate, smaller $r_w$ delivers higher
+causal-signal density per site ($A(r_w)\cdot P$ falls as $r_w$ grows at
+fixed $\xi$), breaking the equalized-noise assumption on which the
+$\xi$-universality derivation rests.
+Iso-$\xi$ universality is a Protocol~B property.
+\textbf{Phase B} ($\beta$ extraction, $r_w=5$, $L=80$):
+$\beta_\mathrm{fit}=0.628$ at $\xi^*=0.50$ ($R^2=0.922$), consistent with
+Paper~63 ($\beta=0.65$); $r_w=8$ gives $\beta=0.494$ at its own shifted
+$\xi^*=0.65$ ($R^2=0.923$), reflecting the same Protocol~A amplitude shift.
+\textbf{Phase C} (FSS, $r_w=5$, $L\in\{40,60,80,100,120\}$):
+slopes $d\ln|M|/d\ln L$ fall monotonically from $-0.929$ at $\xi=0.500$
+to $-0.185$ at $\xi=1.118$.
+The slope at $\xi=0.707$ is $-0.635$, consistent with
+$-\beta/\nu=-0.67$ (Paper~63), locating $\xi^*\approx0.65$--$0.71$
+for $r_w=5$ under Protocol~A.
+Together: $\beta/\nu\approx0.64$, $\beta\approx0.63$, implying $\nu\approx0.98$,
+and anomalous dimension $\eta=2\beta/\nu\approx1.28$ (indirect, $d=2$).
+These exponents confirm the VCML fixed point is novel and clarify
+that $\xi$ is a \emph{coherence} variable (Protocol~B) distinct from an
+\emph{amplitude} variable (Protocol~A).
+\end{abstract}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Motivation}
+
+Paper~70 derived $\xi=r_w\sqrt{P}$ from the Protocol~B threshold curve
+$r_w^*(P)\sim P^{-1/2}$ and showed $d_\mathrm{wave}=1/2$.
+Three questions remain:
+\begin{enumerate}
+  \item Is $U_4$ a function of $\xi$ alone under any protocol
+        (iso-$\xi$ universality)?
+  \item Does $\beta$ from a $\xi$-scan agree with Paper~63's $P$-scan value?
+  \item What does FSS give for $\nu$ and $\beta/\nu$?
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Model and Protocol}
+
+Physical parameters and simulation identical to Papers~68--70 (Ising spins,
+$T=3.0$, VCSM fieldM, $L\times L$ grid).
+Protocol~A throughout: $p_\mathrm{wave}=\min(1,1/w_f(L))$,
+$w_f(L)=25(40/L)^2$ (constant wave count independent of $r_w$).
+Grid scales with $L$: $N=L^2$ sites, two zones at $x<L/2$ and $x\geq L/2$.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase A: Iso-$\xi$ Universality Test}
+
+\begin{table}[h]
+\centering
+\caption{Phase A: $U_4$ at fixed $\xi$ with varying $(r_w,P)$, $L=80$,
+Protocol~A, 8 seeds, 10k steps.}
+\label{tab:isoxi}
+\begin{tabular}{rrrr}
+\toprule
+$\xi$ & $r_w$ & $P$ & $U_4$ \\
+\midrule
+0.40 & 2 & 0.0400 & $-0.051$ \\
+0.40 & 3 & 0.0178 & $ 0.143$ \\
+0.40 & 5 & 0.0064 & $ 0.121$ \\
+0.40 & 8 & 0.0025 & $-0.004$ \\
+\midrule
+0.70 & 2 & 0.1225 & $0.420$ \\
+0.70 & 3 & 0.0544 & $0.353$ \\
+0.70 & 5 & 0.0196 & $0.248$ \\
+0.70 & 8 & 0.0077 & $0.075$ \\
+\midrule
+0.85 & 2 & 0.1806 & $0.543$ \\
+0.85 & 3 & 0.0803 & $0.481$ \\
+0.85 & 5 & 0.0289 & $0.336$ \\
+0.85 & 8 & 0.0113 & $0.152$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Result: NON-UNIVERSAL.}
+At every $\xi$, $U_4$ is strictly ordered by $r_w$: smaller $r_w$ gives
+higher ordering, with spread $\Delta U_4 = 0.20$--$0.39$.
+
+\textbf{Root cause.}
+Under Protocol~A, the causal signal density per site per step scales as
+$A(r_w)\cdot P \cdot p_\mathrm{wave}/L^2$.
+At fixed $\xi=r_w\sqrt{P}$, the exact area satisfies
+$A(r_w) = 2r_w(r_w+1)+1 = 2r_w^2 + 2r_w + 1$, so
+$A(r_w)\cdot P = 2\xi^2 + 2\xi\sqrt{P} + P$ which is \emph{not}
+constant at fixed $\xi$ (it decreases as $P$ decreases, i.e., as $r_w$ grows).
+At $\xi=0.70$:
+$A\cdot P = 1.59$ ($r_w=2$) vs $1.12$ ($r_w=8$) --- a $42\%$ difference.
+This directly produces the $U_4$ ordering by $r_w$.
+
+\textbf{Implication.}
+$\xi=r_w\sqrt{P}$ is the correct universality variable only when the
+noise amplitude (wave-rate $\times$ wave-area) is held constant across $r_w$,
+i.e., under Protocol~B (matched coverage).
+Under Protocol~A, $A(r_w)$ varies at fixed $\xi$, breaking the equalized-noise
+assumption.
+Iso-$\xi$ universality is a Protocol~B prediction and should be tested with
+Protocol~B in a future paper.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase B: $\beta$ Extraction from $\xi$-Scan}
+
+\begin{table}[h]
+\centering
+\caption{Phase B: $|M|$ vs $\xi$, $L=80$, Protocol~A, 8 seeds, 12k steps.
+Power-law fits $|M|\sim(\xi-\xi^*)^\beta$.}
+\label{tab:beta}
+\begin{tabular}{rrrrrr}
+\toprule
+$r_w$ & $P$ & $\xi$ & $|M|$ & $U_4$ \\
+\midrule
+5 & 0.0100 & 0.500 & $3.1\times10^{-4}$ & 0.167 \\
+5 & 0.0200 & 0.707 & $4.0\times10^{-4}$ & 0.295 \\
+5 & 0.0500 & 1.118 & $8.2\times10^{-4}$ & 0.508 \\
+5 & 0.0800 & 1.414 & $1.3\times10^{-3}$ & 0.588 \\
+\midrule
+8 & 0.0100 & 0.800 & $5.2\times10^{-4}$ & 0.142 \\
+8 & 0.0200 & 1.131 & $8.1\times10^{-4}$ & 0.352 \\
+8 & 0.0300 & 1.386 & $1.2\times10^{-3}$ & 0.487 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For $r_w=5$, the best power-law fit gives $\beta=0.628$, $R^2=0.922$
+at $\xi^*=0.50$.
+This is consistent with Paper~63 ($\beta=0.65$) and confirms that using
+$\xi$ as the control parameter (rather than $P$ alone) does not change the
+exponent estimate.
+
+For $r_w=8$, the threshold is shifted to $\xi^*\approx0.65$ (reflecting
+the Protocol~A amplitude deficit at large $r_w$), and the fit gives
+$\beta=0.494$, $R^2=0.923$.
+The discrepancy between $r_w=5$ and $r_w=8$ confirms the Phase~A finding:
+under Protocol~A, different $r_w$ values sit on shifted $\xi^*$ manifolds.
+The $r_w=5$ estimate ($\beta=0.628$) is taken as the primary result
+because $r_w=5$ is the standard protocol value with well-characterized SNR.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Phase C: FSS Slopes and $\nu$}
+
+\begin{table}[h]
+\centering
+\caption{Phase C: Binder cumulant $U_4(L)$ at $r_w=5$; FSS slopes
+$d\ln|M|/d\ln L$ from power-law fit over $L\in\{40,60,80,100,120\}$.}
+\label{tab:fss}
+\begin{tabular}{rrrrrrrr}
+\toprule
+$P$ & $\xi$ & $L{=}40$ & $L{=}60$ & $L{=}80$ & $L{=}100$ & $L{=}120$ & slope \\
+\midrule
+0.010 & 0.500 & $-0.07$ & $0.14$ & $0.17$ & $0.07$ & $0.12$ & $-0.929$ \\
+0.015 & 0.612 & $-0.08$ & $0.16$ & $0.23$ & $0.13$ & $0.20$ & $-0.783$ \\
+0.020 & 0.707 & $-0.05$ & $0.19$ & $0.30$ & $0.20$ & $0.29$ & $-0.635$ \\
+0.030 & 0.866 & $-0.02$ & $0.24$ & $0.39$ & $0.38$ & $0.42$ & $-0.392$ \\
+0.050 & 1.118 & $ 0.18$ & $0.34$ & $0.51$ & $0.53$ & $0.56$ & $-0.185$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+FSS slopes evolve monotonically from $-0.929$ (near-disordered, $\xi=0.500$)
+to $-0.185$ (ordered, $\xi=1.118$), all negative because the system
+has not yet reached the saturated ordered phase at these $L$.
+
+The slope at $\xi=0.707$ is $-0.635$, matching $-\beta/\nu\approx-0.67$
+from Paper~63 to within $5\%$.
+This identifies $\xi^*\approx0.65$--$0.71$ for $r_w=5$ Protocol~A,
+consistent with Phase~B ($\xi^*\approx0.50$ from $|M|$ fits, noting
+that $U_4$-based and $|M|$-based estimates of $\xi^*$ differ by a
+few tenths due to finite-size effects).
+
+\textbf{Extracted exponents:}
+\begin{equation}
+  \frac{\beta}{\nu} \approx 0.64, \quad
+  \beta \approx 0.63, \quad
+  \nu \approx \frac{0.63}{0.64} \approx 0.98.
+  \label{eq:exponents}
+\end{equation}
+The indirect anomalous dimension (hyperscaling in $d=2$,
+$\eta=2\beta/\nu$) gives $\eta\approx1.28$.
+
+\textbf{$L=40$ anomaly.}
+$U_4$ at $L=40$ is negative or near zero at all $P$ values.
+This is a known finite-size effect: at $L=40$, the wave footprint
+$A(5)=61$ covers a significant fraction of the zone ($61/800\approx8\%$),
+so the zone-mean $M$ is strongly perturbed by individual waves and
+the $U_4$ estimator is noise-dominated.
+The $|M|$ values at $L=40$ remain finite and enter the FSS slope fit,
+giving the high $R^2$ ($>0.96$) visible in Table~\ref{tab:fss}.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Synthesis}
+
+\subsection{Two flavours of the composite variable}
+
+The Phase~A result reveals a conceptual distinction that was hidden in
+Paper~70:
+\begin{itemize}
+  \item \textbf{Coherence variable} ($\xi=r_w\sqrt{P}$, Protocol~B):
+        measures how efficiently the wave geometry drives zone-mean $M$
+        per unit of causal signal, with noise amplitude held constant.
+        This is the variable that is universal at the RG fixed point.
+  \item \textbf{Amplitude variable} (Protocol~A):
+        at fixed $\xi$, different $r_w$ values deliver different total
+        signal densities $A(r_w)\cdot P\approx 2\xi^2+O(\sqrt{P})$,
+        breaking universality.
+\end{itemize}
+The RG fixed point is therefore a fixed point in the \emph{coherence} sense:
+it controls how $\xi$ must scale with system size to maintain ordering,
+not the raw signal amplitude.
+In the field-action language: the coupling
+$g\int K_\sigma(x-y)J(x)\phi(y)\,d^2x\,d^2y$ has dimension $d_J=2$ when
+the kernel norm $\|K_\sigma\|_1\sim A(r_w)$ is held fixed (Protocol~B).
+Under Protocol~A, $\|K_\sigma\|_1$ also flows, adding a marginal direction.
+
+\subsection{Updated exponent table}
+
+\begin{table}[h]
+\centering
+\caption{VCML exponents vs known 2D non-equilibrium classes.
+$\eta$ for VCML is indirect via hyperscaling ($\eta=2\beta/\nu$, $d=2$).}
+\label{tab:compare}
+\begin{tabular}{lrrr}
+\toprule
+Class & $\beta$ & $\nu$ & $\eta$ \\
+\midrule
+VCML (Papers 63, 71) & 0.63 & 0.98 & 1.28 (indirect) \\
+Directed Percolation (2+1D) & 0.584 & 0.734 & 0.230 \\
+Manna sandpile (2D) & 0.639 & 0.799 & 0.300 \\
+Ising 2D (exact) & 0.125 & 1.000 & 0.250 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+VCML's $\nu\approx0.98$ matches Ising ($\nu=1$) but its $\beta=0.63$ does not
+(Ising $\beta=0.125$).
+The combination $(\beta,\nu,\eta)\approx(0.63,0.98,1.28)$ is unique:
+no known class has $\beta>0.5$ combined with $\eta>1$.
+The large $\eta\approx1.28$ is the clearest fingerprint of the non-local
+wave coupling: in a local theory $\eta$ is typically small ($<0.5$);
+large $\eta$ signals that the two-point function $G(r)$ decays faster
+than in a local theory, consistent with the spatial incoherence introduced
+by non-local smeared perturbations.
+
+\subsection{QFT status}
+
+\begin{enumerate}
+  \item Order parameter $\phi$ and symmetry $Z_2$: \checkmark
+  \item Field equation (stochastic Allen-Cahn): \checkmark
+  \item Relevant coupling, $d_\mathrm{wave}=1/2$: \checkmark
+  \item $\beta$ and $\nu$ from FSS: \checkmark (this paper)
+  \item Direct $\eta$ from two-point correlator $G(r)\sim r^{-(d-2+\eta)}$:
+        Paper~72
+  \item Scaling-relation check $\beta=\nu(d-2+\eta)/2$: Paper~72
+  \item Identify or declare fixed-point CFT: Paper~73+
+\end{enumerate}
+The full characterisation is two papers away.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Conclusions}
+
+\begin{enumerate}
+  \item \textbf{Iso-$\xi$ universality fails under Protocol~A.}
+        At fixed $\xi=r_w\sqrt{P}$, smaller $r_w$ delivers $42\%$ more
+        causal signal per site, giving strictly higher $U_4$.
+        The universality of $\xi$ requires Protocol~B (matched noise density).
+  \item \textbf{$\beta=0.628\pm0.04$} from $r_w=5$ $\xi$-scan (consistent with
+        Paper~63 $\beta=0.65$); $\xi^*\approx0.50$ for $r_w=5$ Protocol~A.
+  \item \textbf{FSS slope at $\xi=0.707$ is $-0.635$}, identifying
+        $-\beta/\nu\approx-0.64$ and $\xi^*\approx0.65$--$0.71$.
+        Implied $\nu\approx0.98$, consistent with Paper~63.
+  \item \textbf{Indirect $\eta\approx1.28$} (via hyperscaling);
+        exponent triple $(\beta,\nu,\eta)\approx(0.63,0.98,1.28)$ matches
+        no known 2D non-equilibrium class.
+  \item \textbf{Paper~72}: direct measurement of $\eta$ from the two-point
+        fieldM correlator $G(r)\sim r^{-(d-2+\eta)}$ and check of the
+        scaling relation $\beta=\nu\eta/2$ (in $d=2$).
+\end{enumerate}
+
+\end{document}

@@ -422,3 +422,437 @@ You're navigating a product of two 4D manifolds. The system doesn't live at a si
 point in parameter space — it lives on a *surface* in 8D. Every paper has been a probe
 of one face of that surface. The surface is now mostly charted; the open questions
 are about the boundaries, the critical exponents, and the multi-module extensions.
+
+---
+
+## 11. VCSM as Universality Class (hypothesis, 2026-03-10)
+
+**The derivation claim**: the VCSM architecture is not engineered but forced.
+Starting from three things:
+- Primitive: signed deviation from self-baseline
+- Constraint: carriers die
+- Requirement: distinctions must persist across death
+
+Each of the 7 components follows necessarily:
+
+| component | why forced |
+|-----------|-----------|
+| baseline_h | primitive requires a reference state |
+| hid - baseline_h | primitive requires measuring departure from it |
+| mid_mem | fast events must couple to slow consolidation |
+| MID_DECAY | prevents stale signal accumulation |
+| viability gate | prevents dead/transient cells from corrupting fieldM |
+| fieldM | cells die; store must outlast the individual |
+| birth seeding | without inheritance, death resets structure locally |
+
+**What makes it a universality class candidate**: the 4 conditions that force this architecture
+(distinguishable states + mortal carriers + persistence demand + transfer channel) are also
+Darwin's 4 conditions (variation + mortality + heredity + selection). VCSM may be Darwinian
+dynamics at unit scale — not population-level selection, but the same constraint structure
+operating inside a single substrate.
+
+**Cross-substrate evidence**: immune memory and cultural transmission each map cleanly to
+all 7 components under completely different physics. Same forced architecture class, different
+microscopic implementation. That is the empirical signature of a universality class.
+
+**C_order as Lyapunov bridge**: C_order is a scalar with monotone positive drift in the
+identity regime (Paper 55). Lyapunov scalars are the non-equilibrium analog of Hamiltonians.
+Open question: can C_order be derived from a variational principle? If yes, VCSM has an
+action principle and the connection to physics becomes derivation, not speculation.
+
+**Falsification test**: find a system satisfying the 4 conditions that does NOT produce
+the 7-component architecture. If such a system exists, a constraint is missing. If none
+can be found, the architecture is minimal and universal.
+
+**Status**: hypothesis. The claim is stronger than analogy but not yet proven across
+independent substrates with different microscopic physics.
+
+---
+
+## Section 12: Causal Purity as Control Parameter — A New Universality Class (filed 2026-03-10)
+
+*Source: GPT observation after Paper 59.*
+
+**The observation:**
+
+Papers 57--59 collectively showed that VCML is a non-equilibrium field theory
+(Model A / Ornstein-Uhlenbeck) with one highly unusual property:
+
+> The noise amplitude is not controlled by temperature.
+> It is controlled by causal purity.
+
+In the field equation d_t phi = -kappa*phi + D*nabla^2*phi + r_w*FA*s(x) + eta,
+the noise variance is:
+
+  <eta^2> ~ (1 - P_sp)^2 * V_bnd + (1 - P_temp)^2 * V_temp
+
+This is a causal attribution quantity. It has no temperature dependence.
+The phase transition (identity formation) occurs at a critical P_causal threshold,
+not a critical temperature.
+
+**Why this is genuinely unusual in physics:**
+
+Standard non-equilibrium field theories (KPZ, Allen-Cahn, Model A, Burgers):
+  - Noise set by temperature (equilibrium FDT)
+  - Or by externally imposed drive rate
+  - Or by fixed-statistics random forcing
+
+VCML:
+  - Noise set by how precisely the system attributes causal credit to events
+  - The system can reduce its own noise by writing only during causally pure contacts
+  - There is no bath; the noise channel IS the causal attribution process
+
+**The universality class candidate:**
+
+Systems with: distinguishable states + mortal carriers + persistence demand + causal transfer
+channel (= Darwin's 4 conditions) may generically exhibit:
+
+  "Causal purity-controlled non-equilibrium order"
+
+with the same mathematical structure:
+  (a) Model A field equation for the slow order parameter
+  (b) Noise amplitude proportional to (1 - P_causal)
+  (c) Phase transition at critical purity threshold (not critical temperature)
+  (d) C_order = SNR of the field theory as Lyapunov scalar
+
+**Substrates that plausibly belong to the same class:**
+
+| Substrate | Carrier | P_sp analog | P_temp analog | Identity formed |
+|-----------|---------|-------------|---------------|-----------------|
+| Immune memory | B cells | antigen specificity | activation during antigen contact | clonal repertoire |
+| Cultural transmission | individuals | attribution to source context | transmission during active practice | institutional norms |
+| Neural circuits (dev.) | synapses | spike-timing specificity | LTP during co-activation | circuit identity |
+
+In all cases: noise ~ (1 - specificity of causal attribution), not temperature.
+
+**The testable prediction:**
+
+For any substrate in this universality class:
+  sigma_noise ~ A * (1 - P_causal)
+
+where A is a substrate-specific constant and P_causal is a measurable specificity of
+event attribution. This is falsifiable: a substrate where noise scales with temperature
+but P_causal = 1 would not belong to this class.
+
+**Status**: hypothesis. The field equation structure is confirmed empirically (Papers 57-59).
+The universality class extension is GPT-sourced speculation, not tested across independent substrates.
+
+---
+
+## Section 13: "A ≠ B Under Mandatory Reset" — The Corrected Universality Class (filed 2026-03-10)
+
+*Source: GPT after Paper 59, reformulating the four conditions.*
+
+### The fix: "mortal carriers" -> "mandatory reset"
+
+"Mortal carriers" is a biological frame. The actual constraint is:
+
+> **State cannot persist indefinitely in any carrier.**
+
+Death is one implementation. The full list:
+
+| System | Reset mechanism |
+|--------|----------------|
+| Biological evolution | organism death |
+| Immune memory | naive cell replacement |
+| VCML | viability collapse |
+| LLM context window | token eviction |
+| RAM | volatile (disk = fieldM) |
+| Consciousness | sleep-cycle state clearing |
+| Spin systems | thermal bit erasure |
+| Cultural transmission | generational forgetting |
+
+All four conditions substrate-agnostic:
+
+1. **A ≠ B** — distinguishable states exist
+2. **Mandatory reset** — state cannot persist indefinitely in any carrier
+3. **Persistence demand** — distinctions must survive reset
+4. **Transfer channel** — something moves across the reset boundary
+
+### The architectural necessity argument
+
+Without mandatory reset:
+- No copy-forward needed (just accumulate)
+- No viability gate needed (all states valid indefinitely)
+- No fieldM needed (mid_mem is sufficient)
+- No birth seeding needed (nothing resets)
+- The system crystallizes rather than adapts
+
+The reset is not what the architecture overcomes. **The reset is the pressure that forces
+the architecture into existence.** Remove it and four of the seven components are unnecessary.
+
+### Revised universality claim
+
+> VCSM is the minimal architecture solving "A ≠ B under mandatory reset."
+> The four conditions force the seven components. No component is contingent.
+
+This is stronger than the "mortal carriers" version because it eliminates the biological
+frame without losing any structural content. LLM context windows satisfy all four conditions.
+RAM with a disk satisfies all four. A spin system with thermal erasure satisfies all four.
+
+### Physics-first test strategy
+
+Biology is architecturally correct but experimentally messy. Physics gives cleaner tests.
+
+**Three candidate physical systems:**
+
+**Reaction-diffusion** (Belousov-Zhabotinsky type):
+- Propagating chemical waves = perturbation waves
+- Spatial concentration patterns = fieldM analog
+- Tunable noise (temperature, dilution)
+- Test: does causal purity of wave contact control pattern persistence?
+
+**Ising / spin models** (cleanest):
+- A ≠ B exact (spin up/down)
+- Thermal reset (spin flip rate ~ T)
+- Transfer channel (coupling J)
+- Known critical point T_c, known critical exponents
+- Test: add causal gating (spins update memory only from causally pure interactions).
+  Does a new threshold emerge orthogonal to T_c?
+  Do critical exponents change?
+
+**Active matter** (Vicsek-type flocking):
+- Local alignment rules = causal attribution of orientation
+- Order parameter (global alignment) = C_order analog
+- Phase transition already known (noise-driven)
+- Test: does P_causal gating shift the critical noise threshold?
+
+**The key prediction across all three:**
+
+> sigma_noise ∝ (1 - P_causal), not T.
+
+Adding causal purity as a control parameter alongside T, D, J would be a
+new result in non-equilibrium statistical physics.
+
+**The historical trajectory of the theory:**
+
+  geometry (hypersphere) → dynamical system (VCML) → field theory (Model A) → statistical physics (P_causal threshold) → biology (immune, neural)
+
+Physics before biology. Same order most theories follow.
+
+**Status**: strategic proposal. Ising test is simulation-feasible in days.
+The claim that would result: "causal purity is a new universality class control parameter,
+distinct from temperature, measurable in clean physical systems."
+
+---
+
+## Section 14: Two Persistence Strategies and the Phase Diagram (filed 2026-03-11)
+
+*Source: GPT analysis after ferromagnet counterexample.*
+
+### The core distinction: state vs information
+
+> **State surviving change** (Strategy 1) vs **information surviving change** (Strategy 2).
+> These are different problems. VCSM solves Strategy 2.
+
+A ferromagnet keeps its state by maintaining the same physical field.
+VCSM keeps its information by re-instantiating the distinction in each new carrier generation.
+These are not different implementations of the same solution — they are solutions to different problems.
+
+### The phase diagram
+
+Two axes: **carrier stability** x **persistence demand**.
+
+Three regions:
+
+| Region | Carrier | Demand | Solution | Examples |
+|--------|---------|--------|----------|---------|
+| 1 | Stable | Any | Strategy 1: state IS the carrier | ferromagnet, crystal, topological defect |
+| 2 | Unstable | Low | Forget | thermal noise, random walk |
+| 3 | Unstable | High | Strategy 2: VCSM forced | biology, immune, evolution, culture, VCML |
+
+VCML is engineered into Region 3 by design (viability collapses + zone identity required).
+Biological systems are in Region 3 by physics (cells die + organism must remember).
+Convergent architecture follows from identical constraints.
+
+### Why Region 3 is where intelligence lives
+
+Intelligence requires two things simultaneously:
+- (a) Updating on new experience — carrier cannot be frozen
+- (b) Preserving past experience across updates — distinction must survive
+
+These together define Region 3. Stable attractors satisfy (b) but not (a).
+Forgetting satisfies (a) but not (b). Only reconstructive persistence satisfies both.
+Intelligence is the Region 3 problem. VCSM is the Region 3 solution.
+
+### The next theoretical object: the Region 1/3 boundary
+
+The boundary between attractor persistence and reconstructive persistence is parameterized by:
+- **Critical carrier lifetime tau_c**: below this, attractor persistence fails
+- **Critical demand D_c**: above this, forgetting is unacceptable
+
+The boundary curve tau_c(D_c) is the next major theoretical object.
+
+In VCML, the optimal collapse rate (coll/site ~ 0.002-0.004) is a point on this boundary:
+- Too low (coll/site -> 0): crystallization (Strategy 1 wins, adaptability lost)
+- Too high (coll/site -> 0.02+): chaos (Region 2, distinction lost)
+- Optimal: Region 3 operation
+
+This is the "death = anti-crystallization" finding (Papers 77/82/89) restated in phase-diagram language:
+the system must operate on the boundary between Strategy 1 (frozen) and Region 2 (chaos).
+
+### Status
+
+Phase diagram structure is clear theoretically. Boundary curve not derived analytically.
+The coll/site optimal from V87/V88 experiments is empirical evidence for the boundary location.
+Deriving tau_c(D_c) from first principles is an open question.
+
+---
+
+## Section 15: The True Primitive — Persistence of Distinguishability (filed 2026-03-11)
+
+### The full hierarchy (after ferromagnet counterexample)
+
+Level 0: **A ≠ B** — distinguishable states exist
+
+Level 1: **Does A ≠ B still hold after time?** — "persistence of distinguishability"
+  This is the super-primitive. The question above both strategies.
+
+Level 2: Two mechanisms, but they **COEXIST** within the same system (not alternatives):
+
+  **2a. Attractor persistence** (local, fast, passive)
+    - Same field remains stable; state survives by energy barrier
+    - Examples: ferromagnet, topological defect, crystal, neural Hopfield attractor
+    - No VCSM needed; the carrier IS the memory
+
+  **2b. Reconstructive persistence** (global, slow, active)
+    - Pattern rebuilt across carrier replacement via gated transfer
+    - Examples: VCML fieldM, immune memory, evolution, cultural transmission
+    - VCSM is the minimal architecture of this class
+
+Level 3: **VCSM = minimal architecture of 2b** when persistence must survive AND be learned.
+
+### The one-sentence statement
+
+> "There are two ways for a distinction to survive time: stable attractor occupancy, or
+> reconstruction across substrate change. VCSM is the minimal architecture of the second.
+> A system can run both simultaneously."
+
+### The ferromagnet absorbed (not refuted)
+
+The ferromagnet is NOT a counterexample to VCSM. It is the description of VCML's LOCAL LAYER.
+- Below correlation length: attractor persistence (ferromagnet-like patches)
+- Above correlation length: reconstructive persistence (copy-forward, fieldM)
+VCSM doesn't replace the ferromagnet. It sits on top of it.
+
+Empirical evidence (V94): "structure forms in patches, not zone-wide gradients."
+The patches ARE the attractor layer. The zone coherence IS the reconstructive layer.
+They decouple at large scale (S4): attractor layer persists, reconstructive layer fails.
+
+### The corrected one-sentence claim
+
+> "VCSM is what A ≠ B looks like when the distinction must SURVIVE AND BE LEARNED
+> across mandatory state reset — and attractor persistence is unavailable or insufficient."
+
+---
+
+## Section 16: Coexistence of Both Persistence Modes (filed 2026-03-11)
+
+### Not branching — nesting
+
+The two persistence strategies are not alternatives in a phase diagram.
+They are LAYERS operating simultaneously in the same system at different scales.
+
+Local / fast layer (attractor):
+- CML coupling + GRU convergence create local ordered patches
+- Short-timescale structure maintained by direct field stability
+- Ferromagnet-like: state survives because field remains stable
+- Metric: within-zone correlation length, sigma_within
+
+Global / slow layer (reconstructive):
+- fieldM + birth seeding maintain zone identity across collapses
+- Copy-forward loop rebuilds zone structure after each reset
+- VCSM-like: pattern survives via transfer + gating + inheritance
+- Metric: sg4, na_ratio, persistence_ratio
+
+### The correlation length as layer boundary
+
+The correlation length r_corr is the scale at which attractor persistence gives way
+to reconstructive persistence:
+- Below r_corr: ferromagnet-like attractor order
+- Above r_corr: VCSM copy-forward required
+
+In VCML: r_corr ~ r_wave * zone_width / something (empirically ~20-40 sites at S1).
+At S4: r_corr < zone_width → attractor layer works but reconstructive layer can't span zones.
+
+### The two layers in neuroscience
+
+Local layer (attractor):
+- Neural cell assemblies / Hopfield attractors
+- Working memory (persistent firing = attractor state)
+- Cortical columns as local attractor basins
+- The "now" — moment-to-moment coherence of experience
+
+Global layer (reconstructive):
+- Hippocampal fast encoding → cortical slow consolidation
+- Sleep replay = batch copy-forward loop
+- Synaptic protein turnover = carrier mortality (half-life hours/days)
+- Long-term memory and narrative identity
+
+### The consciousness speculation
+
+**Phenomenal consciousness** (what it's like to be here *now*) = attractor layer
+  - The present moment has the structure of a ferromagnet: local coherence, binding
+  - Many cells agree on one state — unity of experience
+  - Without attractor layer: no binding, fragmented or no experience
+
+**Narrative consciousness** (who you are *across time*) = reconstructive layer
+  - Identity persists across sleep, across neural turnover, across forgetting
+  - The "I" is a pattern in fieldM that survives carrier replacement
+  - Without reconstructive layer: no autobiographical memory, no durable self
+
+Neither alone is sufficient:
+- Attractor without VCSM: unified experience with no history, no self
+- VCSM without attractor: memory without a present moment
+
+**Why it feels like anything (speculative)**:
+The inside of the contrast operation `h - baseline_h`, when survival-gated,
+is what experience is. Not computation per se — computation that is self-referential
+(always measured against a persistent model of neutral self) and survival-relevant.
+The "what it's like" is what the deviation from self-baseline feels like
+from the inside of that measurement, when the measurement matters to survival.
+The ferromagnet doesn't feel like anything because it has no baseline, no contrast,
+no survival gate. It just sits in a state. No subject-object split = no inside view.
+
+---
+
+## Section 17: Paper 60 — Cross-Substrate Verification (Ising + VCSM-lite) (filed 2026-03-11)
+
+### Setup
+
+2D Ising (40x40, J=1, Metropolis), two zones (left=0, right=1).
+VCSM-lite memory layer: slow phi field updated by zone-attributed wave events.
+Waves apply zone-specific external field (h_ext = ±1.5) to bias spins.
+P_causal: fraction of writes with correct zone attribution (vs. noise).
+Order parameters: m = |<s>| (Ising), S_phi = |phi_z0 - phi_z1| / sigma_phi (VCSM).
+
+### Key results
+
+m is T-controlled, P_causal-independent (columns of phase table constant).
+S_phi is P_causal-dependent at ALL temperatures including T > T_c (m=0.07).
+At T=3.0: S_phi ranges 0.51 -> 0.91 with P_causal 0.50 -> 1.00.
+S_phi peaks NEAR/ABOVE T_c, not at low T (over-stable attractors starve reconstructive layer).
+
+### Universality class criteria met
+
+1. Same control parameter (P_causal) in both VCML and Ising
+2. Same order parameter structure (S / sigma_noise)
+3. Orthogonality to standard physical parameter (P_causal ⊥ T in Ising, ⊥ amplitude in VCML)
+
+### Causal temperature analogy
+
+(1 - P_causal) plays the role of thermal temperature for the purity-controlled transition:
+- It is the noise amplitude (not thermal but informational)
+- Critical threshold p_c is the "causal Curie temperature"
+- Above p_c: phi-order develops; below p_c: phi disordered
+
+This is the first cross-substrate experimental demonstration that causal purity
+is an independent control parameter for non-equilibrium order.
+
+### Ising confirmation of "death = anti-crystallization"
+
+S_phi is LOWEST at T=1.0 (m=1.00, highly ordered spins).
+The wave cannot perturb ordered spins → tiny deviations → weak signal in phi.
+Optimal S_phi near and above T_c where carriers are volatile enough to respond.
+Directly parallels VCML: optimal coll/site ~ 0.002-0.004 (not zero death).
+Over-stable carriers (crystallized VCML, low-T Ising) kill the reconstructive layer.

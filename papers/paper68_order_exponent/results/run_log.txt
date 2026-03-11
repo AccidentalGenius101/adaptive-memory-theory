@@ -1,0 +1,59 @@
+Phase A: 60 runs -- L=160, p_wave=0.640, P in [0.001, 0.002, 0.003, 0.005, 0.007, 0.01, 0.015, 0.02, 0.03, 0.05], 10000 steps ...
+Phase A done.
+
+Phase B: 80 runs -- L in [80, 100, 120, 160], P in [0.003, 0.005, 0.007, 0.01, 0.02], 10000 steps ...
+Phase B done.
+
+Phase C (Manna flux balance): 4 runs -- L=120, P=0.01, 10000 steps ...
+Phase C done.
+
+=== PHASE A: Fine P scan at L=160 ===
+       P      absM       se       U4    log|M|   1/sqrt(P)
+------------------------------------------------------------
+  0.0010   0.00013  0.00001   0.0643    -8.933       31.62
+  0.0020   0.00013  0.00001   0.0548    -8.945       22.36
+  0.0030   0.00013  0.00001   0.0502    -8.943       18.26
+  0.0050   0.00014  0.00001   0.0379    -8.909       14.14
+  0.0070   0.00014  0.00001   0.0365    -8.861       11.95
+  0.0100   0.00016  0.00001   0.0828    -8.723       10.00
+  0.0150   0.00021  0.00001   0.2031    -8.453        8.16
+  0.0200   0.00028  0.00002   0.3205    -8.195        7.07
+  0.0300   0.00041  0.00002   0.4613    -7.806        5.77
+  0.0500   0.00070  0.00002   0.5836    -7.270        4.47
+
+Power-law fit: |M| ~ P^beta
+  beta = 0.4063,  R^2 = 0.7568
+  Manna prediction: beta=0.639  Paper63 measurement: beta=0.650
+  Match: NO (|beta_fit - 0.639| = 0.2327)
+
+BKT essential singularity fit: |M| ~ exp(-A/sqrt(P))
+  A = 0.0480,  R^2 = 0.5014
+
+Ordinary essential singularity fit: |M| ~ exp(-A/P)
+  A = 0.0010,  R^2 = 0.3071
+
+Best fit: Power law (R^2=0.7568, beta=0.4063)  BKT (R^2=0.5014, A=0.0480)  Exp (R^2=0.3071, A=0.0010)  
+
+=== PHASE B: FSS at fine P values ===
+      P  absM(L=80)  absM(L=100)  absM(L=120)  absM(L=160)
+----------------------------------------------------------------------
+ 0.0030     0.00028     0.00026     0.00019     0.00013
+ 0.0050     0.00030     0.00027     0.00019     0.00013
+ 0.0070     0.00030     0.00027     0.00020     0.00014
+ 0.0100     0.00032     0.00029     0.00022     0.00017
+ 0.0200     0.00040     0.00037     0.00030     0.00028
+
+beta/nu from log-log |M| vs L:
+  P=0.0030: d(log|M|)/d(logL) = -1.2094 [expect -beta/nu = -0.6701 at p_c; positive = away from p_c]
+  P=0.0050: d(log|M|)/d(logL) = -1.1937 [expect -beta/nu = -0.6701 at p_c; positive = away from p_c]
+  P=0.0070: d(log|M|)/d(logL) = -1.1254 [expect -beta/nu = -0.6701 at p_c; positive = away from p_c]
+  P=0.0100: d(log|M|)/d(logL) = -1.0070 [expect -beta/nu = -0.6701 at p_c; positive = away from p_c]
+  P=0.0200: d(log|M|)/d(logL) = -0.5332 [expect -beta/nu = -0.6701 at p_c; positive = away from p_c]
+
+=== PHASE C: Manna Conservation-Law Diagnostic (L=120, P=0.01) ===
+Mean creation flux per step: 0.255587
+Mean decay flux per step:    0.079027
+Ratio create/decay:          3.2344
+RESULT: Creation > decay -- net phi gain. Consolidation-dominant.
+
+Saved -> C:\Users\briel\Documents\vcsm-theory\papers\paper68_order_exponent\results\paper68_analysis.json

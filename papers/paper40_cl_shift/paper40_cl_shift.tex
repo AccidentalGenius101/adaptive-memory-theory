@@ -1,0 +1,281 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\title{\textbf{Paper 40: Real Continual Learning in VCML ---\\
+Zone Boundary Shift, Forgetting, and Two-Task Interleaving}}
+\author{VCSM Theoretical Series}
+\date{2026-03-10}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Paper~38 tested continual learning by inverting wave polarity (suppression $\leftrightarrow$
+excitation) mid-run, but this perturbation is invisible to sg4n (polarity-blind by
+construction).  Here we test \emph{genuine} continual learning by shifting the spatial
+positions of zone boundaries at $T_\mathrm{shift} = 1500$ steps.
+Three experiments probe adaptation, forgetting, and multi-task stability:
+(A)~zone boundary shift with overlap fractions of 0\% (cyclic permutation, $\Delta=10$)
+and 50\% (partial overlap, $\Delta=5$), versus a no-shift reference;
+(B)~two-task interleaving from $t=0$, alternating every 500 steps;
+(C)~the same interleaving begun after a 2000-step commitment phase for task~A.
+Key findings:
+(1) a cyclic-permutation shift ($\Delta = z_w$) is \emph{immediately transparent}:
+sg4n under the new zone labelling equals sg4n under the old labelling at the moment of
+shift, because sg4 is invariant under permutation of zone indices;
+(2) a half-width shift ($\Delta = z_w/2$) causes genuine disruption --- sg4n under the
+new labelling drops and recovers slowly (still rising at $T=4000$);
+(3) prior commitment provides \emph{no long-term advantage} in two-task interleaving:
+both tasks converge to the same steady-state sg4n ($\approx 0.29$ and $0.27$) regardless
+of whether task~A was committed first.
+\end{abstract}
+
+\section{Introduction}
+
+Continual learning asks whether a system can acquire new representations without
+destroying previously learned ones.
+Paper~38 attempted to test this by inverting the suppression/excitation assignment of all
+zones at step $T_\mathrm{shift} = 2000$, but this perturbation is a \emph{polarity flip}
+--- it changes the sign of the wave activation without moving zone boundaries.
+Because sg4n measures mean pairwise distances between zone-mean fieldM vectors, it is
+invariant to a global sign inversion of all zone vectors (the inter-zone distances are
+unchanged).
+The polarity-flip experiment confirmed that sg4n is polarity-blind, but it could not
+detect whether VCML's spatial structure updated.
+
+The correct test is a \emph{zone boundary shift}: move the spatial positions that define
+each zone, so that a cell previously in zone~$z$ now belongs to zone~$z'$.
+Unlike a polarity flip, this is not invisible to sg4n under the new labelling.
+If the system fails to adapt, sg4n under the new labelling stays near zero.
+If the system adapts, sg4n under the new labelling recovers.
+
+We study three cases:
+\begin{enumerate}
+  \item \textbf{Cyclic permutation} ($\Delta = z_w = 10$): all zone boundaries shift by
+        one full zone width.  Zone~0 cells become zone~1 cells, zone~1 becomes zone~2,
+        etc.\ (modular wrap).  This is a consistent relabelling: each cell goes from
+        one zone to exactly one other zone, with no mixing.
+  \item \textbf{Half-width shift} ($\Delta = z_w/2 = 5$): zone boundaries shift by half
+        a zone width.  Half of every zone's cells cross a boundary into a neighbouring
+        zone; the other half remain.  New zones are composed of cells from two different
+        old zones.
+  \item \textbf{No shift} (reference): standard run, no boundary change.
+\end{enumerate}
+
+We also test two-task interleaving: alternating between zone configuration~A
+($\Delta = 0$) and configuration~B ($\Delta = 5$) every 500 steps,
+comparing the case where interleaving starts immediately ($t=0$) versus after a
+2000-step commitment phase.
+
+\section{Methods}
+
+\subsection{Base System}
+
+Standard VCML: $H=40$, $\mathrm{HALF}=40$, $N_\mathrm{zones}=4$, $z_w=10$,
+$\mathrm{WR}=4.8$, $\mathrm{FA}=0.16$, $T_\mathrm{shift}=1500$, 5 seeds per condition.
+The commitment epoch is $t^* \approx 2000$ (Paper~27), so the shift occurs \emph{before}
+full commitment.
+
+\subsection{ShiftableEnv}
+
+A \texttt{ShiftableEnv} environment launches waves at positions consistent with a
+zone-boundary offset $\Delta$.
+Zone class $z$ in shifted coordinates corresponds to positions $c_x$ in the active region
+satisfying $(c_x - \mathrm{HALF} + \Delta) \bmod \mathrm{HALF} \in [z \cdot z_w,
+(z+1) \cdot z_w)$.
+The attribute \texttt{env.delta} is changed at $T_\mathrm{shift}$;
+thereafter all wave launches respect the new boundary positions.
+
+\subsection{Dual-Labelling Metric}
+
+At each checkpoint we compute sg4n under \emph{two} zone labellings simultaneously:
+\begin{itemize}
+  \item \textbf{sg4n\_new}: using the current ($\Delta$) zone labelling.
+        Measures adaptation to the new configuration.
+  \item \textbf{sg4n\_old}: always using $\Delta=0$ (original boundaries).
+        Measures how much of the old structure survives.
+\end{itemize}
+Both can be high simultaneously: the system retains old structure while building new.
+Both near zero indicates failure to maintain any zone differentiation.
+
+\section{Results}
+
+\subsection{Experiment A: Zone Boundary Shift}
+
+\begin{table}[h]
+  \centering
+  \caption{sg4n under new labelling at selected time points.
+           Shift occurs at $T_\mathrm{shift}=1500$; first post-shift checkpoint is $t=1600$.}
+  \label{tab:expa}
+  \small
+  \begin{tabular}{lccccc}
+    \toprule
+    Condition & $t=1400$ & $t=1600$ & $t=2000$ & $t=3000$ & $t=4000$ \\
+              & (pre-shift) & (post) & & & \\
+    \midrule
+    C\_ref  ($\Delta=0$)  & 0.326 & 0.375 & 0.243 & 0.259 & 0.252 \\
+    C\_half ($\Delta=5$)  & 0.326 & 0.162 & 0.182 & 0.284 & \textbf{0.798} \\
+    C\_full ($\Delta=10$) & 0.326 & \textbf{0.415} & 0.236 & 0.161 & 0.194 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:expa} shows markedly different responses across the three conditions.
+
+\paragraph{Cyclic permutation ($\Delta=10$) is immediately transparent.}
+At $t=1600$ (100 steps after the shift), sg4n\_new ($=0.415$) equals sg4n\_old ($=0.415$)
+--- they are identical because sg4 is a mean of \emph{pairwise} distances between zone
+means, and a cyclic permutation of zone indices only permutes the distance matrix rows and
+columns without changing any individual distance.
+The system is already in the correct configuration for the new labelling without any
+adaptation required.
+This extends the alignment-blindness result of Paper~39 to the single-region continual
+learning setting: a consistent relabelling (here a permutation rather than a spatial
+offset) does not constitute a genuine learning challenge.
+
+After the shift, sg4n for C\_full decays along the normal metastability trajectory
+(peak at $t\approx1600$, half-life $\sim800$ steps), suggesting the env change
+(waves now drive the shifted configuration) gradually refocuses structure.
+
+\paragraph{Half-width shift ($\Delta=5$) causes genuine disruption and slow adaptation.}
+At $t=1600$, sg4n\_new drops to $0.162$ from the pre-shift value of $0.326$ --- a 50\%
+reduction.
+The disruption arises because new zones are composites of two old zones:
+new zone~0 = \{cells 0--4 (old zone~0)\} $\cup$ \{cells 35--39 (old zone~3)\}.
+These cells carry fieldM from two different attractor states (suppression- and
+excitation-type).
+Under the new labelling, within-zone variance rises and between-zone distance falls,
+lowering sg4n.
+
+Recovery is slow: sg4n\_new is still rising at $t=4000$ ($=0.798$), far exceeding the
+reference trajectory peak ($0.465$).
+The eventual high value reflects the system successfully learning the new zone
+configuration: waves drive cells at mixed-heritage positions to adopt a unified new zone
+identity, and the copy-forward loop propagates this across the zone through births.
+The long recovery time ($>2500$ steps) is consistent with the commitment-epoch timescale:
+re-differentiation under the new zone map requires a new commitment-epoch cycle starting
+from the disrupted state.
+
+\paragraph{Old structure decays on the metastability timescale.}
+For all shifted conditions, sg4n\_old evolves similarly to the reference (Figure 1b):
+it does not collapse immediately at the shift but decays over $\sim800$--$1600$ steps
+(the half-life from Paper~38).
+The copy-forward loop preserves old zone structure even while new waves drive toward the
+new configuration.
+The old and new structures coexist transiently.
+
+\subsection{Experiment B: Interleaved Switching Without Prior Commitment}
+
+Alternating between task~A ($\Delta=0$) and task~B ($\Delta=5$) every 500 steps from $t=0$
+produces a systematic asymmetry:
+task~A converges to a higher steady-state sg4n ($\approx 0.48$) than task~B ($\approx
+0.30$), a ratio of 1.61.
+
+The asymmetry arises from task ordering: task~A is always the first task in each 500-step
+period.
+The first 500 steps (task~A only) establishes structure from a cold start.
+When task~B first appears at $t=500$, it must build structure against the already-formed
+task~A fieldM, which the copy-forward loop partially perpetuates across each switch.
+The structural head-start of task~A is never fully overcome.
+
+\subsection{Experiment C: Post-Commitment Interleaved Switching}
+
+Task~A is run alone for 2000 steps (commitment phase, sg4n\_A peak $=0.453$), then
+interleaving begins.
+
+The result is convergence: by $T=5000$, sg4n\_A $= 0.294$ and sg4n\_B $= 0.269$,
+a ratio of $1.09$.
+Prior commitment to task~A provides only a transient advantage.
+The committed attractor for task~A is eroded by the periodic task~B episodes
+(erosion of $\approx35\%$ over the interleaving period), while task~B builds from zero
+to nearly the same level.
+The system settles into a steady state where both tasks coexist at roughly equal strength.
+
+This convergence implies that the VCML attractor is not an absorbing state.
+The committed structure from $t^*\approx2000$ provides resistance proportional to the
+metastability half-life ($\sim800$ steps) but is eventually overwritten by the
+interleaved input.
+The system does not exhibit catastrophic forgetting of task~A, but it does exhibit
+\emph{gradual forgetting} at a rate determined by the turnover and field decay dynamics.
+
+\section{Discussion}
+
+\subsection{The Three Modes of Zone-Shift Response}
+
+Zone boundary shifts reveal three qualitatively distinct behaviours:
+
+\textbf{Consistent permutation} ($\Delta = k \cdot z_w$, integer $k$): no learning
+challenge.
+sg4 is permutation-invariant; the old structure is immediately readable under the new
+labelling.
+This is not a continual learning scenario but a relabelling scenario.
+
+\textbf{Partial overlap} ($0 < \Delta < z_w$): genuine learning challenge.
+The old and new configurations are incompatible: some cells must switch zone identity.
+Recovery requires a full re-commitment cycle ($>2000$ steps).
+The copy-forward loop contributes to both the disruption (propagating old fieldM across
+new zone boundaries) and the recovery (propagating new zone identity through births).
+
+\textbf{No shift}: the metastability trajectory (Paper~38) is the baseline.
+Structure peaks near $t^*$ and decays with half-life $\sim800$ steps.
+
+\subsection{Committed Structure Is Not Rigid}
+
+Paper~38 established a bimodal attractor with $P_\mathrm{high}(\mathrm{geo}) = 0.50$ and
+$G_\mathrm{basin} = 1.88$.
+The current experiments show that once in the high-structure basin, the system is not
+permanently trapped there.
+Two-task interleaving with a 500-step period drives the system out of the task~A basin
+and toward a mixed steady state, at a rate determined by the period length relative to the
+metastability half-life.
+
+This has direct implications for biological plasticity.
+In the hippocampal dentate gyrus, mandatory neurogenesis (turnover) prevents crystallisation
+of zone boundaries, maintaining adaptability at the cost of gradual forgetting.
+The 500-step interleaving period here corresponds to a biological learning schedule
+where the input environment alternates faster than the metastability half-life.
+When the switching period exceeds the half-life, old structure survives; when it falls
+below, the system tracks the current input.
+
+\subsection{Task-Ordering Asymmetry and the First-Mover Advantage}
+
+Experiment~B reveals a first-mover advantage: the task presented first in each interleaving
+cycle maintains higher sg4n.
+This asymmetry is structural, not parametric --- both tasks use identical wave parameters
+and the same FA.
+The advantage arises because the copy-forward loop propagates task~A fieldM during the
+500-step task~A phase, which the 500-step task~B phase must partially overwrite.
+If the periods were equal and the system were linear, the advantage would cancel.
+The asymmetry implies that the copy-forward loop introduces a non-linearity:
+established fieldM resists overwriting more than empty fieldM resists writing.
+
+\section{Conclusion}
+
+Three conclusions close the continual learning thread opened in Paper~38:
+
+\begin{enumerate}
+  \item \textbf{Permutation-invariance prevents detection of relabelling.}
+        A cyclic zone shift ($\Delta = z_w$) is immediately transparent.
+        What Paper~38 called ``polarity blindness'' generalises:
+        any \emph{consistent relabelling} of zones leaves sg4 unchanged.
+        The genuine learning challenge requires \emph{spatial reassignment with overlap}.
+
+  \item \textbf{Partial overlap causes disruption with slow recovery.}
+        A half-width shift ($\Delta = z_w/2$) drops sg4n\_new by 50\% at the shift,
+        then requires $>2500$ steps to recover --- comparable to the initial
+        commitment timescale.
+        Old structure and new structure coexist during this recovery period.
+
+  \item \textbf{Prior commitment provides no permanent advantage under interleaving.}
+        Two tasks converge to equal steady-state sg4n when the interleaving period
+        ($500$ steps) is shorter than the commitment epoch ($\sim2000$ steps).
+        The system exhibits gradual, not catastrophic, forgetting;
+        the decay rate is set by the metastability half-life ($\sim800$ steps).
+\end{enumerate}
+
+\end{document}

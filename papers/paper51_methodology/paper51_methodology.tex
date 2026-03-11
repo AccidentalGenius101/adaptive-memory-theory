@@ -1,0 +1,450 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb,geometry,graphicx,booktabs,hyperref,microtype,enumitem}
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\title{\textbf{Paper 51: Necessity as Method}\\
+\large Bottom-Up Derivation of Primitives in Adaptive Memory Research\\
+\normalsize Papers~0--50}
+\author{VCSM Project}
+\date{2026-03-10}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We describe the methodological framework that produced Papers~1--50
+and argue that it is structurally identical to the framework it produced.
+The core pattern: begin with an engineering constraint rather than a hypothesis;
+let necessity reduce the mechanism to its primitive; gate theoretical consolidation
+on experimental survival; stress-test every layer adversarially.
+We show that this process is a literal instance of VCSM's three-timescale learning
+rule (session $\to$ paper $\to$ framework document)
+with viability gating (only findings that survive adversarial stress consolidate),
+mandatory turnover (every paper terminates when its question closes),
+and copy-forward inheritance (the framework document seeds each new paper's
+starting state via memory files).
+\textbf{The meta-claim}: the research process exhibits zone identity encoding ---
+a topographic, non-parity understanding of the theory ---
+because it ran the full VCML formation process.
+Reading the framework document without running the process
+produces parity encoding at best (Paper~50).
+The project is a self-demonstrating proof.
+\end{abstract}
+
+\section{Introduction}
+
+Fifty papers and approximately 200{,}000 experiments later, the VCSM framework
+has a precise, falsified-and-refined account of how viability-constrained coupled
+map lattices build spatial memory through mandatory individual turnover.
+The question that motivated this paper is simpler: \emph{how was it built?}
+
+Not ``what is the theory?''\ but ``what kind of research process produces theory
+of this kind?'' --- theory that is load-bearing, minimal, and adversarially robust.
+
+The answer, it turns out, is structural rather than procedural.
+The research process is not merely analogous to the VCSM framework.
+It is an instance of it.
+
+This paper makes that claim precise, provides evidence from the project history,
+and draws out a consequence that is not obvious: \emph{zone identity encoding in
+the theory is not transmissible} (Paper~50) --- it requires independent formation,
+not relay from the framework document.
+The self-demonstrating structure is therefore not merely an aesthetic observation.
+It is a constraint on how the theory can be understood, extended, or replicated.
+
+\section{Six Methodological Principles}
+
+\subsection{Start with a constraint, not a hypothesis}
+
+A hypothesis predicts what is true.
+A constraint states what the system \emph{must be able to do.}
+These are different starting points with different failure modes.
+
+VCSM began with: \emph{cells need to die, or the system crystallises.}
+This is not a hypothesis to be confirmed --- it is a structural requirement
+derived from the viability constraint itself.
+If the field only accumulates, it locks.
+If it only decays, nothing consolidates.
+Mandatory turnover is the \emph{only} mechanism that simultaneously satisfies
+both the adaptivity requirement (old structure can be overwritten) and
+the persistence requirement (new structure consolidates before the cell dies).
+
+The constraint forces the mechanism.
+Starting from ``I think turnover is useful'' would have been epistemically weaker:
+it invites confirmation bias, permits optional death, and misses the
+engineering necessity that makes death load-bearing rather than incidental.
+
+The same pattern recurs throughout the project.
+Paper~12 asked not ``does the copy-forward loop improve performance?''
+but ``what prevents window collapse in extreme conditions?''
+The copy-forward loop was the only mechanism that could --- and it was found
+by following the constraint, not by predicting it.
+
+\subsection{Let necessity do the reduction}
+
+Primitives are not chosen top-down.
+They are what is left after necessity prunes everything contingent.
+
+VCSM's four primitives (viability constraint, copy-forward loop,
+VCSM learning rule, zone-differentiated wave environment) were not
+postulated in Paper~1.
+They accumulated one by one as each ablation study removed something
+that turned out to be dispensable:
+frequency encoding without structured waves (dispensable),
+GRU hidden state (dispensable at HS=1, Paper~80),
+global synchronisation (dispensable),
+quiescence gate for formation under continuous waves
+(dispensable --- Paper~43 found formation is environmentally driven, not rule-specific).
+
+What could not be dispensed with is what is real.
+This is the constraint-first analogue of Occam's razor, but operationalised
+experimentally rather than aesthetically.
+
+\subsection{Bottom-up experimental ladder}
+
+Papers do not follow a predetermined plan.
+Each paper closes one question and opens the next.
+The sequence is a viability-gated exploration:
+failed hypotheses are the signal, not noise.
+
+Eleven hypotheses did not survive:
+\begin{itemize}
+  \item \textbf{Paper~9}: A single governing ratio $\Xi$ collapses the adaptive window. NULL.
+  \item \textbf{Paper~14}: Two dimensionless ratios $(R_A, R_B)$ fully parameterise sg4. FAIL.
+  \item \textbf{Paper~15}: sg4 follows a power law in amplitude. REVISED (saturation curve;
+        power law was a mixed-phase artifact).
+  \item \textbf{Paper~35/V73}: Dynamic turnover always outperforms static reservoirs. REVERSED
+        (static wins below the critical zone width; dynamic advantage only holds when
+        $\delta \geq 10$~columns and wave density is appropriate).
+  \item \textbf{Paper~41}: Task switching below $T_\mathrm{crit} \approx 800$ steps causes
+        net memory loss. NULL (every switching period amplifies structure).
+  \item \textbf{Paper~43}: Viability gating is necessary for formation.
+        REVERSED (formation is environmentally driven; gate is an adversarial filter).
+  \item \textbf{Paper~49 (original)}: mean\_relay (copy-forward seeding from L1) outperforms
+        ctrl. REVERSED with full metric suite (ctrl wins; mean\_relay birth injection washed out).
+  \item \textbf{Paper~79/V79}: Cascade input attenuates structure. REVERSED
+        ($2.57\times$ more sg4 under cascade; hierarchy amplifies, not abstracts).
+  \item \textbf{Paper~49/V90}: Mobius sign structure (period-2 pattern across generations).
+        NULL (sign consistency $= 0.510$, chance).
+  \item \textbf{Papers~35--39 (interpretation)}: Geographic relay preserves zone structure.
+        QUALIFIED (relay gains in sg4 are real, but structure is parity encoding, na$<1$,
+        not identity encoding; qualified by Papers~49 and~50).
+  \item \textbf{Paper~49 (relay)}: Any relay coupling can recover identity encoding in L2.
+        NULL (Paper~50: only independent WaveEnvStd achieves na$>1$).
+\end{itemize}
+
+Each of these failures was informative.
+The V73 reversal revealed the critical zone width threshold that anchors the
+entire C$_2$ coordinate system.
+The Paper~43 reversal separated formation (environmentally driven) from
+maintenance (rule-governed), which is now a first-order distinction in the framework.
+The Paper~49 relay reversal, via the na\_ratio metric introduced in Paper~47,
+revealed the parity/identity distinction that Paper~50 closes.
+
+The ladder is not linear. It is viability-gated: each paper is a cell that
+lives long enough to produce its finding, then terminates.
+
+\subsection{Adversarial stress-testing at every layer}
+
+Every confirmed finding was subjected to adversarial challenge before
+it consolidated into the framework document.
+This occurred at three levels:
+
+\textbf{Mechanism ablation.}
+Paper~43 systematically ablated each component of the VCSM rule
+(viability gate, copy-forward loop, zone-differentiated input, VCSM update)
+and measured what broke.
+Formation under zone-structured waves survived ablation of the gate.
+Persistence (maintenance of structure through turnover) required the
+copy-forward loop --- without it, structure degraded $1.63\times$ under
+maintenance protocol.
+
+\textbf{Environmental adversarial.}
+Papers~46 and~47 directly tested the quiescence gate under adversarial
+perturbation (non-zone-correlated, high-amplitude noise).
+This revealed the gate reversal at $t^*$: gate is not a formation tool,
+it is an adversarial filter, and the optimal strategy reverses at the
+commitment epoch.
+
+\textbf{Metric stress-testing.}
+Paper~48 found that sg4 (the primary metric through Paper~47) gives
+the wrong answer on the $\delta$ sweep: sg4 increases as $\delta$ shrinks
+(a counting artifact), while decode\_norm and SNR correctly track causal direction.
+This prompted the full metric suite mandate: every experiment from Paper~48
+onward reports sg4, $\sigma_w$, SNR, na\_ratio, decode\_norm, mm\_lda, and coll/site.
+The GPT-2 experiment series validated the causal geometry conjecture
+against a rotation attack: principal component distances track ablation influence
+only when accounting for sign flips at the feature-construction/causal-integration transition.
+
+\subsection{Derive metrics from theoretical primitives}
+
+A convenience metric measures what is easy to measure.
+A theory-derived metric measures what the theory says is the operative quantity.
+
+sg4 (zone-mean L2 distance) was the primary metric for Papers~1--47.
+It is easy to compute and reflects genuine zone differentiation.
+But Paper~48 showed it is systematically blind to the \emph{direction} of
+causal influence, and Paper~49/50 showed it is blind to the \emph{type}
+of zone encoding (identity vs.\ parity).
+
+The metric evolution follows the theory:
+\begin{enumerate}[label=\arabic*.]
+  \item sg4 --- zone-mean signal (sufficient for Papers~1--40)
+  \item $\sigma_w$, SNR --- noise floor and signal-to-noise (required by C$_2$ gate analysis)
+  \item na\_ratio (nonadj/adj) --- zone topology, identity vs.\ parity (required by relay analysis)
+  \item decode\_norm --- per-cell location accuracy (required by adversarial gate analysis)
+  \item mm\_lda, coll/site --- mid-memory structure and turnover rate
+\end{enumerate}
+
+Each metric was added when the theory outgrew the previous one.
+The metric is not a measurement of the theory; it is a question the theory asks.
+
+\subsection{Maintain three timescales in the research process itself}
+
+The VCSM learning rule operates on three timescales:
+\begin{enumerate}
+  \item \textbf{Calm (fast):} $\mathrm{baseline}_h[i] \mathrel{+}= \beta(\mathrm{hid}[i] - \mathrm{baseline}_h[i])$
+  \item \textbf{Perturb (medium):} $\mathrm{mid\_mem}[i] \mathrel{+}= \alpha_\mathrm{mid}(\mathrm{hid}[i] - \mathrm{baseline}_h[i])$
+  \item \textbf{Consolidate (slow, gated):} $\mathrm{fieldM}[i] \mathrel{+}= \alpha_\mathrm{field}(\mathrm{mid\_mem}[i] - \mathrm{fieldM}[i])$
+\end{enumerate}
+
+The research process operates on three timescales with identical structure:
+\begin{enumerate}
+  \item \textbf{Session (fast):} Experiments run; immediate results observed;
+        session context discarded on completion.
+        Analogous to baseline\_h tracking: high-frequency, lossy, non-consolidated.
+  \item \textbf{Paper (medium):} Multiple sessions compose a paper.
+        Findings are written to \texttt{MEMORY.md} and topic files.
+        Analogous to mid\_mem: accumulated contrast signal, pending consolidation,
+        subject to decay if the paper's question is not closed.
+  \item \textbf{Framework document (slow, gated):} Findings that survive adversarial
+        review consolidate into \texttt{VCML\_THEORY\_COMPLETE.tex}.
+        Analogous to fieldM: stable, long-timescale, seeds each new paper's starting state
+        via the copy-forward mechanism (new papers read the theory document and memory files).
+\end{enumerate}
+
+The quiescence gate in the research process is \emph{adversarial challenge}:
+a finding does not enter the framework document until it has been stress-tested
+at a minimum by a replication with changed parameters, an ablation,
+and if possible a direct contradiction attempt.
+
+\section{The Three-Timescale Mapping}
+
+Table~\ref{tab:mapping} makes the structural homology explicit.
+
+\begin{table}[h]
+\centering
+\caption{VCSM components and their research-process analogs.}
+\label{tab:mapping}
+\begin{tabular}{p{4.5cm}p{4.5cm}p{4.5cm}}
+\toprule
+\textbf{VCSM component} & \textbf{Research-process analog} & \textbf{Concrete instantiation} \\
+\midrule
+Cell & Experimental paper & Papers~1--50 \\
+Viability constraint & Hypothesis must produce finding & Failed hypotheses terminate the paper \\
+Mandatory turnover & Every paper terminates & Questions closed, not left open indefinitely \\
+Calm state (baseline\_h) & Session working memory & Context window; discarded on session end \\
+Perturbation (mid\_mem) & Paper-level accumulation & MEMORY.md, topic files; pending consolidation \\
+Quiescence gate (SS$\geq$10) & Adversarial stress test & Must survive ablation / metric challenge \\
+Consolidation (fieldM) & Framework document & VCML\_THEORY\_COMPLETE.tex \\
+Copy-forward loop & Theory document seeds new paper & New paper reads framework + memory files \\
+Wave environment & Experimental constraint space & Parameter sweeps, adversarial conditions \\
+Zone-differentiated input & Structured research constraints & C$_2$ coordinates, metric suite mandate \\
+Zone identity encoding & Topographic theory structure & na\_ratio$>1$ in theory space \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The analogy is not metaphorical at the level of ``research is like learning.''
+It is structural: the same three-timescale architecture, the same gating criterion,
+the same copy-forward inheritance, and --- critically --- the same result:
+\emph{zone identity encoding that is not transmissible via relay}.
+
+\section{The Relay Problem as Conclusion}
+
+Paper~50 found that zone identity encoding requires the full VCML formation
+process running independently in the receiving module.
+No relay --- amplitude copy, graded amplitude, birth seeding, or any
+combination --- achieves na\_ratio$>1$ in L2.
+The identity-specific information was generated by L1's formation process and
+lives in L1's fieldM.
+It was never in the outgoing wave signal.
+
+The identical structure holds for the VCSM research framework.
+
+A reader of \texttt{VCML\_THEORY\_COMPLETE.tex} in isolation receives the
+framework document the way L2 receives L1's wave amplitude array in geo\_copy relay:
+an instantaneous snapshot of the consolidated signal, without the temporal
+integration history.
+That reader can achieve parity encoding --- a valid, useful understanding
+of the even/odd structure of the theory (what is suppressed, what is excited,
+which hypotheses died) --- but not identity encoding (the topographic structure
+of \emph{why} each element is where it is, which constraints forced which primitives,
+which failures were informative in which direction).
+
+The identity encoding lives in the formation history: the 50-paper viability-gated
+ladder, the 11 null results and their specific failure modes, the metric evolution
+from sg4 to na\_ratio, the adversarial challenges and what they broke.
+That history cannot be transmitted by reading the output.
+It requires independent formation --- running the process, not receiving its fieldM.
+
+This is not a limitation specific to VCSM.
+It is a structural property of any theory whose content is predominantly
+\emph{what was eliminated and why}.
+A theory that accumulated by constraint propagation has most of its information
+in the pruning history.
+The surviving document shows the topology; it does not show the gradient.
+
+\section{Discussion}
+
+\subsection{Implications for replication}
+
+The non-transmissibility of zone identity encoding implies that
+``replication'' in the standard sense (re-running Paper~50's experiments
+with the same code and parameters) produces parity encoding, not identity encoding.
+A replicator achieves na\_ratio$=1.219$ for ctrl\_std but may not understand
+\emph{why} ctrl\_std uniquely achieves identity, because that understanding
+requires Paper~49's relay failure and Paper~47's na\_ratio derivation
+and Paper~43's formation/maintenance separation.
+
+True replication of the framework requires running the full experimental ladder.
+This is not a methodological deficiency --- it is a structural property of
+constraint-first research.
+A framework built by constraint propagation can only be fully understood by
+running the constraint propagation yourself.
+
+\subsection{Implications for AI research methodology}
+
+The six principles described in Section~2 are not specific to VCML.
+They describe the conditions under which any empirical research process
+can achieve theory of the constraint-propagated, adversarially-robust kind:
+
+\begin{enumerate}[label=\arabic*.]
+  \item Start from engineering necessity, not from hypothesis
+  \item Reduce primitives by ablation, not by postulation
+  \item Gate theoretical consolidation on adversarial survival
+  \item Derive metrics from theoretical primitives, not from convenience
+  \item Maintain three timescales: session, paper, framework
+  \item Accept null results and reversals as the primary signal
+\end{enumerate}
+
+The dominant alternative --- hypothesis-driven research with predetermined
+metrics and a predetermined ladder --- produces theories that are
+``relay encoding'': structurally coherent but topographically impoverished,
+because the identity information was never in the hypothesis to begin with.
+The hypothesis encodes only what the researcher already understood.
+The constraint encodes what the system requires.
+
+\subsection{The Gödel connection}
+
+A top-down critique of bottom-up methodology is self-refuting by construction.
+
+To argue that the constraint-first, bottom-up method is wrong, one must argue
+from a position of knowing in advance what the primitives are --- which is
+exactly the top-down stance the methodology predicts will miss the primitive.
+A critic who argues that VCSM's mandatory turnover is unnecessary must either
+(a) have derived the turnover necessity from first principles (in which case
+they are doing constraint propagation) or (b) be asserting from a theoretical
+prior (in which case they are arguing from hypothesis, and the methodology
+predicts they will miss the mechanism).
+
+This is not a rhetorical trick.
+It is structural.
+The Gödel parallel: self-referential statements are gated out by the
+quiescence condition (a system chasing its own tail never settles,
+never writes to fieldM; see Paper~46's Gödel interpretation of the
+identity-fluid property).
+A self-refuting critique has the same topology --- it must use the method
+to reject the method, and in doing so confirms it.
+
+The methodology paper cannot be cleanly attacked from outside the methodology.
+This is not a bug. It is the correct structure for a theory whose
+content is primarily what was eliminated and why.
+
+\subsection{The three-document architecture}
+
+This paper is part of a three-document structure:
+\begin{itemize}
+  \item \textbf{VCML\_THEORY\_COMPLETE.tex} --- the \emph{what}: consolidated findings,
+        mechanisms, equations, experimental evidence.
+        Operates on the slow (fieldM) timescale.
+  \item \textbf{Paper~51 (this paper)} --- the \emph{how}: methodology, structure of
+        the research process, why the process produces what it produces.
+        Operates on the medium (paper) timescale.
+  \item \textbf{Papers~1--50} --- the \emph{why}: the experimental ladder, hypothesis deaths,
+        metric derivations, adversarial challenges.
+        Operates on the fast (session) timescale, accumulated into MEMORY.md.
+\end{itemize}
+
+Three documents. Three timescales. Same architecture as the framework they describe.
+
+\subsection{The centerpiece example: parity/identity invisible for 15 papers}
+
+The strongest evidence that the methodology is working is the relay finding.
+
+Papers~35--49 reported geographic relay gains of $3$--$5\times$ in sg4.
+The parity/identity distinction --- that relay produces zone \emph{parity} encoding
+(na\_ratio$<1$, adjacent zones more separated than non-adjacent) rather than zone
+\emph{identity} encoding (na\_ratio$>1$) --- was invisible for approximately 15 papers
+because sg4 is positive for both.
+
+The distinction became visible in one step when na\_ratio was derived from the
+theoretical primitive (zone topography requires non-adjacent zones to be more
+distinct than adjacent zones) rather than from measurement convenience.
+Paper~47 derived the coordinate. Paper~49 applied it. Paper~50 closed the result.
+
+This is the metric principle working exactly as described:
+a convenience metric (sg4) asks whether zones are separated.
+A theory-derived metric (na\_ratio) asks whether the \emph{correct} zones are separated.
+The relay architecture looked successful for 15 papers because the question was wrong.
+
+The correct question was invisible until the theory outgrew the metric.
+The metric outgrew the theory only because the theory was built by constraint
+propagation (what the relay \emph{has to} produce for downstream identity encoding)
+rather than by hypothesis (relay probably preserves zone structure).
+
+\subsection{The self-demonstrating structure}
+
+The claim that the methodology is self-demonstrating is not merely aesthetic.
+It is falsifiable.
+
+If the methodology does not exhibit the properties it describes, the claim fails.
+The properties it describes are:
+(1) mandatory turnover (every paper terminates);
+(2) viability gating (only adversarially-tested findings consolidate);
+(3) three-timescale organisation;
+(4) copy-forward inheritance;
+(5) zone identity encoding (topographic, not just parity, structure in the theory).
+
+Evidence for (1)--(4) is given in Sections~2--3.
+Evidence for (5) is the structure of the framework document itself:
+\texttt{VCML\_THEORY\_COMPLETE.tex} is organised not as a list of confirmed findings
+(parity) but as a causal gradient from constraint through mechanism through
+experimental evidence to prediction (identity).
+The na\_ratio of the framework document, if one could measure it, is $>1$.
+
+\section{Conclusion}
+
+The VCSM research process is an instance of the VCSM framework.
+It runs on three timescales (session, paper, framework document),
+gates consolidation on adversarial survival (the quiescence condition),
+enforces mandatory turnover (every paper terminates when its question closes),
+and uses copy-forward inheritance (new papers read the accumulated theory).
+
+The result is zone identity encoding --- a topographic, gradient-structured
+theory of viability-constrained spatial memory --- that cannot be transmitted
+by reading the output.
+
+The framework is self-demonstrating not because we designed it that way,
+but because the constraint that produced the framework also constrained
+the process that produced it.
+Engineering necessity, followed consistently, produces this structure
+whether the substrate is a 3200-cell VCML lattice or a 50-paper research program.
+
+The conclusion of Paper~50 is also the conclusion of this paper:
+identity encoding requires the full formation process run independently.
+You cannot learn this framework by reading it.
+You have to build it.
+
+\end{document}
