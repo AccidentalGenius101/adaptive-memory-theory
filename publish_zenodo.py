@@ -204,11 +204,19 @@ def find_paper_pdf(paper_num: int) -> tuple[Path | None, Path | None]:
         # match paper76_*, paper076_*, paper76gamma*, etc.
         m = re.match(r'paper0*(\d+)', stem)
         if m and int(m.group(1)) == paper_num:
-            # find PDF
+            # find PDF -- prefer the main paper PDF over figure PDFs
             pdfs = list(d.glob('*.pdf')) + list((d / 'results').glob('*.pdf') if (d / 'results').exists() else [])
             texs = list(d.glob('*.tex'))
-            pdf  = pdfs[0] if pdfs else None
             tex  = texs[0] if texs else None
+            # Sort: PDFs whose name matches the directory stem come first,
+            # then any PDF without 'figure' in the name, then figures last.
+            def _pdf_rank(p):
+                n = p.stem.lower()
+                if n == stem.lower():          return 0   # exact match
+                if 'figure' not in n:          return 1   # paper PDF, not figure
+                return 2                                   # figure PDF
+            pdfs_sorted = sorted(pdfs, key=_pdf_rank)
+            pdf = pdfs_sorted[0] if pdfs_sorted else None
             return pdf, tex
     return None, None
 
