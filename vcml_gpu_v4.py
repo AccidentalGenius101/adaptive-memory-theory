@@ -38,28 +38,25 @@ def _find_msvc_bin():
             return str(cl.parent)
     return None
 
-def _find_cuda_include():
-    """Return extra CUDA include paths needed when system CUDA headers are missing.
-    Checks pip-installed nvidia-cuda-runtime-cu12 package as fallback."""
+def _find_cuda_includes():
+    """Return list of extra CUDA include paths from pip-installed nvidia-* packages.
+    Used as fallback when the system CUDA toolkit has incomplete headers."""
     import sys, glob
-    for pattern in [
-        str(Path(sys.prefix) / 'Lib/site-packages/nvidia/cuda_runtime/include'),
-        str(Path(sys.prefix) / 'lib/python*/site-packages/nvidia/cuda_runtime/include'),
-    ]:
-        for p in glob.glob(pattern):
-            if Path(p, 'cuda_runtime.h').exists():
-                return p
-    return None
+    nvidia_base = Path(sys.prefix) / 'Lib' / 'site-packages' / 'nvidia'
+    if not nvidia_base.exists():
+        nvidia_base = Path(sys.prefix) / 'lib' / 'site-packages' / 'nvidia'
+    paths = []
+    for pkg_inc in sorted(nvidia_base.glob('*/include')):
+        if pkg_inc.is_dir():
+            paths.append(str(pkg_inc))
+    return paths
 
 def _load_ext():
     os.makedirs(_BUILD, exist_ok=True)
     msvc = _find_msvc_bin()
     if msvc:
         os.environ['PATH'] = msvc + os.pathsep + os.environ.get('PATH', '')
-    extra_inc = []
-    cuda_inc = _find_cuda_include()
-    if cuda_inc:
-        extra_inc = [f'-I{cuda_inc}']
+    extra_inc = [f'-I{p}' for p in _find_cuda_includes()]
     # sm_86 = RTX 3060/3080/3090; change to sm_89 for RTX 40-series
     return cpp_ext.load(
         name='vcml_cuda_ext',
