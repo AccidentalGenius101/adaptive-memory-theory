@@ -23,8 +23,26 @@ _CU_DIR  = Path(__file__).parent / 'vcml_cuda'
 _CU_SRC  = str(_CU_DIR / 'vcml_step.cu')
 _BUILD   = str(_CU_DIR / '_build')
 
+def _find_msvc_bin():
+    """Return the x64 MSVC bin dir if cl.exe is not already in PATH."""
+    import shutil
+    if shutil.which('cl'):
+        return None
+    for vs_root in [r'C:\Program Files\Microsoft Visual Studio',
+                    r'C:\Program Files (x86)\Microsoft Visual Studio']:
+        vs_path = Path(vs_root)
+        if not vs_path.exists():
+            continue
+        for cl in sorted(vs_path.glob('*/*/VC/Tools/MSVC/*/bin/Hostx64/x64/cl.exe'),
+                         reverse=True):
+            return str(cl.parent)
+    return None
+
 def _load_ext():
     os.makedirs(_BUILD, exist_ok=True)
+    msvc = _find_msvc_bin()
+    if msvc:
+        os.environ['PATH'] = msvc + os.pathsep + os.environ.get('PATH', '')
     # sm_86 = RTX 3060/3080/3090; change to sm_89 for RTX 40-series
     return cpp_ext.load(
         name='vcml_cuda_ext',
@@ -157,7 +175,7 @@ def _run_one(ext, L: int, P_causal: float, seed: int, nsteps: int,
             M_accum, dev_sum, dev_sq, dev_std,
             cell_rng, wave_rng_t,
             nb4, cb0, cb1, col_g, row_g, z0f,
-            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0)
+            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0, h_field)
     torch.cuda.synchronize()
 
     # ── CUDA graph capture ────────────────────────────────────────────
@@ -171,7 +189,7 @@ def _run_one(ext, L: int, P_causal: float, seed: int, nsteps: int,
             M_accum, dev_sum, dev_sq, dev_std,
             cell_rng, wave_rng_t,
             nb4, cb0, cb1, col_g, row_g, z0f,
-            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0)
+            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0, h_field)
         M_out_buf.copy_(M_out)
 
     # ── measurement run ───────────────────────────────────────────────
@@ -205,7 +223,8 @@ def _run_one(ext, L: int, P_causal: float, seed: int, nsteps: int,
 
 # ── batched runner (multiple seeds × same P, B in parallel) ───────────
 def _run_batch(ext, L: int, P_causal: float, seed_list: list[int],
-               nsteps: int, r_w: int, device: torch.device, geom) -> list[dict]:
+               nsteps: int, r_w: int, device: torch.device, geom,
+               h_field: float = 0.0) -> list[dict]:
     """Run all seeds for one P_causal value, B seeds batched in one graph."""
     N    = L * L
     B    = len(seed_list)
@@ -257,7 +276,7 @@ def _run_batch(ext, L: int, P_causal: float, seed_list: list[int],
             M_accum, dev_sum, dev_sq, dev_std,
             cell_rng, wave_rng_t,
             nb4, cb0, cb1, col_g, row_g, z0f,
-            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0)
+            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0, h_field)
     torch.cuda.synchronize()
 
     # graph capture
@@ -270,7 +289,7 @@ def _run_batch(ext, L: int, P_causal: float, seed_list: list[int],
             M_accum, dev_sum, dev_sq, dev_std,
             cell_rng, wave_rng_t,
             nb4, cb0, cb1, col_g, row_g, z0f,
-            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0)
+            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0, h_field)
         M_out_buf.copy_(M_out)
 
     # measurement
@@ -307,7 +326,8 @@ def _run_batch(ext, L: int, P_causal: float, seed_list: list[int],
 
 # ── public API ────────────────────────────────────────────────────────
 def run_batch_gpu_v4(L: int, P_causal_list: list[float], seed_list: list[int],
-                     nsteps: int, r_w: int = 5, device_str: str = 'cuda') -> list[dict]:
+                     nsteps: int, r_w: int = 5, device_str: str = 'cuda',
+                     h_field: float = 0.0) -> list[dict]:
     """
     Drop-in replacement for run_batch_gpu_v3.
 
@@ -332,7 +352,7 @@ def run_batch_gpu_v4(L: int, P_causal_list: list[float], seed_list: list[int],
     all_results = []
     for P in P_causal_list:
         t0 = time.time()
-        batch = _run_batch(ext, L, P, seed_list, nsteps, r_w, device, geom)
+        batch = _run_batch(ext, L, P, seed_list, nsteps, r_w, device, geom, h_field)
         dt    = time.time() - t0
         rate  = nsteps * len(seed_list) / dt / 1000
         print(f'  [v4] L={L} P={P:.4f} {len(seed_list)} seeds {nsteps}steps  '
@@ -342,7 +362,7 @@ def run_batch_gpu_v4(L: int, P_causal_list: list[float], seed_list: list[int],
     return all_results
 
 # ── benchmark ─────────────────────────────────────────────────────────
-def benchmark(L: int = 80, B: int = 8, nsteps: int = 10_000):
+def benchmark(L: int = 80, B: int = 8, nsteps: int = 10_000, h_field: float = 0.0):
     """Quick benchmark: steps/min and seed-steps/min."""
     ext    = _get_ext()
     device = torch.device('cuda')
@@ -385,7 +405,7 @@ def benchmark(L: int = 80, B: int = 8, nsteps: int = 10_000):
                             M_accum, dev_sum, dev_sq, dev_std,
                             cell_rng, wave_rng_t,
                             nb4, cb0, cb1, col_g, row_g, z0f,
-                            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0)
+                            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0, h_field)
     torch.cuda.synchronize()
 
     g         = torch.cuda.CUDAGraph()
@@ -396,7 +416,7 @@ def benchmark(L: int = 80, B: int = 8, nsteps: int = 10_000):
                             M_accum, dev_sum, dev_sq, dev_std,
                             cell_rng, wave_rng_t,
                             nb4, cb0, cb1, col_g, row_g, z0f,
-                            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0)
+                            P_ten, wp, r_w, L, B, N, n_cb0, n_cb1, n_z0, h_field)
         M_out_buf.copy_(M_out)
 
     torch.cuda.synchronize()

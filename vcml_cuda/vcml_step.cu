@@ -1,9 +1,17 @@
 /*
  * vcml_step.cu  --  Pure CUDA C implementation of one VCML time-step
  *
- * Architecture: 13 kernel types, 23 launches per step, all captured as one
- * CUDA graph.  cuRAND device API for ALL random numbers (no host RNG).
+ * Architecture: 12 kernel types, 25 launches per step (down from 33),
+ * all captured as one CUDA graph.  cuRAND device API for ALL random numbers.
  * Exposed via pybind11: vcml_full_step() + init_rng_states()
+ *
+ * Kernel boundary merges vs original:
+ *   - k_zero_accum + k_gen_wave  → k_init_step          (-1 boundary)
+ *   - k_zero_h_ext inside wave loop removed (k_compute_h_ext is self-zeroing)
+ *                                                        (-5 boundaries)
+ *   - k_flip_wave_z + k_zero_h_ext + k_finalize_M
+ *                                  → k_step_cleanup      (-2 boundaries)
+ *   Total: 33 → 25 launches per step (~24% fewer inter-kernel gaps)
  *
  * Tested on RTX 3060 (sm_86). Compile with:
  *   -O3 --use_fast_math -arch=sm_86 -lcurand
@@ -69,47 +77,7 @@ __global__ void k_init_wave_rng(curandState* states, u64 base_seed, i32 B)
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   KERNEL 3: k_zero_accum
-   Zero per-batch accumulators before each step.
-   ═══════════════════════════════════════════════════════════════════════ */
-__global__ void k_zero_accum(f32* M_accum, f32* dev_sum, f32* dev_sq, i32 B)
-{
-    i32 bid = blockIdx.x * blockDim.x + threadIdx.x;
-    if (bid >= B) return;
-    M_accum[bid] = 0.f;
-    dev_sum[bid]  = 0.f;
-    dev_sq[bid]   = 0.f;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   KERNEL 4: k_gen_wave
-   Generate one wave per batch seed:
-     fires[b]  = 1 if wave fires this step (prob = wp)
-     cx_z0[b]  = wave centre x in zone-0 half
-     cx_z1[b]  = wave centre x in zone-1 half
-     cy[b]     = wave centre y
-   ═══════════════════════════════════════════════════════════════════════ */
-__global__ void k_gen_wave(curandState* wave_rng,
-                            i8* fires, i32* cx_z0, i32* cx_z1, i32* cy,
-                            f32 wp, i32 L, i32 B)
-{
-    i32 bid = blockIdx.x * blockDim.x + threadIdx.x;
-    if (bid >= B) return;
-    curandState* st = &wave_rng[bid];
-
-    fires[bid] = (curand_uniform(st) < wp) ? 1 : 0;
-    if (fires[bid]) {
-        i32 half = L / 2;
-        cx_z0[bid] = (i32)(curand_uniform(st) * half) % half;
-        cx_z1[bid] = half + (i32)(curand_uniform(st) * half) % half;
-        cy[bid]    = (i32)(curand_uniform(st) * L) % L;
-    } else {
-        cx_z0[bid] = 0;  cx_z1[bid] = L/2;  cy[bid] = 0;
-    }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   KERNEL 5: k_metro_sub
+   KERNEL 3: k_metro_sub
    Metropolis update for one checkerboard sublattice (cb0 or cb1).
      s      : spin field [B*N]  (±1.0)
      cb     : indices of this sublattice [n_cb]
@@ -176,7 +144,8 @@ __global__ void k_update_base_streak_mid(const f32* s, f32* base, f32* mid,
      wave_z  : which zone the wave is in this step [B]  (0 or 1)
      col_g   : column (x) of each site [N]
      row_g   : row (y) of each site [N]
-   h_ext is zeroed externally before each wave round.
+   k_compute_h_ext is self-zeroing: writes 0.f for non-fired batches and for
+   all sites outside the disk.  No preceding k_zero_h_ext needed.
    ═══════════════════════════════════════════════════════════════════════ */
 __global__ void k_compute_h_ext(f32* h_ext,
                                   const i8* fires,
@@ -288,6 +257,7 @@ __global__ void k_update_mid_phi_accum_M(
     const f32* dev_std, /* [B]   population std of (s-base) */
     f32* M_accum,       /* [B]   accumulator for order parameter */
     curandState* rng,   /* [B*N] */
+    f32 h_field,        /* scalar external conjugate field (+h for z0, -h for z1) */
     i32 N, i32 B, i32 n_z0)
 {
     i32 gi = blockIdx.x * blockDim.x + threadIdx.x;
@@ -295,8 +265,8 @@ __global__ void k_update_mid_phi_accum_M(
     i32 bid = gi / N;
     i32 li  = gi % N;
 
-    /* ── phi field decay (always) ── */
-    phi[gi] *= FIELD_DECAY;
+    /* ── phi field decay + external conjugate field (always, unconditional) ── */
+    phi[gi] = phi[gi] * FIELD_DECAY + h_field * z0f[li];
 
     /* ── viability gate ── */
     if (streak[gi] < SS) return;
@@ -326,40 +296,52 @@ __global__ void k_update_mid_phi_accum_M(
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   KERNEL 13: k_flip_wave_z
-   After each wave round, toggle which zone the wave targets next.
+   KERNEL 13: k_init_step  [MERGED: k_zero_accum + k_gen_wave]
+   Grid: grid_B.  Zeros per-batch accumulators and generates wave for step.
    ═══════════════════════════════════════════════════════════════════════ */
-__global__ void k_flip_wave_z(i32* wave_z, const i8* fires, i32 B)
+__global__ void k_init_step(f32* M_accum, f32* dev_sum, f32* dev_sq,
+                             curandState* wave_rng,
+                             i8* fires, i32* cx_z0, i32* cx_z1, i32* cy,
+                             f32 wp, i32 L, i32 B)
 {
     i32 bid = blockIdx.x * blockDim.x + threadIdx.x;
     if (bid >= B) return;
-    if (fires[bid]) wave_z[bid] = 1 - wave_z[bid];
+    M_accum[bid] = 0.f;  dev_sum[bid] = 0.f;  dev_sq[bid] = 0.f;
+    curandState* st = &wave_rng[bid];
+    fires[bid] = (curand_uniform(st) < wp) ? 1 : 0;
+    if (fires[bid]) {
+        i32 half = L / 2;
+        cx_z0[bid] = (i32)(curand_uniform(st) * half) % half;
+        cx_z1[bid] = half + (i32)(curand_uniform(st) * half) % half;
+        cy[bid]    = (i32)(curand_uniform(st) * L) % L;
+    } else {
+        cx_z0[bid] = 0;  cx_z1[bid] = L / 2;  cy[bid] = 0;
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   KERNEL 14: k_zero_h_ext
-   Zero h_ext between wave rounds (captured in graph).
+   KERNEL 14: k_step_cleanup  [MERGED: k_flip_wave_z + k_zero_h_ext + k_finalize_M]
+   Grid: grid_BN.  All three end-of-step operations in one launch.
+     - h_ext zeroed for all BN elements (for next step's main metro)
+     - wave_z flipped for fired batches
+     - M_out[b] = M_accum[b] * n_z0_inv
    ═══════════════════════════════════════════════════════════════════════ */
-__global__ void k_zero_h_ext(f32* h_ext, i32 BN)
+__global__ void k_step_cleanup(i32* wave_z, const i8* fires,
+                                f32* h_ext, i32 BN,
+                                f32* M_out, const f32* M_accum, f32 n_z0_inv,
+                                i32 B)
 {
     i32 tid = blockIdx.x * blockDim.x + threadIdx.x;
     if (tid < BN) h_ext[tid] = 0.f;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   KERNEL 15: k_finalize_M
-   M_out[b] = M_accum[b] / n_z0  (normalise by zone size).
-   ═══════════════════════════════════════════════════════════════════════ */
-__global__ void k_finalize_M(f32* M_out, const f32* M_accum, f32 n_z0_inv, i32 B)
-{
-    i32 bid = blockIdx.x * blockDim.x + threadIdx.x;
-    if (bid >= B) return;
-    M_out[bid] = M_accum[bid] * n_z0_inv;
+    if (tid < B) {
+        if (fires[tid]) wave_z[tid] = 1 - wave_z[tid];
+        M_out[tid] = M_accum[tid] * n_z0_inv;
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
    vcml_full_step()  --  the single pybind11-exposed function
-   Launches all 23 kernels for ONE VCML time-step.
+   Launches 25 kernels for ONE VCML time-step (down from original 33).
    All tensor arguments are CUDA tensors already allocated by the caller.
    The caller captures this function in a torch CUDAGraph for zero Python
    overhead in the simulation loop.
@@ -399,7 +381,8 @@ void vcml_full_step(
     float wp,                  /* wave fire probability per step       */
     int r_w,                   /* wave radius                          */
     int L, int B, int N,
-    int n_cb0, int n_cb1, int n_z0)
+    int n_cb0, int n_cb1, int n_z0,
+    float h_field = 0.f)       /* external conjugate field (default 0) */
 {
     /* ── raw device pointers ── */
     f32* sp        = s.data_ptr<f32>();
@@ -439,63 +422,53 @@ void vcml_full_step(
     f32 N_inv    = 1.f / (f32)N;
     f32 n_z0_inv = 1.f / (f32)n_z0;
 
-    /* ── LAUNCH 1: zero accumulators ── */
-    k_zero_accum<<<grid_B, BLOCK>>>(M_accp, dev_sump, dev_sqp, B);
+    /* ── LAUNCH 1: zero accumulators + generate wave [merged] ── */
+    k_init_step<<<grid_B, BLOCK>>>(M_accp, dev_sump, dev_sqp,
+                                    wave_rngp, firesp, cx_z0p, cx_z1p, cyp,
+                                    wp, L, B);
 
-    /* ── LAUNCH 2: generate wave ── */
-    k_gen_wave<<<grid_B, BLOCK>>>(wave_rngp, firesp, cx_z0p, cx_z1p, cyp,
-                                   wp, L, B);
-
-    /* ── LAUNCHES 3-4: main Metropolis (h_ext = 0 = already zeroed) ── */
+    /* ── LAUNCHES 2-3: main Metropolis (h_ext already zeroed by prior step) ── */
     k_metro_sub<<<grid_cb0, BLOCK>>>(sp, cb0p, nb4p, h_extp, cell_rngp,
                                       n_cb0, N, B);
     k_metro_sub<<<grid_cb1, BLOCK>>>(sp, cb1p, nb4p, h_extp, cell_rngp,
                                       n_cb1, N, B);
 
-    /* ── LAUNCH 5: update base, streak, mid (post main metro) ── */
+    /* ── LAUNCH 4: update base, streak, mid (post main metro) ── */
     k_update_base_streak_mid<<<grid_BN, BLOCK>>>(sp, basep, midp, streakp, N, B);
 
-    /* ── LAUNCHES 6-7: reduce deviation std ── */
+    /* ── LAUNCHES 5-6: reduce deviation std ── */
     k_reduce_dev<<<grid_reduce, BLOCK>>>(sp, basep, dev_sump, dev_sqp, N, B);
     k_finalize_dev_std<<<grid_B, BLOCK>>>(dev_stdp, dev_sump, dev_sqp, N_inv, B);
 
-    /* ── WAVE ROUNDS: WAVE_DUR × (compute h_ext + 2 metro sub-steps) ── */
-    /* First, copy s → s_wave for isolated wave metro */
-    k_copy<<<grid_BN, BLOCK>>>(s_wavep, sp, BN);   /* LAUNCH 8 */
+    /* ── LAUNCH 7: copy s → s_wave for isolated wave metro ── */
+    k_copy<<<grid_BN, BLOCK>>>(s_wavep, sp, BN);
 
+    /* ── LAUNCHES 8-22: WAVE_DUR × 3 (h_ext is self-zeroing; no k_zero_h_ext) ── */
     for (int wr = 0; wr < WAVE_DUR; wr++) {
-        /* zero h_ext */
-        k_zero_h_ext<<<grid_BN, BLOCK>>>(h_extp, BN);                    /* +1 */
-        /* compute wave field */
+        /* k_compute_h_ext writes every element: ±1 in disk, 0 elsewhere, 0 if !fires */
         k_compute_h_ext<<<grid_BN, BLOCK>>>(h_extp, firesp,
                                              cx_z0p, cx_z1p, cyp,
                                              wave_zp, col_gp, row_gp,
-                                             r_w, L, N, B);              /* +1 */
-        /* wave Metropolis on s_wave (2 sub-steps) */
+                                             r_w, L, N, B);
         k_metro_sub<<<grid_cb0, BLOCK>>>(s_wavep, cb0p, nb4p, h_extp,
-                                          cell_rngp, n_cb0, N, B);       /* +1 */
+                                          cell_rngp, n_cb0, N, B);
         k_metro_sub<<<grid_cb1, BLOCK>>>(s_wavep, cb1p, nb4p, h_extp,
-                                          cell_rngp, n_cb1, N, B);       /* +1 */
+                                          cell_rngp, n_cb1, N, B);
     }
-    /* LAUNCH 8 + WAVE_DUR*4 = 8 + 20 = launches 8-27; keep counting */
 
-    /* ── merge s_wave back into s ── */
-    k_merge_s<<<grid_BN, BLOCK>>>(sp, s_wavep, firesp, N, B);            /* +1 */
+    /* ── LAUNCH 23: merge s_wave back into s ── */
+    k_merge_s<<<grid_BN, BLOCK>>>(sp, s_wavep, firesp, N, B);
 
-    /* ── phi update + M accumulation (one combined kernel) ── */
+    /* ── LAUNCH 24: phi update + M accumulation ── */
     k_update_mid_phi_accum_M<<<grid_BN, BLOCK>>>(
         sp, basep, midp, phip, streakp,
         wave_zp, firesp, h_extp, z0fp, P_tenp, dev_stdp,
-        M_accp, cell_rngp, N, B, n_z0);                                  /* +1 */
+        M_accp, cell_rngp, h_field, N, B, n_z0);
 
-    /* ── flip wave zone for next step ── */
-    k_flip_wave_z<<<grid_B, BLOCK>>>(wave_zp, firesp, B);                /* +1 */
-
-    /* ── zero h_ext for next step's main metro ── */
-    k_zero_h_ext<<<grid_BN, BLOCK>>>(h_extp, BN);                        /* +1 */
-
-    /* ── finalise M_out ── */
-    k_finalize_M<<<grid_B, BLOCK>>>(M_outp, M_accp, n_z0_inv, B);       /* +1 */
+    /* ── LAUNCH 25: flip wave_z + zero h_ext + finalise M_out [merged] ── */
+    k_step_cleanup<<<grid_BN, BLOCK>>>(wave_zp, firesp,
+                                        h_extp, BN,
+                                        M_outp, M_accp, n_z0_inv, B);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
