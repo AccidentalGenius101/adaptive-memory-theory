@@ -35,13 +35,14 @@ def _run_remote(L, P, seeds, nsteps, r_w, h_field):
         f' --nsteps {nsteps} --rw {r_w} --hfield {h_field}'
     ]
     try:
-        raw = subprocess.check_output(cmd, stderr=subprocess.PIPE, timeout=3600)
-        for line in raw.decode('cp1252', errors='replace').splitlines():
+        raw = subprocess.check_output(cmd, stderr=subprocess.STDOUT, timeout=3600)
+        text = raw.decode('cp1252', errors='replace')
+        for line in text.splitlines():
             if line.startswith('RESULT_JSON:'):
                 return json.loads(line[len('RESULT_JSON:'):])
-        raise RuntimeError(f'No RESULT_JSON in remote output:\n{raw.decode()[:500]}')
+        raise RuntimeError(f'No RESULT_JSON in remote output:\n{text[:500]}')
     except subprocess.CalledProcessError as e:
-        raise RuntimeError(f'Remote failed: {e.stderr.decode()[:500]}')
+        raise RuntimeError(f'Remote failed: {e.output.decode("cp1252", errors="replace")[:500]}')
 
 
 def run_batch_cluster(L, P_causal_list, seed_list, nsteps,
