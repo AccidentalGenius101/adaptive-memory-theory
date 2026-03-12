@@ -113,14 +113,22 @@ def _wave_prob(L: int, L_base: int = 40, waves_per_step_base: float = 1.0) -> fl
     return min(1.0, waves_per_step_base * (L_base / L) ** 2)
 
 # ── autocorrelation ───────────────────────────────────────────────────
-def _acf(x: np.ndarray, max_lag: int = 500) -> tuple[np.ndarray, np.ndarray]:
-    x = x - x.mean()
-    n = len(x)
-    lags = np.arange(max_lag + 1)
+def _acf(x: np.ndarray, max_lag: int = 5000) -> tuple[np.ndarray, np.ndarray]:
+    """FFT-based ACF: O(n log n), handles tau >> 500 correctly."""
+    x    = x - x.mean()
+    n    = len(x)
+    lags = np.arange(min(max_lag + 1, n))
     c0   = np.dot(x, x) / n
     if c0 < 1e-30:
-        return lags, np.ones(max_lag + 1)
-    acf  = np.array([np.dot(x[:n-k], x[k:]) / ((n - k) * c0) for k in lags])
+        return lags, np.ones(len(lags))
+    # zero-pad to 2n for circular-free convolution
+    xp  = np.zeros(2 * n)
+    xp[:n] = x
+    F   = np.fft.rfft(xp)
+    raw = np.fft.irfft(F * np.conj(F))[:n]
+    # unbiased normalisation: divide by (n-k) instead of n
+    norms = (n - np.arange(n)) * c0
+    acf   = raw[:len(lags)] / norms[:len(lags)]
     return lags, acf
 
 def _tau_int(acf: np.ndarray, lags: np.ndarray) -> float:
@@ -224,7 +232,7 @@ def _run_one(ext, L: int, P_causal: float, seed: int, nsteps: int,
     chi   = float(np.var(M_np))
     U4    = 1.0 - M4 / (3.0 * M2 ** 2) if M2 > 1e-14 else 0.0
 
-    lags, acf = _acf(M_np, max_lag=500)
+    lags, acf = _acf(M_np, max_lag=5000)
     tau_corr  = _tau_int(acf, lags)
 
     return {
@@ -327,7 +335,7 @@ def _run_batch(ext, L: int, P_causal: float, seed_list: list[int],
         M4    = float(np.mean(M_np ** 4))
         chi   = float(np.var(M_np))
         U4    = 1.0 - M4 / (3.0 * M2 ** 2) if M2 > 1e-14 else 0.0
-        lags, acf = _acf(M_np, max_lag=500)
+        lags, acf = _acf(M_np, max_lag=5000)
         tau_corr  = _tau_int(acf, lags)
         results.append({
             'absM': absM, 'M1': M1, 'M2': M2, 'M4': M4,
