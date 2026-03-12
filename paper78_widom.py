@@ -197,6 +197,166 @@ with open(OUT / 'phaseB.json', 'w') as f:
                'x_scaling': float(PB_H / PB_P**BD),
                'data': {str(L): PB_data[L] for L in PB_Ls}}, f, indent=2)
 
+# ── Phase D: Scaling function Phi(x) fit -- 0+1d vs QFT ──────────────
+print('\n' + '=' * 60)
+print('Phase D: Phi(x) functional form -- 0+1d Langevin vs QFT')
+print('=' * 60)
+print('Candidate forms (all use measured delta=1.623):')
+print('  F1 (mean-field null): Phi^3 - Phi = x  [delta_MF=3, expect bad fit]')
+print('  F2 (additive crossover): Phi = (C^d + x)^(1/d)  [1-param, power potential]')
+print('  F3 (algebraic crossover): Phi = C*(1 + x/x_c)^(1/d)  [2-param, two-scale]')
+print('  F4 (power crossover): Phi = Phi0*(1+(x/x0)^a)^(1/(a*d))  [3-param, general]')
+
+from scipy.optimize import brentq, curve_fit as _cf
+
+def _r2(y_obs, y_pred):
+    ss_res = np.sum((y_obs - y_pred)**2)
+    ss_tot = np.sum((y_obs - y_obs.mean())**2)
+    return 1.0 - ss_res / ss_tot if ss_tot > 0 else 0.0
+
+def _chi2r(y_obs, y_pred, ye, npar):
+    dof = len(y_obs) - npar
+    return np.sum(((y_obs - y_pred) / ye)**2) / dof if dof > 0 else np.nan
+
+# Use Phase A collapsed data (exclude h=0 already done above)
+x_D  = x_sorted
+y_D  = y_sorted
+ye_D = ye_sorted
+
+PD = {}
+
+# F1: mean-field crossover -- rescaled (u^3 - u = rhs, Phi = C*u)
+def _mf_phi(x_arr, C_mf, x_mf):
+    out = []
+    for xi in x_arr:
+        rhs = xi / x_mf
+        def _eqn(u):
+            return u**3 - u - rhs
+        try:
+            u_lo = max(1.0, abs(rhs)**(1.0/3))
+            u_hi = u_lo + max(10.0, abs(rhs))
+            while _eqn(u_hi) < 0:
+                u_hi *= 2
+            u_sol = brentq(_eqn, u_lo, u_hi)
+        except Exception:
+            u_sol = abs(rhs)**(1.0/3) + 1.0
+        out.append(C_mf * u_sol)
+    return np.array(out)
+
+print('\n--- F1: mean-field crossover ---')
+try:
+    x0_mf = float(x_D[len(x_D)//2]) if len(x_D) > 0 else 0.1
+    popt, _ = _cf(_mf_phi, x_D, y_D, sigma=ye_D, absolute_sigma=True,
+                  p0=[float(y_D[0]), x0_mf], bounds=([0.01, 1e-6], [20, 1e4]))
+    yp = _mf_phi(x_D, *popt)
+    R2_f1 = _r2(y_D, yp); chi_f1 = _chi2r(y_D, yp, ye_D, 2)
+    print(f'  C_mf={popt[0]:.4f}  x_mf={popt[1]:.4e}')
+    print(f'  R2={R2_f1:.4f}  chi2/dof={chi_f1:.2f}  (delta_MF=3 forced)')
+    PD['F1_MF'] = {'C_mf': float(popt[0]), 'x_mf': float(popt[1]),
+                   'R2': R2_f1, 'chi2dof': float(chi_f1), 'y_pred': yp.tolist()}
+except Exception as ex:
+    print(f'  FAILED: {ex}')
+    PD['F1_MF'] = None
+
+# F2: additive crossover Phi = (C^delta + x)^(1/delta)
+def _phi_add(x, C):
+    return (np.maximum(C**DELTA + x, 0))**(1.0 / DELTA)
+
+print('\n--- F2: additive crossover ---')
+try:
+    popt, _ = _cf(_phi_add, x_D, y_D, sigma=ye_D, absolute_sigma=True,
+                  p0=[float(y_D[0])], bounds=([1e-6], [20.0]))
+    yp = _phi_add(x_D, *popt)
+    R2_f2 = _r2(y_D, yp); chi_f2 = _chi2r(y_D, yp, ye_D, 1)
+    print(f'  C={popt[0]:.4f}  [V_eff~|M|^{DELTA+1:.3f}, 0+1d power potential]')
+    print(f'  R2={R2_f2:.4f}  chi2/dof={chi_f2:.2f}')
+    PD['F2_additive'] = {'C': float(popt[0]), 'delta_used': DELTA,
+                          'R2': R2_f2, 'chi2dof': float(chi_f2), 'y_pred': yp.tolist()}
+except Exception as ex:
+    print(f'  FAILED: {ex}')
+    PD['F2_additive'] = None
+
+# F3: algebraic crossover Phi = C*(1 + x/x_c)^(1/delta)
+def _phi_alg(x, C, x_c):
+    return C * (1.0 + x / x_c)**(1.0 / DELTA)
+
+print('\n--- F3: algebraic crossover ---')
+try:
+    x0_alg = float(np.median(x_D)) if len(x_D) > 0 else 0.1
+    popt, _ = _cf(_phi_alg, x_D, y_D, sigma=ye_D, absolute_sigma=True,
+                  p0=[float(y_D[0]), x0_alg], bounds=([1e-6, 1e-8], [20, 1e5]))
+    yp = _phi_alg(x_D, *popt)
+    R2_f3 = _r2(y_D, yp); chi_f3 = _chi2r(y_D, yp, ye_D, 2)
+    print(f'  C={popt[0]:.4f}  x_c={popt[1]:.4e}')
+    print(f'  R2={R2_f3:.4f}  chi2/dof={chi_f3:.2f}')
+    PD['F3_algebraic'] = {'C': float(popt[0]), 'x_c': float(popt[1]),
+                           'delta_used': DELTA, 'R2': R2_f3, 'chi2dof': float(chi_f3),
+                           'y_pred': yp.tolist()}
+except Exception as ex:
+    print(f'  FAILED: {ex}')
+    PD['F3_algebraic'] = None
+
+# F4: power crossover Phi = Phi0*(1+(x/x0)^alpha)^(1/(alpha*delta))
+def _phi_pc(x, Phi0, x0, alpha):
+    return Phi0 * (1.0 + (x / x0)**alpha)**(1.0 / (alpha * DELTA))
+
+print('\n--- F4: power crossover ---')
+try:
+    x0_pc = float(np.median(x_D)) if len(x_D) > 0 else 0.1
+    popt, _ = _cf(_phi_pc, x_D, y_D, sigma=ye_D, absolute_sigma=True,
+                  p0=[float(y_D[0]), x0_pc, 1.0],
+                  bounds=([1e-6, 1e-8, 0.1], [20, 1e5, 10]))
+    yp = _phi_pc(x_D, *popt)
+    R2_f4 = _r2(y_D, yp); chi_f4 = _chi2r(y_D, yp, ye_D, 3)
+    print(f'  Phi0={popt[0]:.4f}  x0={popt[1]:.4e}  alpha={popt[2]:.3f}')
+    print(f'  R2={R2_f4:.4f}  chi2/dof={chi_f4:.2f}')
+    PD['F4_power_crossover'] = {
+        'Phi0': float(popt[0]), 'x0': float(popt[1]), 'alpha': float(popt[2]),
+        'delta_used': DELTA, 'R2': R2_f4, 'chi2dof': float(chi_f4),
+        'y_pred': yp.tolist()
+    }
+except Exception as ex:
+    print(f'  FAILED: {ex}')
+    PD['F4_power_crossover'] = None
+
+print('\n--- Phase D ranking ---')
+valid = {k: v for k, v in PD.items() if v is not None}
+ranked = sorted(valid.items(), key=lambda kv: kv[1].get('R2', -1), reverse=True)
+for rank, (name, res) in enumerate(ranked, 1):
+    print(f'  #{rank} {name:<25s}  R2={res["R2"]:.4f}  chi2/dof={res.get("chi2dof", float("nan")):.2f}')
+
+best_name = ranked[0][0] if ranked else 'none'
+best_res  = ranked[0][1] if ranked else {}
+print(f'\n  Best form: {best_name}  R2={best_res.get("R2", 0):.4f}')
+if 'F1' in best_name:
+    print('  INTERPRETATION: Mean-field wins => delta_eff~3, system is d>=4 or MF.')
+    print('  (Surprising -- contradicts measured delta=1.623. Check data quality.)')
+elif 'F2' in best_name:
+    C_v = best_res.get('C', 0)
+    print(f'  INTERPRETATION: Additive crossover => single-scale power potential.')
+    print(f'  V_eff(M) ~ |M|^{DELTA+1:.3f}  [0+1d Langevin, d_eff=0 consistent]')
+    print(f'  Phi(0) = C = {C_v:.4f}  (zero-field amplitude)')
+elif 'F3' in best_name:
+    xc_v = best_res.get('x_c', 0)
+    print(f'  INTERPRETATION: Algebraic crossover => two-scale structure.')
+    print(f'  Crossover at x_c = h*/P^{BD:.3f} = {xc_v:.4e}')
+    print(f'  0+1d Langevin with two relevant couplings [upstream of QFT].')
+elif 'F4' in best_name:
+    a_v = best_res.get('alpha', 1)
+    print(f'  INTERPRETATION: Power crossover, alpha={a_v:.3f}.')
+    if abs(a_v - 1.0) < 0.15:
+        print('  alpha~1 => reduces to algebraic F3.')
+    else:
+        print(f'  alpha!= 1 => non-trivial crossover exponent. Novel 0+1d universality.')
+
+with open(OUT / 'phaseD.json', 'w') as f:
+    json.dump({
+        'description': 'Phi(x) scaling function fits -- 0+1d vs QFT',
+        'x_data': x_D.tolist(), 'y_data': y_D.tolist(), 'ye_data': ye_D.tolist(),
+        'beta': BETA, 'delta': DELTA, 'beta_delta': BD,
+        'fits': PD, 'best_form': best_name,
+    }, f, indent=2)
+
 # ── Summary ───────────────────────────────────────────────────────────
 print('\n' + '=' * 60)
 print('PAPER 78 SUMMARY')
@@ -209,4 +369,6 @@ if C_fit:
     print(f'Zero-field:   Phi(0) ~ {C_fit:.4f}')
 y_spread_str = f'{y_spread/y_mean:.3f}' if y_mean > 0 else 'N/A'
 print(f'FSS spread/mean: {y_spread_str}  (Phase B)')
+if best_name != 'none':
+    print(f'Best Phi(x) form: {best_name}  R2={best_res.get("R2", 0):.4f}  (Phase D)')
 print(f'Results in: {OUT}')
