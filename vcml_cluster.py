@@ -23,7 +23,7 @@ from vcml_gpu_v4 import run_batch_gpu_v4
 LAPTOP_HOST = 'briel@192.168.2.151'
 LAPTOP_REPO = r'C:\Users\briel\Documents\vcsm-theory'
 LAPTOP_PY   = 'py'
-LAPTOP_FRAC = 0.5   # give laptop half the seeds (adjust if speeds differ)
+LAPTOP_FRAC = 0.125 # 1 seed on laptop (23k/min), 7 on desktop (100k/min) -> ~4.3s vs 7s wall
 
 # ── remote runner ──────────────────────────────────────────────────────
 def _run_remote(L, P, seeds, nsteps, r_w, h_field):
@@ -40,9 +40,9 @@ def _run_remote(L, P, seeds, nsteps, r_w, h_field):
         for line in text.splitlines():
             if line.startswith('RESULT_JSON:'):
                 return json.loads(line[len('RESULT_JSON:'):])
-        raise RuntimeError(f'No RESULT_JSON in remote output:\n{text[:500]}')
+        raise RuntimeError(f'No RESULT_JSON in remote output:\n{text[:2000]}')
     except subprocess.CalledProcessError as e:
-        raise RuntimeError(f'Remote failed: {e.output.decode("cp1252", errors="replace")[:500]}')
+        raise RuntimeError(f'Remote failed: {e.output.decode("cp1252", errors="replace")[:2000]}')
 
 
 def run_batch_cluster(L, P_causal_list, seed_list, nsteps,
