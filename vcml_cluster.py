@@ -36,7 +36,7 @@ def _run_remote(L, P, seeds, nsteps, r_w, h_field):
     ]
     try:
         raw = subprocess.check_output(cmd, stderr=subprocess.PIPE, timeout=3600)
-        for line in raw.decode('utf-8', errors='replace').splitlines():
+        for line in raw.decode('cp1252', errors='replace').splitlines():
             if line.startswith('RESULT_JSON:'):
                 return json.loads(line[len('RESULT_JSON:'):])
         raise RuntimeError(f'No RESULT_JSON in remote output:\n{raw.decode()[:500]}')
@@ -104,9 +104,9 @@ def run_batch_cluster(L, P_causal_list, seed_list, nsteps,
 # ── quick test ─────────────────────────────────────────────────────────
 if __name__ == '__main__':
     import numpy as np
-    print('Testing cluster with L=80, P=0.010, 8 seeds, 5k steps...')
+    print('Testing cluster with L=80, P=0.010, 8 seeds, 20k steps...')
     t0 = time.time()
-    res = run_batch_cluster(80, [0.010], list(range(8)), 5_000, r_w=5)
+    res = run_batch_cluster(80, [0.010], list(range(8)), 20_000, r_w=5)
     dt = time.time() - t0
     absMs = [r['absM'] for r in res]
     print(f'  {len(res)} results in {dt:.1f}s')
